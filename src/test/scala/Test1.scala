@@ -1,0 +1,398 @@
+object Test1 extends App {
+
+  println(s"drugi test")
+}
+
+
+  import org.jsoup.{Connection, Jsoup}
+  import org.jsoup.nodes.Element
+  import org.jsoup.select.Elements
+
+  import scala.collection.mutable
+  import scala.jdk.CollectionConverters.*
+  import java.text.SimpleDateFormat
+  import java.util.Date
+  import java.util.Calendar
+  import scala.annotation.tailrec
+
+/*import collection.convert.ImplicitConversions.seqAsJavaList
+import collection.convert.ImplicitConversionsToScala.collectionAsScalaIterable
+
+import collection.convert.ImplicitConversions.listAsScalaBuffer
+
+import collection.convert.ImplicitConversionsToScala.listAsScalaBuffer*/
+
+
+/*object WebScraper {
+    def main(args: Array[String]): Unit = {
+      //val url = "https://www.example.com"
+      val url = "https://hattrick.org"
+      val doc = Jsoup.connect(url).get()
+      val title = doc.title()
+      println(s"Tytuł strony: $title")
+    }
+  }
+
+object Main extends App {
+  WebScraper.main(Array.empty)
+}*/
+
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+
+class Player{
+
+  def main(args: Array[String]): Unit = {
+    val url = args(0)
+    val connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+    //val forSale = checkIfForSale(document)
+    val TL_status = document.select("div.transferPlayerInformation").asScala.length
+  }
+
+  def checkIfForSale(info: Document): Int = info.select("div.transferPlayerInformation").asScala.length
+}
+
+object Player1 {
+
+  def elementContain(element: Element, string: String): Boolean = element.text().contains(string)
+
+  def NoGamesPlayed(element: Element): Boolean = elementContain(element, "Ostatnio nie grał")
+
+  def NewDateFormat(pattern: String = "dd.MM.yyyy") = new SimpleDateFormat(pattern)
+
+  def SinceFrom(element: Element): String = element.select("span").text().split(" ")(1).replace(")", "")
+
+  def OnTL(document: Document): Boolean = document.select("div.transferPlayerSkills").asScala.length.equals(1)
+
+  def DaysInClub(joinDateString: String): Long = {
+    val dateFormat = NewDateFormat() //default value = dd.mm.rrrr
+    val today: Date = Calendar.getInstance().getTime
+    val joinDate: Date = dateFormat.parse(joinDateString)
+    (today.getTime - joinDate.getTime) / (1000 * 60 * 60 * 24)
+  }
+
+  def Loyalty(element: Element): String = element.select("span").text().split(" ").head.replaceAll("[()]", "")
+
+  def Age(document: Document): (Double, Int, Int) = {
+
+    val wiek = document.select("div.byline").text()
+    val years = wiek.split(" ")(0).toInt
+    val days = wiek.split(" ")(3).toInt
+
+    (years.toFloat + days.toFloat / 1000.0, years, days)
+
+  }
+
+  def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int) = {
+
+    val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
+
+    val GK = bufferElement(index+14).select("span.denominationNumber").text().split(" ").head.toInt
+    val DEF = bufferElement(index+17).select("span.denominationNumber").text().split(" ").head.toInt
+    val PM = bufferElement(index+20).select("span.denominationNumber").text().split(" ").head.toInt
+    val WG = bufferElement(index+23).select("span.denominationNumber").text().split(" ").head.toInt
+    val PASS = bufferElement(index+26).select("span.denominationNumber").text().split(" ").head.toInt
+    val SCO = bufferElement(index+29).select("span.denominationNumber").text().split(" ").head.toInt
+    val SP = bufferElement(index+32).select("span.denominationNumber").text().split(" ").head.toInt
+
+    (GK,DEF,PM,WG,PASS,SCO,SP)
+
+  }
+
+}
+
+
+class Player1 (args: Array[String]){
+
+    val url: String = args(0)
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    val exists: Boolean = if(document.title.split("»").length == 1) false else true
+    val has_club: Boolean = if(document.title.split("»").length == 4) true else false
+
+    val name: Option[String] = if(exists) Some(document.title.split("»").head) else None
+    /*val exists = if(name.equalsIgnoreCase("hattrick")) false else true*/
+
+
+    val onTL: Boolean = Player1.OnTL(document)
+    //val info = document.select("a.copyToClipboard").text.split(" ")
+    val info: mutable.Seq[Element] = document.select("td").asScala//.length
+    val info1: mutable.Seq[Element] = document.select("div").asScala//.length
+    val info2: mutable.Seq[Element] = document.select("span").asScala//.length
+
+    val no_match: Option[Boolean] = if(exists && has_club)Some(Player1.NoGamesPlayed(info1(2))) else None
+    val sinceFrom: Option[String] = if(exists && has_club)Some(Player1.SinceFrom(info2(19))) else None
+    /*println(s"${args(0)}")
+    println(s"${sinceFrom}")*/
+    val daysInClub: Option[Long] = if(exists && has_club)Some(Player1.DaysInClub(Player1.SinceFrom(info2(19)))) else None
+
+    val loyalty: Option[String] = if(exists) Some(Player1.Loyalty(info2(18))) else None
+
+    val age: Option[(Double, Int, Int)] = if(exists) Some(Player1.Age(document)) else None
+
+    val skills: Option[(Int, Int, Int, Int, Int, Int, Int)] = if(onTL) Some(Player1.Skills(info)) else None
+
+    val gk: Option[Int] = if(onTL) Some(skills.get._1) else None
+    val df: Option[Int] = if(onTL) Some(skills.get._2) else None
+    val pm: Option[Int] = if(onTL) Some(skills.get._3) else None
+    val wg: Option[Int] = if(onTL) Some(skills.get._4) else None
+    val pass: Option[Int] = if(onTL) Some(skills.get._5) else None
+    val sco: Option[Int] = if(onTL) Some(skills.get._6) else None
+    val sp: Option[Int] = if(onTL) Some(skills.get._7) else None
+
+
+  }
+
+
+class YouthPlayer (args: Array[String]){
+
+  val url: String = args(0)
+  val connection: Connection = Jsoup.connect(url)
+  val document: Document = connection.get()
+  val name: String = document.title.split("»").head
+
+}
+
+
+class WebScraper {
+  def main(args: Array[String]): Unit = {
+    //val url = "https://www.example.com"
+    val url = args(0)
+    val connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+    //val title = document.title
+    //val body: Element = document.body() //całe body wypisuje
+    //val full = document.select("title")
+    //val full = document.select("div class")
+    //val test = document.text("transferPlayer")
+    //val title = document.select("Playmaking").text
+    //val title = document.getElementsContainingText("Rozgrywanie")
+    //val text: String = title.text.substring(title.text.indexOf("Rozgrywanie"))
+    //val tl: String = full.substring(full.indexOf("transferPlayer"))
+    //println(s"Title of the page: $title")
+   // println(s"Title of the page: $text")
+    //println(s"Title of the page: $full")
+    //println(s"Title of the page: $test")
+    //println(s"Body of the page: ${body.text}") //sam tekst, bez znaczników html
+    println(s"Transfer Player Information: ${document.select("div.transferPlayerInformation").asScala.length}") // <div class="transferPlayerInformation">
+    //println(s"Title of the page: $tl")
+   // val splitted_text: Array[String] = text.split(" ")
+   // println(s"${splitted_text(0)} ${splitted_text(3)} ")
+
+
+  }
+}
+
+object Main extends App {
+  /*val scraper = new WebScraper
+  scraper.main(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=431317367"))*/
+
+  //val player = (new Player).main(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=438617879"))
+
+  val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=474603272"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=474220925"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=454378333"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=441279411"))
+  //player1.TL_status = 0 //setter
+  println(player1.onTL) //getter
+  println(player1.name)
+  println(player1.exists)
+  println(player1.info)
+  println(player1.info1)
+  player1.info.indices.foreach(i => println(s"$i => ${player1.info(i)}"))
+  player1.info1.indices.foreach(i => println(s"$i => ${player1.info1(i)}"))
+  player1.info2.indices.foreach(i => println(s"+++ $i => ${player1.info2(i)}"))
+  println(s"XXX ${player1.no_match}")
+  val loyalty: Option[String] = player1.loyalty
+  println(s"${player1.info2(19)}")
+  val since_from_string: String = player1.info2(19).select("span").text().split(" ")(1).replace(")","")
+  val test = player1.info2(19).select("span.shy span[dir=ltr]").first.text().split(" ")(1).replace(")","")
+  val dateFormat = new SimpleDateFormat("dd.MM.yyyy")
+  val since_from_date: Date = dateFormat.parse(since_from_string)
+  println(s"ZZZ $since_from_string $since_from_date $test")
+  println(s"Loyalty: $loyalty")
+
+  val today = Calendar.getInstance().getTime
+  val difference = (today.getTime - since_from_date.getTime) / (1000 * 60 * 60 * 24)
+  println(difference + " days")
+
+
+  println(player1.info(4))
+  //println(player1.info(135))
+  //println(player1.info(135).select("td.right").text().replace(" ",""))
+  //TSI
+  println(player1.info(4).select("td").text().replaceAll(" ",""))
+  //pensja
+  println(player1.info(6).select("td").text().replaceAll(" ","")replaceAll("zł/tydzień",""))
+  //forma
+  println(s"Forma: ${player1.info(10).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Forma: ${player1.info(10).select("span.denominationNumber").text().split(" ").head}")
+  //kondycja
+  println(s"Kondycja: ${player1.info(13).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Kondycja: ${player1.info(13).select("span.denominationNumber").text().split(" ").head}")
+  //specjalność
+  println(s"Specjalność: ${player1.info(8).select("td").text().split(" ").head}")
+  //Bronienie
+  println(s"Bronienie: ${player1.info(16).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Bronienie: ${player1.info(16).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Defensywa: ${player1.info(19).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Defensywa: ${player1.info(19).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Rozgrywanie: ${player1.info(22).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Rozgrywanie: ${player1.info(22).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Dośrodkowania: ${player1.info(25).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Dośrodkowania: ${player1.info(25).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Podania: ${player1.info(28).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Podania: ${player1.info(28).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Skuteczność: ${player1.info(31).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Skuteczność: ${player1.info(31).select("span.denominationNumber").text().split(" ").head}")
+  println(s"St. Fragmenty: ${player1.info(34).select("span.bar-denomination").text().split(" ").head}")
+  println(s"St. Fragmenty: ${player1.info(34).select("span.denominationNumber").text().split(" ").head}")
+
+}
+
+object Test extends App{
+
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=438617879"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=454378333"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=441279411"))
+  //val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=441279412"))
+  val player1 = new Player1(Array("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=474603272"))
+
+  player1.info.indices.foreach(i => println(s"$i => ${player1.info(i)} -> ${player1.info(i).text()}"))
+
+
+  @tailrec
+  def elementCompare(elements: mutable.Buffer[Element], index: Int, text: String): Int = {
+
+    println(s"$index-${elements(index).text()}-$text-${elements(index).text() == text}")
+
+    if (index == elements.length) -1
+    else if(elements(index).text() == text) index
+    else elementCompare(elements, index + 1, text)
+
+  }
+
+  //val index = elementCompare(player1.info, 0, "TSI")//działa
+  val index = player1.info.indexOf(player1.info.find(_.text == "TSI").get)
+
+  println(index)
+
+  //TSI
+  println(player1.info(index+1).select("td").text().replaceAll(" ", ""))
+  //pensja
+  val pensja20 = player1.info(index+3).select("td").text().replaceAll(" ", "").replaceAll("zł/tydzień", "")
+  val pensjaBASE = player1.info(index+3).select("td").select("span").attr("title").split(" ")(0).replaceAll("zł/tydzień", "").trim.replaceAll(" ", "")
+  val pensja = if (pensjaBASE.nonEmpty) pensjaBASE else pensja20
+  println(pensja)
+  //specjalność
+  println(s"Specjalność: ${player1.info(index+5).select("td").text().split(" ").head}")
+  //forma
+  println(s"Forma: ${player1.info(index+7).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Forma: ${player1.info(index+7).select("span.denominationNumber").text().split(" ").head}")
+  //kondycja
+  println(s"Kondycja: ${player1.info(index+10).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Kondycja: ${player1.info(index+10).select("span.denominationNumber").text().split(" ").head}")
+  //Bronienie
+  println(s"Bronienie: ${player1.info(index+13).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Bronienie: ${player1.info(index+14).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Defensywa: ${player1.info(index+16).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Defensywa: ${player1.info(index+17).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Rozgrywanie: ${player1.info(index+19).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Rozgrywanie: ${player1.info(index+20).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Dośrodkowania: ${player1.info(index+22).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Dośrodkowania: ${player1.info(index+23).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Podania: ${player1.info(index+25).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Podania: ${player1.info(index+26).select("span.denominationNumber").text().split(" ").head}")
+  println(s"Skuteczność: ${player1.info(index+28).select("span.bar-denomination").text().split(" ").head}")
+  println(s"Skuteczność: ${player1.info(index+29).select("span.denominationNumber").text().split(" ").head}")
+  println(s"St. Fragmenty: ${player1.info(index+31).select("span.bar-denomination").text().split(" ").head}")
+  println(s"St. Fragmenty: ${player1.info(index+32).select("span.denominationNumber").text().split(" ").head}")
+
+  println(s"Wiek: ${player1.age.get._1}")
+
+}
+
+object Test2 extends App{
+
+  val Player_id_start = 441279411
+  val Player_id_end = Player_id_start + 500
+
+  for(i <- Player_id_start to Player_id_end){
+
+
+
+    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i"))
+
+    if(player.exists) {
+      //println(s"${player.wiek(1)} ${player.wiek(2)}")
+      val player_wiek: Double = player.age.get._1
+      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i -> $player_wiek ${player.onTL} ${player.no_match}")
+    }
+
+  }
+
+
+
+}
+
+object Test3 extends App{
+
+  val Player_id_start = 474503272
+  val Player_id_end = Player_id_start - 500
+
+  for(i <- Player_id_start to Player_id_end by -1){
+
+    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i"))
+
+    if(player.exists && player.has_club && player.age.get._1 < 18.000 && player.onTL) {
+
+      //println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.skills.get._1} ${player.skills.get._2} ${player.skills.get._3} ${player.skills.get._4} ${player.skills.get._5} ${player.skills.get._6} ${player.skills.get._7}")
+      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.gk.get} ${player.df.get} ${player.pm.get} ${player.wg.get} ${player.pass.get} ${player.sco.get} ${player.sp.get}")
+    }
+
+  }
+
+
+
+}
+
+object Test4 extends App{
+
+  val PlayerID_start = 474552748
+  val step = 100
+  val backstep = 9
+  val counterMax = 11
+
+  @tailrec
+  def searchID(id: Int, counter: Int, lastID: Int): Int = {
+
+    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id"))
+
+    println(s"${player.name}")
+
+    if(counter >= counterMax) lastID
+    else if(player.exists)
+    {
+      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id")
+      searchID(id+step,0,id)
+    }
+    else searchID(id-backstep,counter+1,lastID)
+
+  }
+
+  val id = searchID(PlayerID_start, 0, PlayerID_start)
+
+}
+
+object Test5 extends App{
+
+   val youthPlayer = new YouthPlayer(Array(s"https://www.hattrick.org/Club/Players/YouthPlayer.aspx?YouthPlayerID=324275438)"))
+
+   println(youthPlayer.name)
+}
+
+
+
+
