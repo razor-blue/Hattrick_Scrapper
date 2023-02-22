@@ -9,11 +9,23 @@ object Test1 extends App {
   import org.jsoup.select.Elements
 
   import scala.collection.mutable
-  import scala.jdk.CollectionConverters.*
+  import scala.jdk.CollectionConverters._
   import java.text.SimpleDateFormat
   import java.util.Date
   import java.util.Calendar
   import scala.annotation.tailrec
+  import java.io.File
+  import com.github.tototoshi.csv._
+
+/*import org.openqa.selenium.{By, WebDriver, WebElement}
+import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
+
+import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}*/
+import java.io.File
+import scala.util.Try
+
+  import scala.concurrent.ExecutionContextExecutor
 
 /*import collection.convert.ImplicitConversions.seqAsJavaList
 import collection.convert.ImplicitConversionsToScala.collectionAsScalaIterable
@@ -84,10 +96,18 @@ object Player1 {
 
   }
 
-  def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int) = {
+  def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) = {
 
     val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
+    val TSI = bufferElement(index+1).select("td").text().replaceAll(" ", "").toInt
+
+    val Salary20 = bufferElement(index + 3).select("td").text().replaceAll(" ", "").replaceAll("zł/tydzień", "")
+    val SalaryBASE = bufferElement(index + 3).select("td").select("span").attr("title").split(" ")(0).replaceAll("zł/tydzień", "").trim.replaceAll(" ", "")
+    val Salary = (if (SalaryBASE.nonEmpty) SalaryBASE else Salary20).toInt
+
+    val Form = bufferElement(index+7).select("span.denominationNumber").text().split(" ").head.toInt
+    val Condition = bufferElement(index+10).select("span.denominationNumber").text().split(" ").head.toInt
     val GK = bufferElement(index+14).select("span.denominationNumber").text().split(" ").head.toInt
     val DEF = bufferElement(index+17).select("span.denominationNumber").text().split(" ").head.toInt
     val PM = bufferElement(index+20).select("span.denominationNumber").text().split(" ").head.toInt
@@ -96,12 +116,11 @@ object Player1 {
     val SCO = bufferElement(index+29).select("span.denominationNumber").text().split(" ").head.toInt
     val SP = bufferElement(index+32).select("span.denominationNumber").text().split(" ").head.toInt
 
-    (GK,DEF,PM,WG,PASS,SCO,SP)
+    (TSI,Salary,Form,Condition,GK,DEF,PM,WG,PASS,SCO,SP)
 
   }
 
 }
-
 
 class Player1 (args: Array[String]){
 
@@ -115,12 +134,14 @@ class Player1 (args: Array[String]){
     val name: Option[String] = if(exists) Some(document.title.split("»").head) else None
     /*val exists = if(name.equalsIgnoreCase("hattrick")) false else true*/
 
+  println(s"$name")
 
     val onTL: Boolean = Player1.OnTL(document)
     //val info = document.select("a.copyToClipboard").text.split(" ")
-    val info: mutable.Seq[Element] = document.select("td").asScala//.length
-    val info1: mutable.Seq[Element] = document.select("div").asScala//.length
-    val info2: mutable.Seq[Element] = document.select("span").asScala//.length
+    val info: mutable.Buffer[Element] = document.select("td").asScala//.length
+    val info1: mutable.Buffer[Element] = document.select("div").asScala//.length
+    val info2: mutable.Buffer[Element] = document.select("span").asScala//.length
+    val info3: mutable.Buffer[Element] = document.select("table.htbox-table").asScala//.length
 
     val no_match: Option[Boolean] = if(exists && has_club)Some(Player1.NoGamesPlayed(info1(2))) else None
     val sinceFrom: Option[String] = if(exists && has_club)Some(Player1.SinceFrom(info2(19))) else None
@@ -132,26 +153,135 @@ class Player1 (args: Array[String]){
 
     val age: Option[(Double, Int, Int)] = if(exists) Some(Player1.Age(document)) else None
 
-    val skills: Option[(Int, Int, Int, Int, Int, Int, Int)] = if(onTL) Some(Player1.Skills(info)) else None
+    val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if(onTL) Some(Player1.Skills(info)) else None
 
-    val gk: Option[Int] = if(onTL) Some(skills.get._1) else None
-    val df: Option[Int] = if(onTL) Some(skills.get._2) else None
-    val pm: Option[Int] = if(onTL) Some(skills.get._3) else None
-    val wg: Option[Int] = if(onTL) Some(skills.get._4) else None
-    val pass: Option[Int] = if(onTL) Some(skills.get._5) else None
-    val sco: Option[Int] = if(onTL) Some(skills.get._6) else None
-    val sp: Option[Int] = if(onTL) Some(skills.get._7) else None
+    val tsi: Option[Int] = if(onTL) Some(skills.get._1) else None
+    val salary: Option[Int] = if(onTL) Some(skills.get._2) else None
+    val form: Option[Int] = if(onTL) Some(skills.get._3) else None
+    val condition: Option[Int] = if(onTL) Some(skills.get._4) else None
+    val gk: Option[Int] = if(onTL) Some(skills.get._5) else None
+    val df: Option[Int] = if(onTL) Some(skills.get._6) else None
+    val pm: Option[Int] = if(onTL) Some(skills.get._7) else None
+    val wg: Option[Int] = if(onTL) Some(skills.get._8) else None
+    val pass: Option[Int] = if(onTL) Some(skills.get._9) else None
+    val sco: Option[Int] = if(onTL) Some(skills.get._10) else None
+    val sp: Option[Int] = if(onTL) Some(skills.get._11) else None
 
 
   }
 
+object YouthPlayer{
+
+  def Age(document: Document): (Double, Int, Int) = {
+
+    val wiek = document.select("div.byline").text()
+    val years = wiek.split(" ")(0).toInt
+    val days = wiek.split(" ")(3).toInt
+
+    (years.toFloat + days.toFloat / 1000.0, years, days)
+    //(14.toFloat + 101.toFloat / 1000.0, 14, 111)
+
+  }
+
+  def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title").split(": ")(1)
+
+  def BestPerformance(document: Document): String = {
+
+    document.select("table.youthPlayerPerformance").select("td.middle").text()
+
+  }
+
+  def Read_td(worldCupNumber: Int): Elements = {
+
+    val url: String = s"https://hattrickportal.pro/Tracker/U20/U21WC.aspx?WorldCup=$worldCupNumber"
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    document.select("td")
+
+  }
+
+  def WorldCupAgeMinMax(worldCupNumber: Int): ((Double, Int, Int),(Double, Int, Int)) = {
+
+    val td = Read_td(worldCupNumber: Int).asScala
+
+    val maxAgeYears = td(3).text().split(" ")(0).toInt
+    val maxAgeDays = td(3).text().split(" ")(3).toInt
+
+    val minAgeYears = td(167).text().split(" ")(0).toInt
+    val minAgeDays = td(167).text().split(" ")(3).toInt
+
+    val ageMax = maxAgeYears + maxAgeDays / 1000.0
+    val ageMin = minAgeYears + minAgeDays / 1000.0
+
+    ((ageMin,minAgeYears,minAgeDays),(ageMax,maxAgeYears,maxAgeDays))
+
+  }
+
+  @tailrec
+  def WhichWorldCup(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
+
+    val ageMin = WorldCupAgeMinMax(worldCupNumber)._1._1
+    val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
+
+    val ageCurrent = playerAge._1
+
+    //if(ageCurrent <= ageMax && ageCurrent >= ageMin) worldCupNumber
+    if(ageCurrent >= ageMin) worldCupNumber
+    else WhichWorldCup(playerAge, worldCupNumber+1)
+
+  }
+
+  @tailrec
+  def f(td: mutable.Buffer[Element], worldCupNumber: Int, playerAge: Double, index: Int): String = {
+
+    val age = td(index).text().split(" ")(0).toDouble + td(index).text().split(" ")(3).toDouble / 1000.0
+    val round = td( index - 5 ).text() //round for previous
+
+    if (playerAge > age) s"WC ${worldCupNumber-1} --> $round"
+    else f(td, worldCupNumber, playerAge, index + 4)
+
+  }
+  
+  def WhichRoundOfWorldCup(playerAge: (Double, Int, Int), worldCupNumber: Int): String = {
+
+    val td: mutable.Buffer[Element] = Read_td(worldCupNumber).asScala
+
+    val age = WorldCupAgeMinMax(worldCupNumber)
+
+    val ageMin = age._1._1
+    val ageMax = age._2._1
+
+    if(playerAge._1 > ageMax) s"WC ${worldCupNumber-1} --> Final"
+    else if(playerAge._1 <= ageMin) s"WC $worldCupNumber --> Final"
+    else f(td, worldCupNumber, playerAge._1 ,7)
+    
+  }
+
+  def Availability(age: (Double, Int, Int)): String = {
+
+    val i = 37
+
+    val worldCupNumber = WhichWorldCup(age, i)
+    val worldCupRound = WhichRoundOfWorldCup(age, worldCupNumber)
+
+   worldCupRound
+
+  }
+
+}
 
 class YouthPlayer (args: Array[String]){
 
   val url: String = args(0)
   val connection: Connection = Jsoup.connect(url)
   val document: Document = connection.get()
+
   val name: String = document.title.split("»").head
+  val age: (Double, Int, Int) = YouthPlayer.Age(document)
+  val nationality: String = YouthPlayer.Nationality(document)
+  val bestPerformance: String = YouthPlayer.BestPerformance(document)
+  val availability: String= YouthPlayer.Availability(age)
 
 }
 
@@ -339,28 +469,42 @@ object Test2 extends App{
 
 object Test3 extends App{
 
-  val Player_id_start = 474503272
-  val Player_id_end = Player_id_start - 500
+  val file = new File("C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\playerDatabase.csv")
+  val writer = CSVWriter.open(file, append = true)
+  /*writer.writeAll(List(
+    List("Jan", "Kowalski", "30"),
+    List("Anna", "Nowak", "25")
+  ))*/
 
-  for(i <- Player_id_start to Player_id_end by -1){
 
-    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i"))
+  val Player_id_start = 474627757
+  val Player_id_end = Player_id_start - 50000
 
-    if(player.exists && player.has_club && player.age.get._1 < 18.000 && player.onTL) {
+  for(id <- Player_id_start to Player_id_end by -1){
 
-      //println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.skills.get._1} ${player.skills.get._2} ${player.skills.get._3} ${player.skills.get._4} ${player.skills.get._5} ${player.skills.get._6} ${player.skills.get._7}")
-      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$i -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.gk.get} ${player.df.get} ${player.pm.get} ${player.wg.get} ${player.pass.get} ${player.sco.get} ${player.sp.get}")
+    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id"))
+
+    if(player.exists && player.has_club && player.age.get._1 < 18.000 && player.onTL && /*player.df.get >= 6 && player.df.get <=8 &&*/ player.no_match.get && player.loyalty.get.equals(20) && player.daysInClub.get.<=(7)) {
+
+      //println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.skills.get._1} ${player.skills.get._2} ${player.skills.get._3} ${player.skills.get._4} ${player.skills.get._5} ${player.skills.get._6} ${player.skills.get._7}")
+      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id -> ${player.age.get._1} ${player.tsi.get} ${player.condition.get} ${player.gk.get} ${player.df.get} ${player.pm.get} ${player.wg.get} ${player.pass.get} ${player.sco.get} ${player.sp.get}")
+      writer.writeAll(List(
+        List(s"$id", "Kowalski", "30")
+      ))
     }
 
   }
 
 
 
+
+
+  writer.close()
 }
 
 object Test4 extends App{
 
-  val PlayerID_start = 474552748
+  val PlayerID_start = 324275438//474603088
   val step = 100
   val backstep = 9
   val counterMax = 11
@@ -368,7 +512,8 @@ object Test4 extends App{
   @tailrec
   def searchID(id: Int, counter: Int, lastID: Int): Int = {
 
-    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id"))
+    //val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id"))
+    val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=$id"))
 
     println(s"${player.name}")
 
@@ -388,9 +533,87 @@ object Test4 extends App{
 
 object Test5 extends App{
 
-   val youthPlayer = new YouthPlayer(Array(s"https://www.hattrick.org/Club/Players/YouthPlayer.aspx?YouthPlayerID=324275438)"))
-
+   val youthPlayer = new YouthPlayer(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=324275438"))
    println(youthPlayer.name)
+   println(youthPlayer.age)
+   println(youthPlayer.nationality)
+   println(youthPlayer.bestPerformance)
+   youthPlayer.bestPerformance.split(" ").foreach(println(_))
+   println(youthPlayer.availability)
+}
+
+object Test6 extends App{
+
+  val player = new Player1(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=468663386"))
+
+  for(i <- player.info3.indices) println(s"$i -> ${player.info3(i)}")
+
+}
+
+object Test7 extends App{
+/*
+
+  import scalaj.http.Http
+  import org.jsoup.Jsoup
+
+  val playerId = "468663386"
+
+  // pobierz stronę gracza
+  val response = Http(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$playerId").asString
+
+
+
+  // wczytaj widok formularza do zmiennej
+  val doc: Document = Jsoup.parse(response.body)
+  val form: Element = doc.select("form[name=aspnetForm]").first()
+
+
+
+  // pobierz wartości ukrytych pól formularza
+  val viewState: String = form.select("input[name=__VIEWSTATE]").attr("value")
+  val eventTarget = form.select("input[name=__EVENTTARGET]").attr("value")
+
+  println(s"$viewState")
+
+  // ustaw adres strony i żądanie POST z wartościami ukrytych pól formularza
+  val request = Http(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=468663386")
+    .postData(s"__EVENTTARGET=$eventTarget&__VIEWSTATE=$viewState")
+
+  // wykonaj żądanie HTTP
+  val transferResponse = request.execute()
+
+  // wyświetl odpowiedź serwera
+  println(transferResponse.body)
+*/
+
+
+  }
+
+object Test8 extends App{
+
+/*
+
+
+
+  val driver: WebDriver = new ChromeDriver()
+
+  driver.get("https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=468663386")
+
+  // Pobierz element przycisku "Zobacz historię transferów"
+  val viewTransfersButton: WebElement = new WebDriverWait(driver, 10).until(
+    ExpectedConditions.elementToBeClickable(By.id("ctl00_ctl00_CPContent_CPMain_btnViewTransferHistory"))
+  )
+
+  // Symuluj kliknięcie w przycisk "Zobacz historię transferów"
+  viewTransfersButton.click()
+
+  // Pobierz kod źródłowy strony z wynikami
+  val transferHistoryPageSource: String = driver.getPageSource
+
+  // Zamknij przeglądarkę
+  driver.quit()
+*/
+
 }
 
 
