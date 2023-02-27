@@ -4,18 +4,19 @@ object Test1 extends App {
 }
 
 
+  //import Pla.{Age, Nationality}
   import org.jsoup.{Connection, Jsoup}
   import org.jsoup.nodes.Element
   import org.jsoup.select.Elements
 
   import scala.collection.mutable
-  import scala.jdk.CollectionConverters._
+  import scala.jdk.CollectionConverters.*
   import java.text.SimpleDateFormat
   import java.util.Date
   import java.util.Calendar
   import scala.annotation.tailrec
   import java.io.File
-  import com.github.tototoshi.csv._
+  import com.github.tototoshi.csv.*
 
 /*import org.openqa.selenium.{By, WebDriver, WebElement}
 import org.openqa.selenium.chrome.ChromeDriver
@@ -51,6 +52,268 @@ object Main extends App {
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+
+object Pla{
+
+  def Age(document: Document): (Double, Int, Int) = {
+
+    val wiek = document.select("div.byline").text()
+    val years = wiek.split(" ")(0).toInt
+    val days = wiek.split(" ")(3).toInt
+
+    (years.toFloat + days.toFloat / 1000.0, years, days)
+
+  }
+
+
+
+
+}
+
+class Pla(args: Array[String]) {
+
+  val url: String = args(0)+args(1)
+  val connection: Connection = Jsoup.connect(url)
+  val document: Document = connection.get()
+
+  val exists: Boolean = if (document.title.split("»").length == 1) false else true
+  val has_club: Boolean = if (document.title.split("»").length == 4) true else false
+
+  val id: Option[Int] = if(exists) Some(document.select("span.idNumber").text().replaceAll("[()]", "").toInt) else None
+
+  val name: Option[String] = if (exists) Some(document.title.split("»").head.trim) else None
+
+  val age: Option[(Double, Int, Int)] = if (exists) Some(Pla.Age(document)) else None
+  val link: Option[String] = if (exists) Some(args(0)) else None
+
+
+}
+
+object Y{
+
+  def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title").split(": ")(1)
+  def Since(document: Document): Int = document.select("span.shy span[dir=ltr]").first.text().split(" ")(2).toInt
+
+  def BestPerformances(document: Document): String = {
+
+    val arrayString: Array[String] = document.select("table.youthPlayerPerformance").select("td.middle").
+      text().replaceAll("-", "-1 -").replaceAll("boczny obrońca", "boczny_obrońca").split(" ")
+
+    @tailrec
+    def addString(str: String, stringToAdd: Array[String], index: Int): String =
+      if (index >= stringToAdd.length) str
+      else addString(str + "," + stringToAdd(index), stringToAdd, index + 3)
+
+    addString(arrayString(1), arrayString, 4)
+
+  }
+
+  def Last5Performances(document: Document): Seq[Double] = {
+
+    val arrayString1: mutable.Buffer[String] = document.select("div.mainBox").select("td.middle").asScala.map(x => x.text().replaceAll("boczny obrońca", "boczny_obrońca"))
+    val arrayString2 = document.select("div.mainBox").select("span.stars-full").asScala
+    val arrayString3 = document.select("div.mainBox").select("td.top").asScala
+
+    println(s"${arrayString3.map(x => x.text())}")
+
+    val stars: Seq[Double] = arrayString3.indices.map(i => arrayString3(i).text().toDouble)
+
+    val nGames = arrayString2.length
+
+    val dictionary = Seq("bramkarz", "boczny_obrońca", "stoper", "pomocnik", "skrzydłowy", "napastnik")
+    val dictionaryMap = Map("bramkarz" -> 0, "boczny_obrońca" -> 1, "stoper" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
+
+
+    val data: Seq[(Int, Double)] = (0 until nGames).map(i => {
+      val nPositionsPlayed = dictionary.count(p => arrayString1(2 + i * 3).contains(p))
+      val minutesPlayed = if (nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
+      val positionPlayed: Int = if (nPositionsPlayed == 1) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
+      val starsPlayed: Double = arrayString3(i).text().toDouble
+
+      //println(s"$i: ${arrayString1(2 + i * 3)} -> ${arrayString3(i).text()} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
+      (positionPlayed, starsPlayed)
+    })
+
+    //println(s"data: $data")
+
+    val newRecord: Seq[Double] = (0 to 5).map(i => {
+      val tmp = data.filter(p => p._1 == i).map(_._2)
+      val tmp2 = if (tmp.isEmpty) -1 else tmp.max
+      tmp2
+    })
+
+    //println(newRecord)
+
+    //println(arrayString2.length)
+    //arrayString1.foreach(println(_))
+    //arrayString2.foreach(println(_))
+
+    newRecord
+
+  }
+
+  def Read_td(worldCupNumber: Int): Elements = {
+
+    val url: String = s"https://hattrickportal.pro/Tracker/U20/U21WC.aspx?WorldCup=$worldCupNumber"
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    document.select("td")
+
+  }
+
+  def WorldCupAgeMinMax(worldCupNumber: Int): ((Double, Int, Int), (Double, Int, Int)) = {
+
+    val td = Read_td(worldCupNumber: Int).asScala
+
+    val maxAgeYears = td(3).text().split(" ")(0).toInt
+    val maxAgeDays = td(3).text().split(" ")(3).toInt
+
+    val minAgeYears = td(167).text().split(" ")(0).toInt
+    val minAgeDays = td(167).text().split(" ")(3).toInt
+
+    val ageMax = maxAgeYears + maxAgeDays / 1000.0
+    val ageMin = minAgeYears + minAgeDays / 1000.0
+
+    ((ageMin, minAgeYears, minAgeDays), (ageMax, maxAgeYears, maxAgeDays))
+
+  }
+
+  @tailrec
+  def WhichWorldCup(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
+
+    val ageMin = WorldCupAgeMinMax(worldCupNumber)._1._1
+    val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
+
+    val ageCurrent = playerAge._1
+
+    //if(ageCurrent <= ageMax && ageCurrent >= ageMin) worldCupNumber
+    if (ageCurrent >= ageMin) worldCupNumber
+    else WhichWorldCup(playerAge, worldCupNumber + 1)
+
+  }
+
+  @tailrec
+  def f(td: mutable.Buffer[Element], worldCupNumber: Int, playerAge: Double, index: Int): String = {
+
+    val age = td(index).text().split(" ")(0).toDouble + td(index).text().split(" ")(3).toDouble / 1000.0
+    val round = td(index - 5).text() //round for previous
+    val date = td(index - 6).text() //
+    val week = td(index - 7).text()
+
+    if (playerAge > age) s"WC ${worldCupNumber - 1} --> ${(index - 7) / 4.0 + 1.0} --> $round --> $date --> $week"
+    else f(td, worldCupNumber, playerAge, index + 4)
+
+  }
+
+  def WhichRoundOfWorldCup(playerAge: (Double, Int, Int), worldCupNumber: Int): String = {
+
+    val td: mutable.Buffer[Element] = Read_td(worldCupNumber).asScala
+
+    val age = WorldCupAgeMinMax(worldCupNumber)
+
+    val ageMin = age._1._1
+    val ageMax = age._2._1
+
+    if (playerAge._1 > ageMax) s"WC ${worldCupNumber - 1} --> Final"
+    else if (playerAge._1 <= ageMin) s"WC $worldCupNumber --> Final"
+    else f(td, worldCupNumber, playerAge._1, 7)
+
+  }
+
+  def Availability(age: (Double, Int, Int)): String = {
+
+    val i = 37
+
+    val worldCupNumber = WhichWorldCup(age, i)
+    val worldCupRound = WhichRoundOfWorldCup(age, worldCupNumber)
+
+    worldCupRound
+
+  }
+}
+
+class Y(args: Array[String]) extends Pla(args){
+
+  val stillInYouthAcademy: Boolean = id.get.equals(args(1).toInt)
+
+  val nationality: Option[String] = if(exists) {
+    try {
+      Some(Y.Nationality(document))
+    }
+      catch
+        case _: Throwable =>
+          try {
+            Some(S.Nationality(document))
+          } catch {
+            case _: Throwable => None
+          }
+  }
+  else None
+
+  val since: Option[Int] = if (exists) {
+    try {
+      Some(Y.Since(document))
+    }
+    catch
+      case _: Throwable =>
+        try {
+          Some(-1) //przeniesiony do seniorów
+        } catch {
+          case _: Throwable => None
+        }
+  }
+  else None
+
+  val availability: Option[String] = if( exists) Some(Y.Availability(age.get)) else None
+
+  val bestPerformances: Option[String] = if(stillInYouthAcademy) Some(Y.BestPerformances(document))  else None
+  val last5Performances: Option[Seq[Double]] = if(stillInYouthAcademy) Some(Y.Last5Performances(document)) else None
+
+
+}
+
+object S{
+
+  def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title")
+
+
+}
+
+class S(args: Array[String]) extends Pla(args){
+
+  val nationality: Option[String] = if(exists) Some(S.Nationality(document)) else None
+
+}
+
+object inh_test extends App{
+
+  val p1 = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","324275438"))
+  //val p1 = new Y(Array("https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","310723669"))
+
+  println(p1.exists)
+  println(p1.has_club)
+  println(p1.name.get)
+  println(p1.age.get._1)
+  println(p1.nationality.get)
+  println(p1.since.get)
+  println(p1.link.get)
+  println(p1.availability.get)
+  println(p1.id.get)
+  if(p1.stillInYouthAcademy)println(p1.bestPerformances.get)
+  if(p1.stillInYouthAcademy)println(p1.last5Performances.get)
+
+  val p2 = new S(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=","468663386"))
+
+  println(p2.exists)
+  println(p2.has_club)
+  println(p2.name.get)
+  println(p2.age.get._1)
+  println(p2.nationality.get)
+  println(p2.link.get)
+
+
+}
 
 class Player{
 
@@ -185,9 +448,63 @@ object YouthPlayer{
 
   def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title").split(": ")(1)
 
-  def BestPerformance(document: Document): String = {
+  def BestPerformances(document: Document): String = {
 
-    document.select("table.youthPlayerPerformance").select("td.middle").text()
+    /*document.select("table.youthPlayerPerformance").select("td.middle").text().split(" ").
+      map(s => if(s.equals("-")) s + " -1 "
+      else s
+    ).foldLeft("")((acc,s) => acc + " " +s).trim */
+
+    val arrayString: Array[String] = document.select("table.youthPlayerPerformance").select("td.middle").
+      text().replaceAll("-","-1 -").replaceAll("boczny obrońca","boczny_obrońca").split(" ")
+
+    @tailrec
+    def addString(str: String, stringToAdd: Array[String], index: Int): String =
+
+      if(index >= stringToAdd.length) str
+      else addString(str + "," + stringToAdd(index), stringToAdd, index + 3)
+
+    addString(arrayString(1), arrayString,4)
+
+  }
+
+  def Last5Performances(document: Document): Seq[Double] = {
+
+    val arrayString1: mutable.Buffer[String] = document.select("div.mainBox").select("td.middle").asScala.map(x => x.text().replaceAll("boczny obrońca" ,"boczny_obrońca"))
+    val arrayString2 = document.select("div.mainBox").select("span.stars-full").asScala
+
+    val nGames = arrayString2.length
+
+    val dictionary = Seq("bramkarz", "boczny_obrońca", "stoper", "pomocnik", "skrzydłowy", "napastnik")
+    val dictionaryMap = Map("bramkarz" -> 0, "boczny_obrońca" -> 1, "stoper" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
+
+
+
+      val data: Seq[(Int, Double)] = (0 until nGames).map(i => {
+        val nPositionsPlayed = dictionary.count(p => arrayString1(2 + i * 3).contains(p))
+        val minutesPlayed = if(nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
+        val positionPlayed: Int = if(nPositionsPlayed == 1) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
+        val starsPlayed: Double = arrayString2(i).text().toDouble
+
+        println(s"$i: ${arrayString1(2 + i * 3)} -> ${arrayString2(i)} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
+        (positionPlayed, starsPlayed)
+      })
+
+    println(data)
+
+    val newRecord: Seq[Double] = (0 to 5).map(i => {
+      val tmp = data.filter(p => p._1 == i).map(_._2)
+      val tmp2 = if(tmp.isEmpty) -1 else tmp.max
+      tmp2
+    })
+
+    println(newRecord)
+
+    println(arrayString2.length)
+    arrayString1.foreach(println(_))
+    arrayString2.foreach(println(_))
+
+    newRecord
 
   }
 
@@ -237,8 +554,10 @@ object YouthPlayer{
 
     val age = td(index).text().split(" ")(0).toDouble + td(index).text().split(" ")(3).toDouble / 1000.0
     val round = td( index - 5 ).text() //round for previous
+    val date  = td( index - 6 ).text() //
+    val week  = td( index - 7 ).text()
 
-    if (playerAge > age) s"WC ${worldCupNumber-1} --> $round"
+    if (playerAge > age) s"WC ${worldCupNumber-1} --> ${(index-7)/4.0+1.0} --> $round --> $date --> $week"
     else f(td, worldCupNumber, playerAge, index + 4)
 
   }
@@ -280,7 +599,8 @@ class YouthPlayer (args: Array[String]){
   val name: String = document.title.split("»").head
   val age: (Double, Int, Int) = YouthPlayer.Age(document)
   val nationality: String = YouthPlayer.Nationality(document)
-  val bestPerformance: String = YouthPlayer.BestPerformance(document)
+  val bestPerformances: String = YouthPlayer.BestPerformances(document)
+  val last5Performances: Seq[Double] = YouthPlayer.Last5Performances(document)
   val availability: String= YouthPlayer.Availability(age)
 
 }
@@ -537,8 +857,9 @@ object Test5 extends App{
    println(youthPlayer.name)
    println(youthPlayer.age)
    println(youthPlayer.nationality)
-   println(youthPlayer.bestPerformance)
-   youthPlayer.bestPerformance.split(" ").foreach(println(_))
+   println(youthPlayer.bestPerformances)
+   youthPlayer.last5Performances
+   //youthPlayer.bestPerformance.split(" ").foreach(println(_))
    println(youthPlayer.availability)
 }
 
@@ -551,41 +872,30 @@ object Test6 extends App{
 }
 
 object Test7 extends App{
-/*
 
-  import scalaj.http.Http
-  import org.jsoup.Jsoup
+  /*val file = new File("C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\YPD.csv")
+  val writer = CSVWriter.open(file, append = false)
 
-  val playerId = "468663386"
+  val Youth_Player_id_start = 324275438
+  val Youth_Player_id_end = Youth_Player_id_start - 50
 
-  // pobierz stronę gracza
-  val response = Http(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$playerId").asString
+  for (id <- Youth_Player_id_start to Youth_Player_id_end by -1) {
+
+    val youthPlayer = new YouthPlayer(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=$id"))
+
+    if (youthPlayer.exists && player.has_club && player.age.get._1 < 18.000 && player.onTL && /*player.df.get >= 6 && player.df.get <=8 &&*/ player.no_match.get && player.loyalty.get.equals(20) && player.daysInClub.get.<=(7)) {
+
+      //println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id -> ${player.age.get._1} ${player.onTL} ${player.no_match.get} ${player.loyalty.get} ${player.sinceFrom.get} ${player.daysInClub.get} ${player.skills.get._1} ${player.skills.get._2} ${player.skills.get._3} ${player.skills.get._4} ${player.skills.get._5} ${player.skills.get._6} ${player.skills.get._7}")
+      println(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=$id -> ${player.age.get._1} ${player.tsi.get} ${player.condition.get} ${player.gk.get} ${player.df.get} ${player.pm.get} ${player.wg.get} ${player.pass.get} ${player.sco.get} ${player.sp.get}")
+      writer.writeAll(List(
+        List(s"$id", "Kowalski", "30")
+      ))
+    }
+
+  }
 
 
-
-  // wczytaj widok formularza do zmiennej
-  val doc: Document = Jsoup.parse(response.body)
-  val form: Element = doc.select("form[name=aspnetForm]").first()
-
-
-
-  // pobierz wartości ukrytych pól formularza
-  val viewState: String = form.select("input[name=__VIEWSTATE]").attr("value")
-  val eventTarget = form.select("input[name=__EVENTTARGET]").attr("value")
-
-  println(s"$viewState")
-
-  // ustaw adres strony i żądanie POST z wartościami ukrytych pól formularza
-  val request = Http(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=468663386")
-    .postData(s"__EVENTTARGET=$eventTarget&__VIEWSTATE=$viewState")
-
-  // wykonaj żądanie HTTP
-  val transferResponse = request.execute()
-
-  // wyświetl odpowiedź serwera
-  println(transferResponse.body)
-*/
-
+  writer.close()*/
 
   }
 
