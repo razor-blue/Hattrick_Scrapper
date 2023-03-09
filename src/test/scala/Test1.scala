@@ -84,7 +84,9 @@ class Pla(args: Array[String]) {
   val name: Option[String] = if (exists) Some(document.title.split("»").head.trim) else None
 
   val age: Option[(Double, Int, Int)] = if (exists) Some(Pla.Age(document)) else None
-  val link: Option[String] = if (exists) Some(args(0)) else None
+  val link: Option[String] = if (exists) Some(args(0)+args(1)) else None
+
+  val speciality: Option[String] = if (exists) Some(document.select("td[colspan]").select("i[title]").attr("title")) else None
 
 
 }
@@ -114,14 +116,14 @@ object Y{
     val arrayString2 = document.select("div.mainBox").select("span.stars-full").asScala
     val arrayString3 = document.select("div.mainBox").select("td.top").asScala
 
-    println(s"${arrayString3.map(x => x.text())}")
+    //println(s"${arrayString3.map(x => x.text())}")
 
     val stars: Seq[Double] = arrayString3.indices.map(i => arrayString3(i).text().toDouble)
 
     val nGames = arrayString2.length
 
-    val dictionary = Seq("bramkarz", "boczny_obrońca", "stoper", "pomocnik", "skrzydłowy", "napastnik")
-    val dictionaryMap = Map("bramkarz" -> 0, "boczny_obrońca" -> 1, "stoper" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
+    val dictionary = Seq("bramkarz", "stoper", "boczny_obrońca", "pomocnik", "skrzydłowy", "napastnik")
+    val dictionaryMap = Map("bramkarz" -> 0, "stoper" -> 1, "boczny_obrońca" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
 
 
     val data: Seq[(Int, Double)] = (0 until nGames).map(i => {
@@ -288,8 +290,28 @@ class S(args: Array[String]) extends Pla(args){
 
 object inh_test extends App{
 
-  val p1 = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","324275438"))
+  val List_of_ids = Seq("324275438","320411270","317512515")
+
+  //val p1 = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","317512515"))
+  //val p1 = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","324275438"))
+  val p1 = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","310526039"))
   //val p1 = new Y(Array("https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=","310723669"))
+
+  val file = new File("C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\youthPlayerDatabase.csv")
+  val writer = CSVWriter.open(file, append = false)
+  List_of_ids.foreach(id => {
+
+    val p = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=", s"$id"))
+    if (p.exists && p.stillInYouthAcademy) {
+      val l5p = p.last5Performances.get.mkString(",")
+      println(l5p)
+      writer.writeAll(List(
+        List(s"${p.name.get},${p.id.get},${p.age.get._1},${p.since.get},${p.availability.get.replaceAll(" --> ", ",")},${p.bestPerformances.get},$l5p")
+      ))
+    }
+  })
+  writer.close()
+
 
   println(p1.exists)
   println(p1.has_club)
@@ -300,8 +322,14 @@ object inh_test extends App{
   println(p1.link.get)
   println(p1.availability.get)
   println(p1.id.get)
+  println(s"Specjalność: ${p1.speciality.get}")
   if(p1.stillInYouthAcademy)println(p1.bestPerformances.get)
   if(p1.stillInYouthAcademy)println(p1.last5Performances.get)
+
+
+
+
+
 
   val p2 = new S(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId=","468663386"))
 
@@ -310,7 +338,9 @@ object inh_test extends App{
   println(p2.name.get)
   println(p2.age.get._1)
   println(p2.nationality.get)
+  println(s"Specjalność: ${p2.speciality.get}")
   println(p2.link.get)
+
 
 
 }
@@ -486,11 +516,11 @@ object YouthPlayer{
         val positionPlayed: Int = if(nPositionsPlayed == 1) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
         val starsPlayed: Double = arrayString2(i).text().toDouble
 
-        println(s"$i: ${arrayString1(2 + i * 3)} -> ${arrayString2(i)} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
+        //println(s"$i: ${arrayString1(2 + i * 3)} -> ${arrayString2(i)} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
         (positionPlayed, starsPlayed)
       })
 
-    println(data)
+    //println(data)
 
     val newRecord: Seq[Double] = (0 to 5).map(i => {
       val tmp = data.filter(p => p._1 == i).map(_._2)
@@ -853,14 +883,7 @@ object Test4 extends App{
 
 object Test5 extends App{
 
-   val youthPlayer = new YouthPlayer(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=324275438"))
-   println(youthPlayer.name)
-   println(youthPlayer.age)
-   println(youthPlayer.nationality)
-   println(youthPlayer.bestPerformances)
-   youthPlayer.last5Performances
-   //youthPlayer.bestPerformance.split(" ").foreach(println(_))
-   println(youthPlayer.availability)
+   
 }
 
 object Test6 extends App{
