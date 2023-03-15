@@ -110,7 +110,7 @@ object Y{
 
   }
 
-  def Last5Performances(document: Document): Seq[Double] = {
+  def Last5Performances(document: Document): (Seq[Double], String) = {
 
     val arrayString1: mutable.Buffer[String] = document.select("div.mainBox").select("td.middle").asScala.map(x => x.text().replaceAll("boczny obrońca", "boczny_obrońca"))
     val arrayString2 = document.select("div.mainBox").select("span.stars-full").asScala
@@ -125,14 +125,16 @@ object Y{
     val dictionary = Seq("bramkarz", "stoper", "boczny_obrońca", "pomocnik", "skrzydłowy", "napastnik")
     val dictionaryMap = Map("bramkarz" -> 0, "stoper" -> 1, "boczny_obrońca" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
 
+    val lastMatchDetails: String = if(nGames > 0) arrayString1.head.split(" ").head + " " + arrayString1(2) else "--------"
 
     val data: Seq[(Int, Double)] = (0 until nGames).map(i => {
       val nPositionsPlayed = dictionary.count(p => arrayString1(2 + i * 3).contains(p))
-      val minutesPlayed = if (nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
-      val positionPlayed: Int = if (nPositionsPlayed == 1) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
+      val minutesPlayed: Int = if (nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
+      val positionPlayed: Int = if (nPositionsPlayed == 1 && minutesPlayed == 90) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
       val starsPlayed: Double = arrayString3(i).text().toDouble
 
-      //println(s"$i: ${arrayString1(2 + i * 3)} -> ${arrayString3(i).text()} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
+
+      println(s"$i: ${arrayString1(0 + i * 3).split(" ").head} ${arrayString1(2 + i * 3)} -> ${arrayString3(i).text()} --> $nPositionsPlayed ---> $minutesPlayed ----> $positionPlayed -----> $starsPlayed")
       (positionPlayed, starsPlayed)
     })
 
@@ -150,7 +152,7 @@ object Y{
     //arrayString1.foreach(println(_))
     //arrayString2.foreach(println(_))
 
-    newRecord
+    (newRecord,lastMatchDetails)
 
   }
 
@@ -199,11 +201,12 @@ object Y{
   def f(td: mutable.Buffer[Element], worldCupNumber: Int, playerAge: Double, index: Int): String = {
 
     val age = td(index).text().split(" ")(0).toDouble + td(index).text().split(" ")(3).toDouble / 1000.0
-    val round = td(index - 5).text() //round for previous
-    val date = td(index - 6).text() //
-    val week = td(index - 7).text()
+    val round_id = ((index - 7) / 4.0 + 1.0).toInt
+    val round = td(index - 5).text().replaceAll(",", " ") //round for previous
+    val date = td(index - 6).text()
+    val week = td(index - 7).text().replaceAll("/", ",")
 
-    if (playerAge > age) s"WC ${worldCupNumber - 1} --> ${(index - 7) / 4.0 + 1.0} --> $round --> $date --> $week"
+    if (playerAge > age) s"WC ${worldCupNumber - 1} --> $round_id --> $round --> $date --> $week"
     else f(td, worldCupNumber, playerAge, index + 4)
 
   }
@@ -217,8 +220,8 @@ object Y{
     val ageMin = age._1._1
     val ageMax = age._2._1
 
-    if (playerAge._1 > ageMax) s"WC ${worldCupNumber - 1} --> Final"
-    else if (playerAge._1 <= ageMin) s"WC $worldCupNumber --> Final"
+    if (playerAge._1 > ageMax) s"WC ${worldCupNumber - 1} --> ,Final,,,"
+    else if (playerAge._1 <= ageMin) s"WC $worldCupNumber --> ,Final,,,"
     else f(td, worldCupNumber, playerAge._1, 7)
 
   }
@@ -270,7 +273,7 @@ class Y(args: Array[String]) extends Pla(args){
   val availability: Option[String] = if( exists) Some(Y.Availability(age.get)) else None
 
   val bestPerformances: Option[String] = if(stillInYouthAcademy) Some(Y.BestPerformances(document))  else None
-  val last5Performances: Option[Seq[Double]] = if(stillInYouthAcademy) Some(Y.Last5Performances(document)) else None
+  val last5Performances: Option[(Seq[Double], String)] = if(stillInYouthAcademy) Some(Y.Last5Performances(document)) else None
 
 
 }
@@ -303,7 +306,7 @@ object inh_test extends App{
 
     val p = new Y(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=", s"$id"))
     if (p.exists && p.stillInYouthAcademy) {
-      val l5p = p.last5Performances.get.mkString(",")
+      val l5p = p.last5Performances.get._1.mkString(",")
       println(l5p)
       writer.writeAll(List(
         List(s"${p.name.get},${p.id.get},${p.age.get._1},${p.since.get},${p.availability.get.replaceAll(" --> ", ",")},${p.bestPerformances.get},$l5p")

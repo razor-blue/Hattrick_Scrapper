@@ -5,15 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="last 5 performances self-updates when updating database">
-      <change afterPath="$PROJECT_DIR$/src/data/playerDatabase.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/youthPlayerDatabase.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-02-22_17_09_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-02-22_17_09__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/Test1.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/Test1.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,16 +70,9 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.Testt">
+  <component name="RunManager" selected="Application.createCustomYouthClubDatabase">
     <configuration name="Test" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="Test" />
-      <module name="Scrapper" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Test4" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="Test4" />
       <module name="Scrapper" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -110,6 +99,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="createCustomYouthClubDatabase" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="createCustomYouthClubDatabase" />
+      <module name="Scrapper" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="inh_test" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="inh_test" />
       <module name="Scrapper" />
@@ -119,19 +115,19 @@
     </configuration>
     <list>
       <item itemvalue="Application.Test" />
+      <item itemvalue="Application.createCustomYouthClubDatabase" />
       <item itemvalue="Application.Testt" />
       <item itemvalue="Application.YouthDatabase" />
       <item itemvalue="Application.inh_test" />
       <item itemvalue="Application.Test5" />
-      <item itemvalue="Application.Test4" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.createCustomYouthClubDatabase" />
         <item itemvalue="Application.Testt" />
         <item itemvalue="Application.YouthDatabase" />
         <item itemvalue="Application.inh_test" />
         <item itemvalue="Application.Test5" />
-        <item itemvalue="Application.Test4" />
       </list>
     </recent_temporary>
   </component>
