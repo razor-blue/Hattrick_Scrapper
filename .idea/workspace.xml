@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="Now it is possible to create youth player report for custom youth academy">
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="WIP: update youth player report for custom youth academy (possibility of adding new players to database during updating it)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/build.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/playerDatabase.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/youthPlayerDatabase.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -153,6 +155,7 @@
     <MESSAGE value="last 5 performances self-update when updating database" />
     <MESSAGE value="last 5 performances self-updates when updating database" />
     <MESSAGE value="Now it is possible to create youth player report for custom youth academy" />
-    <option name="LAST_COMMIT_MESSAGE" value="Now it is possible to create youth player report for custom youth academy" />
+    <MESSAGE value="WIP: update youth player report for custom youth academy (possibility of adding new players to database during updating it)" />
+    <option name="LAST_COMMIT_MESSAGE" value="WIP: update youth player report for custom youth academy (possibility of adding new players to database during updating it)" />
   </component>
 </project>
