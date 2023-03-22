@@ -13,6 +13,9 @@ def JsoupConnection(url: String): Document = {
   connection.get()
 }
 
+def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country")
+
+
 
 
 object YouthDatabase {
@@ -26,39 +29,38 @@ object YouthDatabase {
 
     val sp = new Senior(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID=",id))
 
-    val age = sp.age
-
     val cols: Array[String] = line.split(",").map(_.trim)
 
-    println(line)
+    val age: String = f"${sp.age.get._1}%2.3f".replace(',', '.')
+    val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"","")
 
-    f"${sp.name.get},${sp.id.get},${sp.age.get._1}%2.3f,-2,${cols.drop(5).mkString(",")}"
+    f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
 
 
   }
 
-  def updateYouthPlayer(id: String, l5p: Seq[Double]): String = {
+  def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double]): String = {
 
     val yp = new Youth(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=",id))
 
     val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0,-1.0,-1.0,-1.0,-1.0,-1.0),"-----"))
     val lastGame = last5Games._2
-    val bestPerformances = yp.bestPerformances.getOrElse("-1.0,-1.0,-1.0,-1.0,-1.0,-1.0")
-    println(f" ${yp.name.get},${yp.id.get},${yp.age.get._1}%2.3f,${yp.since.get},${yp.availability.get.replaceAll(" --> ",",")},$bestPerformances,${last5Games._1.mkString(",")}")
-    println(f" ${yp.name.get},${yp.id.get},${yp.age.get._1}%2.3f,${yp.since.get},${yp.availability.get.replaceAll(" --> ",",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1,x._2)).mkString(",")},$lastGame")
+    val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
 
-    f"${yp.name.get},${yp.id.get},${yp.age.get._1}%2.3f,${yp.since.get},${yp.availability.get.replaceAll(" --> ",",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1,x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
+    val age: String = f"${yp.age.get._1}%2.3f".replace(',', '.')
+
+    f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ",",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1,x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
   }
 
   def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
 
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)(-1.0))
+    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0))
     val createdRecords = createRecords.result()
 
     val file = new File(pathToCsvFile)
     val writer = CSVWriter.open(file, append = false)
-    writer.writeRow(Seq("Player,Player ID,Years,Days,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country"))
+    writer.writeRow(headline)
     createdRecords.foreach(x => writer.writeRow(Seq(x)))
     writer.close()
 
@@ -69,12 +71,10 @@ object YouthDatabase {
     val bufferedSource = io.Source.fromFile(pathToCsvFile)
     val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
     for (line <- bufferedSource.getLines.drop(1)) {
-      println(line)
-      val cols = line.split(",").map(_.trim)
-      println(s"${cols(0)}|${cols(1)}|${cols(2)}|${cols(17)}|${cols(18)}|${cols(19)}|${cols(20)}|${cols(21)}|${cols(22)}")
-      val l5p: Seq[Double] = Seq(cols(17),cols(18),cols(19),cols(20),cols(21),cols(22)).map(_.toDouble)
-      //println(l5p)
-      val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), l5p) else updateSeniorPlayer(cols(1), line)
+      val cols: Array[String] = line.split(",").map(_.trim)
+      val l5p: Seq[Double] = cols.slice(17,23).toSeq.map(_.toDouble)
+      val b5p: Seq[String] = cols.slice(11,17).toSeq
+      val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p) else updateSeniorPlayer(cols(1), line)
       updateRecords += newRecord
     }
     bufferedSource.close
@@ -88,7 +88,7 @@ object YouthDatabase {
 
     val file = new File(pathToCsvFile)
     val writer = CSVWriter.open(file, append = false)
-    writer.writeRow(Seq("Player,Player ID,Years,Days,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country"))
+    writer.writeRow(headline)
     updatedRecords.foreach(x => writer.writeRow(Seq(x)))
     writer.close()
 
@@ -134,7 +134,7 @@ object YouthDatabase {
     //////-----------------
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)(-1.0))
+    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0))
 
     val createdRecords = createRecords.result()
 
@@ -172,8 +172,8 @@ object createCustomYouthClubDatabase extends App{
 
 object updateCustomYouthClubDatabase extends App {
 
-  //val youthAcademyId = 678445
-  val youthAcademyId = 2955119
+  val youthAcademyId = 678445
+  //val youthAcademyId = 2955119
 
   val pathToDatabase: String = YouthDatabase.PlayerDatabasePathByYouthTeamID(youthAcademyId)
 

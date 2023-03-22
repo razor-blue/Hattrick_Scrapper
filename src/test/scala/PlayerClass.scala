@@ -50,7 +50,8 @@ class PlayerClass(args: Array[String]) {
     val age: Option[(Double, Int, Int)] = if (exists) Some(Pla.Age(document)) else None
     val link: Option[String] = if (exists) Some(args(0) + args(1)) else None
 
-    val speciality: Option[String] = if (exists) Some(document.select("td[colspan]").select("i[title]").attr("title")) else None
+    val specialityMap: Map[String, String] = Map("gra głową" -> "H", "nieprzewidywalny" -> "U", "techniczny" -> "T", "atletyczny" -> "P", "szybki" -> "Q", "witalny" -> "R", "pomocny" -> "S", "" -> "")
+    val speciality: Option[String] = if (exists) Some(specialityMap(document.select("td[colspan]").select("i[title]").attr("title"))) else None
 
 }
 
@@ -105,7 +106,7 @@ object Youth{
             tmp2
         })
 
-      (newRecord,lastMatchDetails)
+        (newRecord,lastMatchDetails)
 
     }
 
