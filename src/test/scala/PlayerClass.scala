@@ -37,7 +37,7 @@ class PlayerClass(args: Array[String]) {
     val connection: Connection = Jsoup.connect(url)
     val document: Document = connection.get()
 
-    val exists: Boolean = if (document.title.split("»").length == 1) false else true
+    val exists: Boolean = if (document.title.split("»").length <= 2) false else true
     val has_club: Boolean = if (document.title.split("»").length == 4) true else false
 
     val id: Option[Int] = if (exists) Some(document.select("span.idNumber").text().replaceAll("[()]", "").toInt) else None
@@ -47,7 +47,7 @@ class PlayerClass(args: Array[String]) {
         Some(PlayerClass.RemoveDiacritics(document.title.split("»").head.trim))
     } else None
 
-    val age: Option[(Double, Int, Int)] = if (exists) Some(Pla.Age(document)) else None
+    val age: Option[(Double, Int, Int)] = if (exists) Some(PlayerClass.Age(document)) else None
     val link: Option[String] = if (exists) Some(args(0) + args(1)) else None
 
     val specialityMap: Map[String, String] = Map("gra głową" -> "H", "nieprzewidywalny" -> "U", "techniczny" -> "T", "atletyczny" -> "P", "szybki" -> "Q", "witalny" -> "R", "pomocny" -> "S", "" -> "")
@@ -189,11 +189,33 @@ object Youth{
         worldCupRound
 
     }
+    
+    def UpdateNonExistingPlayer(line: String): String = {
+
+        val cols: Array[String] = line.split(",").map(_.trim)
+        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+        
+        f"${cols.take(4).mkString(",").replaceAll("\"", "")},10000," + colsDrop5
+        
+    }
+    
+    def UpdateExistingPlayer(yp: Youth, b5p: Seq[String], l5p: Seq[Double]) = {
+
+        val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
+        val lastGame = last5Games._2
+        val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
+
+        val age: String = f"${yp.age.get._1}%2.3f".replace(',', '.')
+
+        println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}")
+        f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
+
+    }
 }
 
 class Youth(args: Array[String]) extends PlayerClass(args){
 
-    val stillInYouthAcademy: Boolean = id.get.equals(args(1).toInt)
+    val stillInYouthAcademy: Boolean = id.getOrElse(false).equals(args(1).toInt)
 
     val nationality: Option[String] = if(exists) {
         try {
@@ -234,6 +256,24 @@ object Senior{
 
     def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title")
 
+    def UpdateNonExistingPlayer(line: String) = {
+
+        val cols: Array[String] = line.split(",").map(_.trim)
+        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+
+        f"${cols.take(4).mkString(",").replaceAll("\"", "")},-10000," + colsDrop5
+    }
+    
+    def UpdateExistingPlayer(sp: Senior, line: String) = {
+
+        val cols: Array[String] = line.split(",").map(_.trim)
+        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+
+        val age: String = f"${sp.age.get._1}%2.3f".replace(',', '.')
+        f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
+        
+    }
+    
 }
 
 class Senior(args: Array[String]) extends PlayerClass(args){

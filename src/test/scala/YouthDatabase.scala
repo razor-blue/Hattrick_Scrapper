@@ -1,12 +1,13 @@
 import com.github.tototoshi.csv.CSVWriter
 
-import java.io.File
+import java.io.{File, FileNotFoundException}
 import com.github.tototoshi.csv.*
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import org.jsoup.{Connection, Jsoup}
 
 import scala.collection.mutable
+import scala.io.BufferedSource
 
 def JsoupConnection(url: String): Document = {
   val connection: Connection = Jsoup.connect(url)
@@ -29,33 +30,31 @@ object YouthDatabase {
 
     val sp = new Senior(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID=",id))
 
-    val cols: Array[String] = line.split(",").map(_.trim)
+    sp.exists match {
+      case true => Senior.UpdateExistingPlayer(sp, line)
+      case false => Senior.UpdateNonExistingPlayer(line)
+    }
 
-    val age: String = f"${sp.age.get._1}%2.3f".replace(',', '.')
-    val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"","")
 
-    f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
 
 
   }
 
-  def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double]): String = {
+  def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
 
     val yp = new Youth(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=",id))
+    
+    yp.exists match{
+      case true => Youth.UpdateExistingPlayer(yp, b5p, l5p)
+      case false => Youth.UpdateNonExistingPlayer(line)
+    }
 
-    val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0,-1.0,-1.0,-1.0,-1.0,-1.0),"-----"))
-    val lastGame = last5Games._2
-    val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
-
-    val age: String = f"${yp.age.get._1}%2.3f".replace(',', '.')
-
-    f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ",",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1,x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
-  }
+    }
 
   def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
 
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0))
+    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0),Seq.fill(6)("").mkString(","))
     val createdRecords = createRecords.result()
 
     val file = new File(pathToCsvFile)
@@ -68,29 +67,43 @@ object YouthDatabase {
 
   def updateDatabase(pathToCsvFile: String): Unit = {
 
-    val bufferedSource = io.Source.fromFile(pathToCsvFile)
-    val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-    for (line <- bufferedSource.getLines.drop(1)) {
-      val cols: Array[String] = line.split(",").map(_.trim)
-      val l5p: Seq[Double] = cols.slice(17,23).toSeq.map(_.toDouble)
-      val b5p: Seq[String] = cols.slice(11,17).toSeq
-      val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p) else updateSeniorPlayer(cols(1), line)
-      updateRecords += newRecord
-    }
-    bufferedSource.close
+      val bufferedSource: Option[BufferedSource] = try {
+        Some(io.Source.fromFile(pathToCsvFile))
+      } catch {
+        case _: FileNotFoundException => None
+      }
 
-    val updatedRecords = updateRecords.result()
+      bufferedSource match {
+        case Some(source) =>
 
-    println("--------------------------")
-    println(updatedRecords)
-    updatedRecords.foreach(println(_))
-    println("--------------------------")
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          for (line <- source.getLines.drop(1)) {
+            val cols: Array[String] = line.split(",").map(_.trim)
+            val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
+            val b5p: Seq[String] = cols.slice(11, 17).toSeq
+            val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
+            updateRecords += newRecord
+          }
+          val updatedRecords = updateRecords.result()
+          source.close() // Nie zapomnij zamknąć pliku po zakończeniu pracy z nim!
+          println(s"Plik $pathToCsvFile istnieje.")
 
-    val file = new File(pathToCsvFile)
-    val writer = CSVWriter.open(file, append = false)
-    writer.writeRow(headline)
-    updatedRecords.foreach(x => writer.writeRow(Seq(x)))
-    writer.close()
+          println("--------------------------")
+          println(updatedRecords)
+          updatedRecords.foreach(println(_))
+          println("--------------------------")
+
+          val file = new File(pathToCsvFile)
+          val writer = CSVWriter.open(file, append = false)
+          writer.writeRow(headline)
+          updatedRecords.foreach(x => writer.writeRow(Seq(x)))
+          writer.close()
+
+        case None =>
+          // Plik nie istnieje
+          println(s"Plik $pathToCsvFile nie istnieje.")
+      }
+
 
   }
 
@@ -134,7 +147,7 @@ object YouthDatabase {
     //////-----------------
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0))
+    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0), Seq.fill(6)("").mkString(","))
 
     val createdRecords = createRecords.result()
 
@@ -170,10 +183,10 @@ object createCustomYouthClubDatabase extends App{
 
 }
 
-object updateCustomYouthClubDatabase extends App {
+object updateCustomYouthClubDatabase {
 
-  val youthAcademyId = 678445
-  //val youthAcademyId = 2955119
+  //val youthAcademyId = 678445
+  val youthAcademyId = 2955119
 
   val pathToDatabase: String = YouthDatabase.PlayerDatabasePathByYouthTeamID(youthAcademyId)
 
@@ -181,6 +194,30 @@ object updateCustomYouthClubDatabase extends App {
 
   YouthDatabase.updateDatabase(pathToDatabase)
   YouthDatabase.addPlayerToDatabase(pathToDatabase,currentPlayerIDs)
+
+}
+
+class CustomYouthClubDatabase(youthAcademyId: Int) {
+
+  def update = {
+
+    val pathToDatabase: String = YouthDatabase.PlayerDatabasePathByYouthTeamID(youthAcademyId)
+
+    val currentPlayerIDs: Array[String] = YouthDatabase.getYouthPlayerIDsFromYouthClubID(youthAcademyId)
+
+    YouthDatabase.updateDatabase(pathToDatabase)
+    YouthDatabase.addPlayerToDatabase(pathToDatabase, currentPlayerIDs)
+
+  }
+
+
+
+}
+
+object run extends App{
+
+  new CustomYouthClubDatabase(678445).update
+  new CustomYouthClubDatabase(2955119).update
 
 }
 
