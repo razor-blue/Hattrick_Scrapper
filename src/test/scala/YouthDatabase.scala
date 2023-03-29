@@ -30,24 +30,22 @@ object YouthDatabase {
 
     val sp = new Senior(Array(s"https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID=",id))
 
-    sp.exists match {
-      case true => Senior.UpdateExistingPlayer(sp, line)
-      case false => Senior.UpdateNonExistingPlayer(line)
-    }
-
-
-
+    if (sp.exists)
+      Senior.UpdateExistingPlayer(sp, line)
+    else
+      Senior.UpdateNonExistingPlayer(line)
 
   }
 
   def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
 
     val yp = new Youth(Array(s"https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID=",id))
-    
-    yp.exists match{
-      case true => Youth.UpdateExistingPlayer(yp, b5p, l5p)
-      case false => Youth.UpdateNonExistingPlayer(line)
-    }
+
+    if(yp.exists)
+      Youth.UpdateExistingPlayer(yp, b5p, l5p)
+    else
+      Youth.UpdateNonExistingPlayer(line)
+
 
     }
 
@@ -85,8 +83,8 @@ object YouthDatabase {
             updateRecords += newRecord
           }
           val updatedRecords = updateRecords.result()
-          source.close() // Nie zapomnij zamknąć pliku po zakończeniu pracy z nim!
-          println(s"Plik $pathToCsvFile istnieje.")
+          source.close()
+          println(s"File $pathToCsvFile exists.")
 
           println("--------------------------")
           println(updatedRecords)
@@ -100,8 +98,7 @@ object YouthDatabase {
           writer.close()
 
         case None =>
-          // Plik nie istnieje
-          println(s"Plik $pathToCsvFile nie istnieje.")
+          println(s"File $pathToCsvFile does not exists.")
       }
 
 
@@ -199,7 +196,7 @@ object updateCustomYouthClubDatabase {
 
 class CustomYouthClubDatabase(youthAcademyId: Int) {
 
-  def update = {
+  def update(): Unit = {
 
     val pathToDatabase: String = YouthDatabase.PlayerDatabasePathByYouthTeamID(youthAcademyId)
 
@@ -216,8 +213,8 @@ class CustomYouthClubDatabase(youthAcademyId: Int) {
 
 object run extends App{
 
-  new CustomYouthClubDatabase(678445).update
-  new CustomYouthClubDatabase(2955119).update
+  new CustomYouthClubDatabase(678445).update()
+  new CustomYouthClubDatabase(2955119).update()
 
 }
 

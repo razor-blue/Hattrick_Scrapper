@@ -199,7 +199,7 @@ object Youth{
         
     }
     
-    def UpdateExistingPlayer(yp: Youth, b5p: Seq[String], l5p: Seq[Double]) = {
+    def UpdateExistingPlayer(yp: Youth, b5p: Seq[String], l5p: Seq[Double]): String = {
 
         val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
         val lastGame = last5Games._2
@@ -256,7 +256,7 @@ object Senior{
 
     def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title")
 
-    def UpdateNonExistingPlayer(line: String) = {
+    def UpdateNonExistingPlayer(line: String): String = {
 
         val cols: Array[String] = line.split(",").map(_.trim)
         val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
@@ -264,7 +264,7 @@ object Senior{
         f"${cols.take(4).mkString(",").replaceAll("\"", "")},-10000," + colsDrop5
     }
     
-    def UpdateExistingPlayer(sp: Senior, line: String) = {
+    def UpdateExistingPlayer(sp: Senior, line: String): String = {
 
         val cols: Array[String] = line.split(",").map(_.trim)
         val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")

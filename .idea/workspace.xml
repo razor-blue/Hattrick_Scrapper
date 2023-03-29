@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="WIP: cleaning printing control lines + fix update senior player">
-      <change beforePath="$PROJECT_DIR$/.bsp/sbt.json" beforeDir="false" afterPath="$PROJECT_DIR$/.bsp/sbt.json" afterDir="false" />
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="WIP: fixed handling of non-existing players (removed from the game)">
+      <change beforePath="$PROJECT_DIR$/.idea/sbt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sbt.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/build.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
@@ -104,6 +102,7 @@
     <configuration name="run" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="run" />
       <module name="Scrapper" />
+      <option name="PROGRAM_PARAMETERS" value="-deprecation" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -159,6 +158,7 @@
     <MESSAGE value="WIP: update youth player report for custom youth academy (possibility of adding new players to database during updating it)" />
     <MESSAGE value="WIP: bug fix in creating &amp; updating youth academy database" />
     <MESSAGE value="WIP: cleaning printing control lines + fix update senior player" />
-    <option name="LAST_COMMIT_MESSAGE" value="WIP: cleaning printing control lines + fix update senior player" />
+    <MESSAGE value="WIP: fixed handling of non-existing players (removed from the game)" />
+    <option name="LAST_COMMIT_MESSAGE" value="WIP: fixed handling of non-existing players (removed from the game)" />
   </component>
 </project>
