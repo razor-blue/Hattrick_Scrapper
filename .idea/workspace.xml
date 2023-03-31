@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="WIP: fixed handling of non-existing players (removed from the game)">
-      <change beforePath="$PROJECT_DIR$/.idea/sbt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sbt.xml" afterDir="false" />
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="WIP: fixed handling of non-existing players (e.g. removed from the game)">
+      <change afterPath="$PROJECT_DIR$/src/data/Piaseczno_Juniors_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/build.properties" beforeDir="false" afterPath="$PROJECT_DIR$/project/build.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
@@ -23,6 +25,23 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="SBT">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Scrapper" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -159,6 +178,7 @@
     <MESSAGE value="WIP: bug fix in creating &amp; updating youth academy database" />
     <MESSAGE value="WIP: cleaning printing control lines + fix update senior player" />
     <MESSAGE value="WIP: fixed handling of non-existing players (removed from the game)" />
-    <option name="LAST_COMMIT_MESSAGE" value="WIP: fixed handling of non-existing players (removed from the game)" />
+    <MESSAGE value="WIP: fixed handling of non-existing players (e.g. removed from the game)" />
+    <option name="LAST_COMMIT_MESSAGE" value="WIP: fixed handling of non-existing players (e.g. removed from the game)" />
   </component>
 </project>

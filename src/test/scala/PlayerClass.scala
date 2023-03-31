@@ -29,6 +29,29 @@ object PlayerClass{
         normalizedText.replaceAll("ł", "l").replaceAll("[^\\p{ASCII}]", "")
     }
 
+    def UpdatePreparation(line: String): (Array[String], String) = {
+
+        val cols: Array[String] = line.split(",").map(_.trim)
+        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+
+        (cols, colsDrop5)
+
+    }
+
+    def UpdateLineForNonExistingPlayer(colscolsDrop5: (Array[String], String), isYouthPlayer: Boolean): String = {
+
+        val (cols, colsDrop5) = colscolsDrop5
+
+        val sign = if(isYouthPlayer) 1 else -1
+
+        f"${cols.take(4).mkString(",").replaceAll("\"", "")},${sign * 10000}," + colsDrop5
+
+    }
+
+    def AgeFormatLine(age: Double): String = f"$age%2.3f".replace(',', '.')
+
+
+
 }
 
 class PlayerClass(args: Array[String]) {
@@ -141,7 +164,7 @@ object Youth{
     def WhichWorldCup(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
 
         val ageMin = WorldCupAgeMinMax(worldCupNumber)._1._1
-        val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
+        //val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
 
         val ageCurrent = playerAge._1
 
@@ -192,10 +215,9 @@ object Youth{
     
     def UpdateNonExistingPlayer(line: String): String = {
 
-        val cols: Array[String] = line.split(",").map(_.trim)
-        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
-        
-        f"${cols.take(4).mkString(",").replaceAll("\"", "")},10000," + colsDrop5
+        val cols_colsDrop5 = PlayerClass.UpdatePreparation(line)
+
+        PlayerClass.UpdateLineForNonExistingPlayer(cols_colsDrop5, true)
         
     }
     
@@ -205,12 +227,14 @@ object Youth{
         val lastGame = last5Games._2
         val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
 
-        val age: String = f"${yp.age.get._1}%2.3f".replace(',', '.')
+        val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
 
         println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}")
         f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
 
     }
+
+
 }
 
 class Youth(args: Array[String]) extends PlayerClass(args){
@@ -258,20 +282,18 @@ object Senior{
 
     def UpdateNonExistingPlayer(line: String): String = {
 
-        val cols: Array[String] = line.split(",").map(_.trim)
-        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+        val cols_colsDrop5 = PlayerClass.UpdatePreparation(line)
 
-        f"${cols.take(4).mkString(",").replaceAll("\"", "")},-10000," + colsDrop5
+        PlayerClass.UpdateLineForNonExistingPlayer(cols_colsDrop5, false)
     }
     
     def UpdateExistingPlayer(sp: Senior, line: String): String = {
 
-        val cols: Array[String] = line.split(",").map(_.trim)
-        val colsDrop5: String = cols.drop(5).mkString(",").replaceAll("\"", "")
+        val colsDrop5 = PlayerClass.UpdatePreparation(line)._2
 
-        val age: String = f"${sp.age.get._1}%2.3f".replace(',', '.')
+        val age: String = PlayerClass.AgeFormatLine(sp.age.get._1)
         f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
-        
+
     }
     
 }

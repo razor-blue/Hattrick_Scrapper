@@ -21,10 +21,14 @@ def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy
 
 object YouthDatabase {
 
-  def PlayerDatabasePathByYouthTeamID(id: Int): String = Map(
+  val TeamIDPlayerDatabasePath: Map[Int, String] = Map(
     678445 -> "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\FCB_youthPlayerDatabase.csv",
     2955119 -> "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\luka_w_systemie_youthPlayerDatabase.csv"
-  )(id)
+  )
+
+  def PlayerDatabasePathByYouthTeamID(id: Int): String = TeamIDPlayerDatabasePath(id)
+
+  def YouthTeamIDByPlayerDatabasePath(path: String): Int = TeamIDPlayerDatabasePath.map(_.swap)(path)
 
   def updateSeniorPlayer(id: String, line: String): String = {
 
@@ -99,6 +103,11 @@ object YouthDatabase {
 
         case None =>
           println(s"File $pathToCsvFile does not exists.")
+          println(s"Create file $pathToCsvFile.")
+
+          val playerIDs: Array[String] =
+            YouthDatabase.getYouthPlayerIDsFromYouthClubID(YouthTeamIDByPlayerDatabasePath(pathToCsvFile))
+          YouthDatabase.createDatabase(pathToCsvFile, playerIDs)
       }
 
 
@@ -180,7 +189,7 @@ object createCustomYouthClubDatabase extends App{
 
 }
 
-object updateCustomYouthClubDatabase {
+/*object updateCustomYouthClubDatabase {
 
   //val youthAcademyId = 678445
   val youthAcademyId = 2955119
@@ -192,11 +201,13 @@ object updateCustomYouthClubDatabase {
   YouthDatabase.updateDatabase(pathToDatabase)
   YouthDatabase.addPlayerToDatabase(pathToDatabase,currentPlayerIDs)
 
-}
+}*/
 
-class CustomYouthClubDatabase(youthAcademyId: Int) {
+class CustomYouthClubAnalysis {
 
-  def update(): Unit = {
+  def this(youthAcademyId: Int) = {
+
+    this()
 
     val pathToDatabase: String = YouthDatabase.PlayerDatabasePathByYouthTeamID(youthAcademyId)
 
@@ -209,12 +220,15 @@ class CustomYouthClubDatabase(youthAcademyId: Int) {
 
 
 
+
+
 }
 
 object run extends App{
 
-  new CustomYouthClubDatabase(678445).update()
-  new CustomYouthClubDatabase(2955119).update()
+  new CustomYouthClubAnalysis(678445)
+  new CustomYouthClubAnalysis(2955119)
+
 
 }
 
