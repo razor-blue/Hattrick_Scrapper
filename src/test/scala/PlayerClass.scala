@@ -11,6 +11,36 @@ import java.util.Calendar
 import scala.annotation.tailrec
 import java.text.Normalizer
 
+object QuickScanYouthPlayer{
+
+    def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title").split(": ")(1)
+
+
+}
+
+class QuickScanYouthPlayer(args: Array[String]) {
+
+    val url: String = args(0) + args(1)
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    val exists: Boolean = if (document.title.split("»").length <= 2) false else true
+
+    val nationality: Option[String] = if (exists) {
+        try {
+            Some(Youth.Nationality(document))
+        }
+        catch
+            case _: Throwable =>
+                try {
+                    Some(Senior.Nationality(document))
+                } catch {
+                    case _: Throwable => None
+                }
+    }
+    else None
+    
+}
 
 object PlayerClass{
 
@@ -26,7 +56,7 @@ object PlayerClass{
 
     def RemoveDiacritics(text: String): String = {
         val normalizedText = Normalizer.normalize(text, Normalizer.Form.NFD)
-        normalizedText.replaceAll("ł", "l").replaceAll("[^\\p{ASCII}]", "")
+        normalizedText.replaceAll("ł", "l").replaceAll("Ł", "L").replaceAll("[^\\p{ASCII}]", "")
     }
 
     def UpdatePreparation(line: String): (Array[String], String) = {
@@ -118,7 +148,7 @@ object Youth{
             val nPositionsPlayed = dictionary.count(p => arrayString1(2 + i * 3).contains(p))
             val minutesPlayed: Int = if (nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
             val positionPlayed: Int = if (nPositionsPlayed == 1  && minutesPlayed == 90) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
-            val starsPlayed: Double = arrayString3(i).text().toDouble
+            val starsPlayed: Double = if (arrayString3(i).text().nonEmpty) {arrayString3(i).text().toDouble} else -1.0
 
             (positionPlayed, starsPlayed)
         })
