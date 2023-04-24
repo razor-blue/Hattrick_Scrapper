@@ -4,15 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="did some code cleaning. Analysis of custom youth academy seems to work fine, but will be further tested">
-      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabaseNewest.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/World_youthPlayerDatabase0.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/config_db.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/PlayerClass.scala" afterDir="false" />
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="2nd method of creating/updating youth player database has been applied. The database has been created.">
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_1_256.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_257_512.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_513_768.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_769_1024.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_1_256.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_257_512.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_513_768.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_769_1024.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_bcp.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/sthGoesWrong.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/tmp.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase0.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -85,13 +91,19 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Lukasz/IdeaProjects/Scrapper/src/data&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.31264368&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Application.newTest">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Lukasz\IdeaProjects\Scrapper\src\data" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.run">
     <configuration name="Test" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="Test" />
       <module name="Scrapper" />
@@ -99,15 +111,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Testt" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="Testt" />
-      <module name="Scrapper" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="createCustomYouthClubDatabase" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="createCustomYouthClubDatabase" />
+    <configuration name="dateTest" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="dateTest" />
       <module name="Scrapper" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -115,6 +120,13 @@
     </configuration>
     <configuration name="newTest" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="newTest" />
+      <module name="Scrapper" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="newTest2" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="newTest2" />
       <module name="Scrapper" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -137,19 +149,19 @@
     </configuration>
     <list>
       <item itemvalue="Application.Test" />
+      <item itemvalue="Application.dateTest" />
+      <item itemvalue="Application.newTest2" />
       <item itemvalue="Application.newTest" />
       <item itemvalue="Application.run" />
       <item itemvalue="Application.updateCustomYouthClubDatabase" />
-      <item itemvalue="Application.createCustomYouthClubDatabase" />
-      <item itemvalue="Application.Testt" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.newTest" />
         <item itemvalue="Application.run" />
+        <item itemvalue="Application.newTest2" />
+        <item itemvalue="Application.dateTest" />
+        <item itemvalue="Application.newTest" />
         <item itemvalue="Application.updateCustomYouthClubDatabase" />
-        <item itemvalue="Application.createCustomYouthClubDatabase" />
-        <item itemvalue="Application.Testt" />
       </list>
     </recent_temporary>
   </component>
@@ -182,6 +194,8 @@
     <MESSAGE value="WIP: fixed handling of non-existing players (removed from the game)" />
     <MESSAGE value="WIP: fixed handling of non-existing players (e.g. removed from the game)" />
     <MESSAGE value="did some code cleaning. Analysis of custom youth academy seems to work fine, but will be further tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="did some code cleaning. Analysis of custom youth academy seems to work fine, but will be further tested" />
+    <MESSAGE value="wip: testing 2nd method of creating/updating youth player database." />
+    <MESSAGE value="2nd method of creating/updating youth player database has been applied. The database has been created." />
+    <option name="LAST_COMMIT_MESSAGE" value="2nd method of creating/updating youth player database has been applied. The database has been created." />
   </component>
 </project>

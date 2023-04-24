@@ -11,6 +11,14 @@ import java.util.Calendar
 import scala.annotation.tailrec
 import java.text.Normalizer
 
+def getTodayDate(pattern: String = "dd.MM.yyyy"): String = {
+
+  val today: Date = Calendar.getInstance().getTime
+  val dateFormat = new SimpleDateFormat(pattern)
+  dateFormat.format(today)
+
+}
+
 object QuickScanYouthPlayer{
 
     def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title").split(": ")(1)
@@ -96,8 +104,8 @@ class PlayerClass(args: Array[String]) {
     val id: Option[Int] = if (exists) Some(document.select("span.idNumber").text().replaceAll("[()]", "").toInt) else None
 
     val name: Option[String] = if (exists) {
-        document.title.split("»").head.trim
-        Some(PlayerClass.RemoveDiacritics(document.title.split("»").head.trim))
+        //document.title.split("»").head.trim
+        Some(PlayerClass.RemoveDiacritics(document.title.split("»").head.replaceAll(",","").trim))
     } else None
 
     val age: Option[(Double, Int, Int)] = if (exists) Some(PlayerClass.Age(document)) else None
@@ -259,8 +267,8 @@ object Youth{
 
         val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
 
-        println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}")
-        f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get}"
+        println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
+        f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
 
     }
 
