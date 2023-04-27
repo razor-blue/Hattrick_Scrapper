@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="2nd method of creating/updating youth player database has been applied. The database has been created.">
       <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L_270423.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_270423.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_1_256.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_257_512.csv" afterDir="false" />
@@ -18,7 +20,11 @@
       <change afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_bcp.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/data/sthGoesWrong.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/data/tmp.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase0.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/config1_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config1_db.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -111,6 +117,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="addNewPlayersToDatabase" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="addNewPlayersToDatabase" />
+      <module name="Scrapper" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="dateTest" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="dateTest" />
       <module name="Scrapper" />
@@ -140,28 +153,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="updateCustomYouthClubDatabase" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="updateCustomYouthClubDatabase" />
-      <module name="Scrapper" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Application.Test" />
+      <item itemvalue="Application.addNewPlayersToDatabase" />
       <item itemvalue="Application.dateTest" />
       <item itemvalue="Application.newTest2" />
       <item itemvalue="Application.newTest" />
       <item itemvalue="Application.run" />
-      <item itemvalue="Application.updateCustomYouthClubDatabase" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.run" />
+        <item itemvalue="Application.addNewPlayersToDatabase" />
         <item itemvalue="Application.newTest2" />
         <item itemvalue="Application.dateTest" />
         <item itemvalue="Application.newTest" />
-        <item itemvalue="Application.updateCustomYouthClubDatabase" />
       </list>
     </recent_temporary>
   </component>

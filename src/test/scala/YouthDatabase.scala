@@ -16,6 +16,7 @@ def JsoupConnection(url: String): Document = {
   connection.get()
 }
 
+//ok
 def tryBufferedSource(pathToFile: String): Option[BufferedSource] = {
 
   try {
@@ -26,7 +27,19 @@ def tryBufferedSource(pathToFile: String): Option[BufferedSource] = {
 
 }
 
-val projectFolder = "src/data/"
+//ok
+def writeToFile(path: String, appendFlag: Boolean, headline: Seq[String], lines: Seq[String]): Unit = {
+
+  val file = new File(path)
+  val writer = CSVWriter.open(file, appendFlag)
+  if(!appendFlag)writer.writeRow(headline)
+  lines.foreach(x => if (x != null) writer.writeRow(Seq(x)))
+  writer.close()
+
+}
+
+val teamPath = "https://www.hattrick.org/Club/?TeamID="
+val databasePath = "src/data/"
 val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
 val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
 val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
@@ -34,9 +47,9 @@ val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx
 
 def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update")
 
-def read_config_db: Int = {
+/*def read_config_db: Int = {
 
-  val config_db_path: String = projectFolder + "config_db.dat"
+  val config_db_path: String = databasePath + "config_db.dat"
 
   val bufferedSource: Option[BufferedSource] = tryBufferedSource(config_db_path)
 
@@ -62,22 +75,27 @@ def read_config_db: Int = {
 
   firstPlayerID
 
-}
+}*/
 
 
 object YouthDatabase {
 
+  //ok
   val DatabasePath: Map[String, String] = Map(
-    "678445" -> {projectFolder + "FCB_youthPlayerDatabase.csv"},
-    "2955119" -> {projectFolder + "luka_w_systemie_youthPlayerDatabase.csv"},
-    "Polska" -> {projectFolder + "Polska_youthPlayerDatabase.csv"},
-    "World" -> {projectFolder + "World_youthPlayerDatabase.csv"}
+    "678445" -> {databasePath + "FCB_youthPlayerDatabase.csv"},
+    "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
+    "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
+    "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
+    "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"}
   )
 
+  //ok
   def getDatabasePathByDatabaseKey(key: String): String = DatabasePath(key)
 
+  //ok
   def getDatabaseKeyByDatabasePath(path: String): String = DatabasePath.map(_.swap)(path)
 
+  //ok
   def updateSeniorPlayer(id: String, line: String): String = {
 
     val sp = new Senior(Array(seniorPlayerPath,id))
@@ -89,7 +107,7 @@ object YouthDatabase {
 
   }
 
-  def addYouthPlayer(yp: Youth/*, b5p: Seq[String], l5p: Seq[Double], line: String*/): String = {
+  /*def addYouthPlayer(yp: Youth/*, b5p: Seq[String], l5p: Seq[Double], line: String*/): String = {
     //320761510
     if (yp.exists)
       //Youth.UpdateExistingPlayer(yp, Seq.empty[String], Seq.empty[Double])
@@ -97,9 +115,10 @@ object YouthDatabase {
     else
       Youth.UpdateNonExistingPlayer("")
 
-  }
+  }*/
 
 
+  //ok
   def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
 
     val yp = new Youth(Array(youthPlayerPath,id))
@@ -111,30 +130,24 @@ object YouthDatabase {
 
     }
 
+  //ok
   def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
 
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
     for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0),Seq.fill(6)("").mkString(","))
     val createdRecords = createRecords.result()
 
-    val file = new File(pathToCsvFile)
-    val writer = CSVWriter.open(file, append = false)
-    writer.writeRow(headline)
-    createdRecords.foreach(x => writer.writeRow(Seq(x)))
-    writer.close()
+    writeToFile(pathToCsvFile, false, headline, createdRecords)
 
   }
 
-  def createDatabase(playerLine: Seq[String], pathToCsvFile: String, appendFlag: Boolean ): Unit = {
+  /*def createDatabase(playerLine: Seq[String], pathToCsvFile: String, appendFlag: Boolean ): Unit = {
 
-    val file = new File(pathToCsvFile)
-    val writer = CSVWriter.open(file, appendFlag)
-    if(!appendFlag)writer.writeRow(headline)
-    playerLine.foreach(x => if (x != null) writer.writeRow(Seq(x)))
-    writer.close()
+    writeToFile(pathToCsvFile, appendFlag, headline, playerLine)
 
-  }
+  }*/
 
+  //ok
   def updateDatabase(pathToCsvFile: String): Unit = {
 
       val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
@@ -159,11 +172,13 @@ object YouthDatabase {
           updatedRecords.foreach(println(_))
           println("--------------------------")
 
-          val file = new File(pathToCsvFile)
+          writeToFile(pathToCsvFile, false, headline, updatedRecords)
+
+          /*val file = new File(pathToCsvFile)
           val writer = CSVWriter.open(file, append = false)
           writer.writeRow(headline)
           updatedRecords.foreach(x => writer.writeRow(Seq(x)))
-          writer.close()
+          writer.close()*/
 
         case None =>
           println(s"File $pathToCsvFile does not exists.")
@@ -183,9 +198,9 @@ object YouthDatabase {
           YouthDatabase.createDatabase(pathToCsvFile, playerIDs)
 
         } else {
-          println(s"Creating database for $databaseKey")
+          println(s"Cannot update $databaseKey. File does not exist.")
 
-          val startID = read_config_db
+          /*val startID = read_config_db
 
           for(i <- Range(0,10000,1)) {
 
@@ -212,26 +227,21 @@ object YouthDatabase {
 
             YouthDatabase.createDatabase(youthPlayerLines, pathToCsvFile, true)
 
-            val file = new File(projectFolder + "config_db.dat")
+            val file = new File(databasePath + "config_db.dat")
             val writer = CSVWriter.open(file, append = false)
             val lastID = startID + i*100 + 100
             writer.writeRow(Seq(lastID.toString))
             writer.close()
 
-          }
-
-//320412639
+          }*/
 
         }
 
-
-
-
       }
-
 
   }
 
+  //ok
   def getYouthPlayerIDsFromYouthClubID(youthAcademyId: Int): Array[String] = {
 
     val url = youthTeamPath + s"$youthAcademyId"
@@ -248,26 +258,33 @@ object YouthDatabase {
 
   }
 
+  //ok
   def getYouthPlayerIDsFromYouthDatabase(pathToCsvFile: String): Seq[String] = {
 
-    val bufferedSource = io.Source.fromFile(pathToCsvFile)
-    val IDsbuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-    for (line <- bufferedSource.getLines) {
-      val cols = line.split(",").map(_.trim)
-      val youthPlayerId: String = cols(1)
-      IDsbuffer += youthPlayerId
+    val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+    bufferedSource match {
+      case Some(source) =>
+        val IDsbuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+        for (line <- source.getLines) {
+          val cols = line.split(",").map(_.trim)
+          val youthPlayerId: String = cols(1)
+          IDsbuffer += youthPlayerId
+        }
+        source.close
+        val youthPlayerIDs: Seq[String] = IDsbuffer.result()
+        youthPlayerIDs
+      case None =>
+        Seq.empty[String]
     }
-    bufferedSource.close
-
-    val youthPlayerIDs: Seq[String] = IDsbuffer.result()
-
-    youthPlayerIDs
-
   }
 
-  def addPlayerToDatabase(pathToCsvFile: String, currentPlayerIDs: Seq[String]): Unit = {
-
-    val storedPlayerIDs: Seq[String] = getYouthPlayerIDsFromYouthDatabase(pathToCsvFile)
+  //ok
+  def addPlayerToDatabase(
+                           pathToCsvFile: String,
+                           currentPlayerIDs: Seq[String],
+                           storedPlayerIDs: Seq[String]
+                         ): Unit = {
 
     val newPlayers: Seq[String] = currentPlayerIDs.filterNot(p => p.equals("0")).diff(storedPlayerIDs)
 
@@ -280,10 +297,13 @@ object YouthDatabase {
 
     val createdRecords = createRecords.result()
 
-    val file = new File(pathToCsvFile)
+    writeToFile(pathToCsvFile, true, headline, createdRecords)
+    writeToFile("src/data/new.csv", true, headline, createdRecords)
+
+    /*val file = new File(pathToCsvFile)
     val writer = CSVWriter.open(file, append = true)
     createdRecords.foreach(x => writer.writeRow(Seq(x)))
-    writer.close()
+    writer.close()*/
 
   }
 
@@ -325,10 +345,13 @@ class YouthAnalysis {
     val currentPlayerIDs: Array[String] = YouthDatabase.getYouthPlayerIDsFromYouthClubID(youthAcademyId)
 
     YouthDatabase.updateDatabase(pathToDatabase)
-    YouthDatabase.addPlayerToDatabase(pathToDatabase, currentPlayerIDs)
+
+    val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+    YouthDatabase.addPlayerToDatabase(pathToDatabase, currentPlayerIDs, storedPlayerIDs)
 
   }
 
+  //ok
   def this(databaseName: String) = {
 
     this()
@@ -354,15 +377,15 @@ class YouthAnalysis {
 
 object run extends App{
 
-  new YouthAnalysis(678445)
+  //new YouthAnalysis(678445)
   new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
+  //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("World")
-
-
+  
 }
 
-
+//ok
 def teamsIDFromLeagueID(leagueID: Int): Seq[String] = {
 
   val url = leaguePath + s"$leagueID"
@@ -377,9 +400,10 @@ def teamsIDFromLeagueID(leagueID: Int): Seq[String] = {
 
 }
 
+//ok
 def youthClubIDFromTeamID(teamID: Int): Int = {
 
-  val url = s"https://www.hattrick.org/Club/?TeamID=$teamID"
+  val url = teamPath + s"$teamID"
   val document = JsoupConnection(url)
 
   val youthClubID: Int = {
@@ -408,49 +432,59 @@ object newTest extends App{
   
   youthClubIds.foreach(x => {
     val currentPlayerIDs = YouthDatabase.getYouthPlayerIDsFromYouthClubID(x)
-    YouthDatabase.addPlayerToDatabase("C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase.csv", currentPlayerIDs)
+    val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(databasePath)
+    YouthDatabase.addPlayerToDatabase(databasePath + "Polska_youthPlayerDatabase.csv", currentPlayerIDs, storedPlayerIDs)
 
   })
 
 }
 
-object newTest2 extends App{
+//ok
+class leagueIDs_DatabasePath {
 
-  //val leagueIDs: Seq[Int] = Seq(3620)      // 1 liga
-  //val leagueIDs: Seq[Int] = 3641 to 3704   //Range(3704, 3704, 1) // 4 liga
-  //val leagueIDs: Seq[Int] = 9520 to 9638   // 5 liga
-  //val leagueIDs: Seq[Int] = 32114 to 32369 // 6 liga, 1-256
-  //val leagueIDs: Seq[Int] = 3230 to 32625  // 6 liga, 257-512
-  //val leagueIDs: Seq[Int] = 32626 to 32881 // 6 liga, 513-768
-  //val leagueIDs: Seq[Int] = 32882 to 33137 // 6 liga, 769-1024
-  //val leagueIDs: Seq[Int] = 58605 to 58860 // 7 liga, 1-256
-  //val leagueIDs: Seq[Int] = 59048 to 59116 // 7 liga, 257-512
-  //val leagueIDs: Seq[Int] = 59296 to 59372   // 7 liga, 513-768
-  val leagueIDs: Seq[Int] = 59373 to 59628   // 7 liga, 513-768
+  def L1: (Range.Inclusive, String) = (3620 to 3620, databasePath + "Polska_youthPlayerDatabase_1L.csv")
+  def L2: (Range.Inclusive, String) = (3621 to 3624, databasePath + "Polska_youthPlayerDatabase_2L.csv")
+  def L3: (Range.Inclusive, String) = (3641 to 3704, databasePath + "Polska_youthPlayerDatabase_3L.csv")
+  def L4: (Range.Inclusive, String) = (3641 to 3704, databasePath + "Polska_youthPlayerDatabase_4L.csv")
 
-  val pathToCsvFile = 
-    if(leagueIDs.head >= 32114 && leagueIDs.last <= 32369) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_6L_1_256.csv"
-    else if(leagueIDs.head >= 32370 && leagueIDs.last <= 32625) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_6L_257_512.csv"
-    else if(leagueIDs.head >= 32626 && leagueIDs.last <= 32881) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_6L_513_768.csv"
-    else if(leagueIDs.head >= 32882 && leagueIDs.last <= 33137) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_6L_769_1024.csv"
-    else if(leagueIDs.head >= 58605 && leagueIDs.last <= 58860) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_7L_1_256.csv"
-    else if(leagueIDs.head >= 58861 && leagueIDs.last <= 59116) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_7L_257_512.csv"
-    else if(leagueIDs.head >= 59117 && leagueIDs.last <= 59372) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_7L_513_768.csv"
-    else if(leagueIDs.head >= 59373 && leagueIDs.last <= 59628) "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\Polska_youthPlayerDatabase_7L_769_1024.csv"
-    else "C:\\Users\\Lukasz\\IdeaProjects\\Scrapper\\src\\data\\sthGoesWrong.csv"
+  def L1_4: (Range.Inclusive, String) = (3620 to 3704, databasePath + "Polska_youthPlayerDatabase1-4L.csv")
+
+  def L5: (Range.Inclusive, String) = (9383 to 9638, databasePath + "Polska_youthPlayerDatabase_5L.csv")
+
+  def L6_1_256: (Range.Inclusive, String) = (32114 to 32369, databasePath + "Polska_youthPlayerDatabase_6L_1_256.csv")
+  def L6_257_512: (Range.Inclusive, String) = (32370 to 32625, databasePath + "Polska_youthPlayerDatabase_6L_257_512.csv")
+  def L6_513_768: (Range.Inclusive, String) = (32626 to 32881, databasePath + "Polska_youthPlayerDatabase_6L_513_768.csv")
+  def L6_769_1024: (Range.Inclusive, String) = (32882 to 33137, databasePath + "Polska_youthPlayerDatabase_6L_769_1024.csv")
+
+  def L7_1_256: (Range.Inclusive, String) = (58605 to 58860, databasePath + "Polska_youthPlayerDatabase_7L_1_256.csv")
+  def L7_257_512: (Range.Inclusive, String) = (58861 to 59116, databasePath + "Polska_youthPlayerDatabase_7L_257_512.csv")
+  def L7_513_768: (Range.Inclusive, String) = (59117 to 59372, databasePath + "Polska_youthPlayerDatabase_7L_513_768.csv")
+  def L7_769_1024: (Range.Inclusive, String) = (59373 to 59628, databasePath + "Polska_youthPlayerDatabase_7L_769_1024.csv")
+
+}
+
+object addNewPlayersToDatabase extends App{
+
+  val leagueIDs_Path: (Range.Inclusive, String) = new leagueIDs_DatabasePath().L2
+
+  val leagueIDs: Seq[Int] = leagueIDs_Path._1
+  val pathToCsvFile: String = leagueIDs_Path._2
 
   leagueIDs.foreach(l_id => {
     teamsIDFromLeagueID(l_id).map(x => youthClubIDFromTeamID(x.toInt)).filter(p => !p.equals(0)).foreach(yc => {
 
       val currentPlayerIDs = YouthDatabase.getYouthPlayerIDsFromYouthClubID(yc)
-      YouthDatabase.addPlayerToDatabase(pathToCsvFile, currentPlayerIDs)
+      val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToCsvFile)
+      YouthDatabase.addPlayerToDatabase(pathToCsvFile, currentPlayerIDs, storedPlayerIDs)
 
     })
 
-    val file = new File("src/data/config1_db.dat")
+    writeToFile(databasePath + "config1_db.dat", false, Seq.empty[String], Seq(l_id.toString))
+
+    /*val file = new File(databasePath + "config1_db.dat")
     val writer = CSVWriter.open(file, append = false)
     writer.writeRow(Seq(l_id.toString))
-    writer.close()
+    writer.close()*/
 
   })
 
