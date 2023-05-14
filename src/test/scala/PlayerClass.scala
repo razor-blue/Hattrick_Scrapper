@@ -82,7 +82,8 @@ object PlayerClass{
 
         val sign = if(isYouthPlayer) 1 else -1
 
-        f"${cols.take(4).mkString(",").replaceAll("\"", "")},${sign * 10000}," + colsDrop5
+        if(math.abs(cols(4).toInt).equals(10000)) ""
+        else f"${cols.take(4).mkString(",").replaceAll("\"", "")},${sign * 10000}," + colsDrop5
 
     }
 

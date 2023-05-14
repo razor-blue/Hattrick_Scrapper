@@ -86,7 +86,16 @@ object YouthDatabase {
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
     "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
-    "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"}
+    "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"},
+    "5 Liga" -> {databasePath + "Polska_youthPlayerDatabase_5L.csv"},
+    "6 Liga 1-256" -> {databasePath + "Polska_youthPlayerDatabase_6L_1_256.csv"},
+    "7 Liga 1-256" -> {databasePath + "Polska_youthPlayerDatabase_7L_1_256.csv"},
+    "6 Liga 257-512" -> {databasePath + "Polska_youthPlayerDatabase_6L_257_512.csv"},
+    "7 Liga 257-512" -> {databasePath + "Polska_youthPlayerDatabase_7L_257_512.csv"},
+    "6 Liga 513-768" -> {databasePath + "Polska_youthPlayerDatabase_6L_513_768.csv"},
+    "7 Liga 513-768" -> {databasePath + "Polska_youthPlayerDatabase_7L_513_768.csv"},
+    "6 Liga 769-1024" -> {databasePath + "Polska_youthPlayerDatabase_6L_769_1024.csv"},
+    "7 Liga 769-1024" -> {databasePath + "Polska_youthPlayerDatabase_7L_769_1024.csv"}
   )
 
   //ok
@@ -103,20 +112,10 @@ object YouthDatabase {
     if (sp.exists)
       Senior.UpdateExistingPlayer(sp, line)
     else
-      Senior.UpdateNonExistingPlayer(line)
+      //Senior.UpdateNonExistingPlayer(line)
+      null
 
   }
-
-  /*def addYouthPlayer(yp: Youth/*, b5p: Seq[String], l5p: Seq[Double], line: String*/): String = {
-    //320761510
-    if (yp.exists)
-      //Youth.UpdateExistingPlayer(yp, Seq.empty[String], Seq.empty[Double])
-      Youth.UpdateExistingPlayer(yp, Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0))
-    else
-      Youth.UpdateNonExistingPlayer("")
-
-  }*/
-
 
   //ok
   def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
@@ -126,7 +125,8 @@ object YouthDatabase {
     if(yp.exists)
       Youth.UpdateExistingPlayer(yp, b5p, l5p)
     else
-      Youth.UpdateNonExistingPlayer(line)
+      //Youth.UpdateNonExistingPlayer(line)
+      null
 
     }
 
@@ -156,23 +156,43 @@ object YouthDatabase {
         case Some(source) =>
 
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          var counter = 0
+
           for (line <- source.getLines.drop(1)) {
-            val cols: Array[String] = line.split(",").map(_.trim)
-            val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
-            val b5p: Seq[String] = cols.slice(11, 17).toSeq
-            val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
-            updateRecords += newRecord
+
+
+              val cols: Array[String] = line.split(",").map(_.trim)
+              val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
+              val b5p: Seq[String] = cols.slice(11, 17).toSeq
+              val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
+              updateRecords += newRecord
+
+            counter += 1
+            if(counter % 100 == 0){
+              val updatedRecords = updateRecords.result()
+              writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+              updateRecords.clear()
+            }
+
+
+
+            //writeToFile(pathToCsvFile + ".csv", true, headline, updatedRecords)
+
           }
+
           val updatedRecords = updateRecords.result()
+          writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+          updateRecords.clear()
+
           source.close()
-          println(s"File $pathToCsvFile exists.")
+          /*println(s"File $pathToCsvFile exists.")
 
           println("--------------------------")
           println(updatedRecords)
           updatedRecords.foreach(println(_))
-          println("--------------------------")
+          println("--------------------------")*/
 
-          writeToFile(pathToCsvFile, false, headline, updatedRecords)
+
 
           /*val file = new File(pathToCsvFile)
           val writer = CSVWriter.open(file, append = false)
@@ -199,41 +219,6 @@ object YouthDatabase {
 
         } else {
           println(s"Cannot update $databaseKey. File does not exist.")
-
-          /*val startID = read_config_db
-
-          for(i <- Range(0,10000,1)) {
-
-
-            val YouthPlayerBuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-            for (j <- Range(1, 100, 1)) {
-
-              val id = startID + i*100 + j
-
-              val idString = id.toString
-              val yp_scan = new QuickScanYouthPlayer(Array(youthPlayerPath, idString))
-              val singleYouthPlayerLine: Option[String] = if yp_scan.exists && yp_scan.nationality.getOrElse("").equals("Polska") then
-                val yp = new Youth(Array(youthPlayerPath, idString))
-                Some(addYouthPlayer(yp))
-              else
-                None
-
-              YouthPlayerBuffer += singleYouthPlayerLine.orNull
-            }
-
-            //println(read_config_db+20000)
-
-            val youthPlayerLines: Seq[String] = YouthPlayerBuffer.result()
-
-            YouthDatabase.createDatabase(youthPlayerLines, pathToCsvFile, true)
-
-            val file = new File(databasePath + "config_db.dat")
-            val writer = CSVWriter.open(file, append = false)
-            val lastID = startID + i*100 + 100
-            writer.writeRow(Seq(lastID.toString))
-            writer.close()
-
-          }*/
 
         }
 
@@ -377,10 +362,19 @@ class YouthAnalysis {
 
 object run extends App{
 
-  //new YouthAnalysis(678445)
-  new YouthAnalysis(2955119)
+  new YouthAnalysis(678445)
+  //new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
   //new YouthAnalysis("Ligi_1-4")
+  //new YouthAnalysis("5 Liga")
+  //new YouthAnalysis("6 Liga 1-256")
+  //new YouthAnalysis("6 Liga 257-512")
+  //new YouthAnalysis("6 Liga 513-768")
+  //new YouthAnalysis("6 Liga 769-1024")
+  //new YouthAnalysis("7 Liga 1-256")
+  //new YouthAnalysis("7 Liga 257-512")
+  //new YouthAnalysis("7 Liga 513-768")
+  //new YouthAnalysis("7 Liga 769-1024")
   //new YouthAnalysis("World")
   
 }
@@ -465,7 +459,7 @@ class leagueIDs_DatabasePath {
 
 object addNewPlayersToDatabase extends App{
 
-  val leagueIDs_Path: (Range.Inclusive, String) = new leagueIDs_DatabasePath().L2
+  val leagueIDs_Path: (Range.Inclusive, String) = new leagueIDs_DatabasePath().L7_769_1024
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
