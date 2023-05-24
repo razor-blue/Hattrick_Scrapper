@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="Add some csv files">
-      <change afterPath="$PROJECT_DIR$/src/test/scala/mongoDB.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/scala/mongoTest.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="VIP: testing mongoDB">
       <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" afterDir="false" />
@@ -22,8 +18,6 @@
       <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_769_1024.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_769_1024.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/new.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/new.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/db_tests/Mongo DB Browser.sc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,14 +130,7 @@
       <recent name="C:\Users\Lukasz\IdeaProjects\Scrapper\src\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.mongoDB">
-    <configuration name="MongoDbConnection" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="MongoDbConnection" />
-      <module name="Scrapper" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.mongoTest">
     <configuration name="MyMongoApp" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="MyMongoApp" />
       <module name="Scrapper" />
@@ -172,6 +159,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="mongoTest" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="mongoTest" />
+      <module name="Scrapper" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="run" type="Application" factoryName="Application" singleton="false" temporary="true">
       <option name="MAIN_CLASS_NAME" value="run" />
       <module name="Scrapper" />
@@ -183,18 +177,18 @@
     <list>
       <item itemvalue="Application.Test" />
       <item itemvalue="Application.mongoDB" />
+      <item itemvalue="Application.mongoTest" />
       <item itemvalue="Application.addNewPlayersToDatabase" />
       <item itemvalue="Application.MyMongoApp" />
-      <item itemvalue="Application.MongoDbConnection" />
       <item itemvalue="Application.run" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.mongoTest" />
         <item itemvalue="Application.mongoDB" />
         <item itemvalue="Application.MyMongoApp" />
         <item itemvalue="Application.run" />
         <item itemvalue="Application.addNewPlayersToDatabase" />
-        <item itemvalue="Application.MongoDbConnection" />
       </list>
     </recent_temporary>
   </component>
@@ -231,6 +225,7 @@
     <MESSAGE value="2nd method of creating/updating youth player database has been applied. The database has been created." />
     <MESSAGE value="Did some preparation for the code cleaning." />
     <MESSAGE value="Add some csv files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add some csv files" />
+    <MESSAGE value="VIP: testing mongoDB" />
+    <option name="LAST_COMMIT_MESSAGE" value="VIP: testing mongoDB" />
   </component>
 </project>

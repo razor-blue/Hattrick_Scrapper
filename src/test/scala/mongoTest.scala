@@ -10,7 +10,7 @@ import java.{lang, util}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.{Duration, SECONDS}
 
-object MyMongoApp {
+object mongoTest {
   def main(args: Array[String]): Unit = {
 
     val mongoClient = new MongoClient("localhost", 27017)

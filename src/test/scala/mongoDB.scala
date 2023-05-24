@@ -2,7 +2,7 @@ import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
 import org.bson.Document
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object mongoDB extends App{
 
