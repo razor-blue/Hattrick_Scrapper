@@ -4,7 +4,7 @@ import com.mongodb.client.{FindIterable, ListDatabasesIterable, MongoCollection,
 import org.bson.Document
 import org.bson.conversions.Bson
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import java.{lang, util}
 import scala.concurrent.{Await, Future}
