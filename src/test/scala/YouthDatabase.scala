@@ -234,6 +234,7 @@ object YouthDatabase {
     val document = JsoupConnection(url)
 
     val YourNYouthPlayers: String = document.select("head[id]").text()
+
     val pattern = "\\d+".r
     val nPlayers: Int = pattern.findAllIn(YourNYouthPlayers).map(_.toInt).toArray.head
 
@@ -425,7 +426,7 @@ object newTest extends App{
     println(youthClubIds)
   
   youthClubIds.foreach(x => {
-    val currentPlayerIDs = YouthDatabase.getYouthPlayerIDsFromYouthClubID(x)
+    val currentPlayerIDs: Array[String] = YouthDatabase.getYouthPlayerIDsFromYouthClubID(x)
     val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(databasePath)
     YouthDatabase.addPlayerToDatabase(databasePath + "Polska_youthPlayerDatabase.csv", currentPlayerIDs, storedPlayerIDs)
 
@@ -459,6 +460,7 @@ class leagueIDs_DatabasePath {
 
 object addNewPlayersToDatabase extends App{
 
+  //csv files have to have header, unless empty line is detected and no ead is applied
   val leagueIDs_Path: (Range.Inclusive, String) = new leagueIDs_DatabasePath().L7_769_1024
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
@@ -467,7 +469,7 @@ object addNewPlayersToDatabase extends App{
   leagueIDs.foreach(l_id => {
     teamsIDFromLeagueID(l_id).map(x => youthClubIDFromTeamID(x.toInt)).filter(p => !p.equals(0)).foreach(yc => {
 
-      val currentPlayerIDs = YouthDatabase.getYouthPlayerIDsFromYouthClubID(yc)
+      val currentPlayerIDs: Array[String] = YouthDatabase.getYouthPlayerIDsFromYouthClubID(yc)
       val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToCsvFile)
       YouthDatabase.addPlayerToDatabase(pathToCsvFile, currentPlayerIDs, storedPlayerIDs)
 
