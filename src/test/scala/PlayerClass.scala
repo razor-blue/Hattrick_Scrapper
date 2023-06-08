@@ -259,7 +259,8 @@ object Youth{
         PlayerClass.UpdateLineForNonExistingPlayer(cols_colsDrop5, true)
         
     }
-    
+
+
     def UpdateExistingPlayer(yp: Youth, b5p: Seq[String], l5p: Seq[Double]): String = {
 
         val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
@@ -270,6 +271,33 @@ object Youth{
 
         println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
         f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
+
+    }
+
+    def UpdateExistingPlayer1(yp: Youth, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
+
+        val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
+        val lastGame = last5Games._2
+        val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
+
+        val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
+
+        val playerAtributes: Array[String] = line.split(",").map(_.trim)
+
+        val (name, id, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeazon, availability_lWeek, nationality) = (playerAtributes(0),playerAtributes(1),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
+
+        val f: String = f"$name,${id},$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
+
+        println(f)
+        f
+
+        //f"${name/*.replaceAll("\"","")*/},${id},$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
+
+        //println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
+        //f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
+
+
+
 
     }
 

@@ -123,7 +123,11 @@ object YouthDatabase {
     val yp = new Youth(Array(youthPlayerPath,id))
 
     if(yp.exists)
-      Youth.UpdateExistingPlayer(yp, b5p, l5p)
+
+      if (line.isEmpty)
+        Youth.UpdateExistingPlayer(yp, b5p, l5p)
+      else
+        Youth.UpdateExistingPlayer1(yp, b5p, l5p, line.replaceAll("\"", ""))
     else
       //Youth.UpdateNonExistingPlayer(line)
       null
@@ -134,7 +138,7 @@ object YouthDatabase {
   def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
 
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0),Seq.fill(6)("").mkString(","))
+    for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0),/*Seq.fill(6)("").mkString(",")*/"")
     val createdRecords = createRecords.result()
 
     writeToFile(pathToCsvFile, false, headline, createdRecords)
@@ -158,15 +162,16 @@ object YouthDatabase {
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
           var counter = 0
 
-          for (line <- source.getLines.drop(1)) {
+          val dataLines: Iterator[String] = source.getLines.drop(1)
 
+          for (line <- dataLines) {
 
               val cols: Array[String] = line.split(",").map(_.trim)
               val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
               val b5p: Seq[String] = cols.slice(11, 17).toSeq
               val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
               updateRecords += newRecord
-
+            
             counter += 1
             if(counter % 100 == 0){
               val updatedRecords = updateRecords.result()
@@ -181,7 +186,15 @@ object YouthDatabase {
           }
 
           val updatedRecords = updateRecords.result()
-          writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+
+          //val dataLinesLength = dataLines.length
+          println(counter)
+
+          if(counter < 70)
+            writeToFile(pathToCsvFile, false, headline, updatedRecords)
+          else
+            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+
           updateRecords.clear()
 
           source.close()
@@ -279,7 +292,7 @@ object YouthDatabase {
     //////-----------------
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0), Seq.fill(6)("").mkString(","))
+    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0), /*Seq.fill(6)("").mkString(",")*/"")
 
     val createdRecords = createRecords.result()
 
