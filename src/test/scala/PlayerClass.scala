@@ -286,7 +286,7 @@ object Youth{
 
         val (name, id, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeazon, availability_lWeek, nationality) = (playerAtributes(0),playerAtributes(1),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
 
-        val f: String = f"$name,${id},$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
+        val f: String = f"$name,$id,$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
 
         println(f)
         f
