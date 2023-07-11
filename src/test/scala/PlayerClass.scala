@@ -268,9 +268,13 @@ object Youth{
         val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
 
         val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
+        val since = yp.since.get
+        val specialityStatus = yp.speciality.getOrElse("")
+        println(s"$specialityStatus")
+        val speciality = if (!specialityStatus.equals("")) specialityStatus.concat(s"$since") else specialityStatus
 
-        println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
-        f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
+        println(f"${yp.name.get},${yp.id.get},$age,$speciality,$since,${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
+        f"${yp.name.get},${yp.id.get},$age,$speciality,${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
 
     }
 
@@ -284,11 +288,33 @@ object Youth{
 
         val playerAtributes: Array[String] = line.split(",").map(_.trim)
 
-        val (name, id, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeazon, availability_lWeek, nationality) = (playerAtributes(0),playerAtributes(1),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
+        val (name, /*id, */ previousSpecialityStatus, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeazon, availability_lWeek, nationality)
+        = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
 
-        val f: String = f"$name,$id,$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
+        val currentSpecialityStatus: String = yp.speciality.getOrElse("")
+        val since = yp.since.get
+        val id = yp.id.get.toString
+
+        val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus)) currentSpecialityStatus else currentSpecialityStatus.concat(s"$since")
+
+        val last5Games_updated = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
+
+        val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()}"
+
+        if(!yp.stillInYouthAcademy) {
+
+            val sp = new Senior(Array(seniorPlayerPath,id))
+
+            if(sp.onTL.getOrElse(true)) {
+                val skills = sp.skills.get
+                writeToFile(databasePath + "TL_listed.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,$last5Games_updated,${skills.productIterator.mkString(",")}"))
+            }
+
+        }
+
 
         println(f)
+        println(s"${currentSpecialityStatus.equals(previousSpecialityStatus)} $previousSpecialityStatus $currentSpecialityStatus $speciality")
         f
 
         //f"${name/*.replaceAll("\"","")*/},${id},$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
@@ -296,7 +322,11 @@ object Youth{
         //println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
         //f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
 
+        /*
+"Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update"
+"Ignacy Florecki,320629733,16.111,T,143,WC 37,20,World Cup - Round I  Matchday 5,03/01/2025,89,16,3,5.5,-1,-1,-1,3.5,3.0,5.5,-1.0,-1.0,-1.0,-1.0,27.06.2023 bramkarz (90'),Polska,28.06.2023"
 
+*/
 
 
     }
@@ -347,6 +377,19 @@ object Senior{
 
     def Nationality(document: Document): String = document.select("div.byline").select("img[title]").attr("title")
 
+    def OnTL(document: Document): Boolean = document.select("div.transferPlayerSkills").asScala.length.equals(1)
+
+    def NewDateFormat(pattern: String = "dd.MM.yyyy") = new SimpleDateFormat(pattern)
+
+    def SinceFrom(element: Element): String = element.select("span").text().split(" ")(1).replace(")", "")
+
+    def DaysInClub(joinDateString: String): Long = {
+        val dateFormat = NewDateFormat() //default value = dd.mm.rrrr
+        val today: Date = Calendar.getInstance().getTime
+        val joinDate: Date = dateFormat.parse(joinDateString)
+        (today.getTime - joinDate.getTime) / (1000 * 60 * 60 * 24)
+    }
+
     def UpdateNonExistingPlayer(line: String): String = {
 
         val cols_colsDrop5 = PlayerClass.UpdatePreparation(line)
@@ -357,9 +400,34 @@ object Senior{
     def UpdateExistingPlayer(sp: Senior, line: String): String = {
 
         val colsDrop5 = PlayerClass.UpdatePreparation(line)._2
-
         val age: String = PlayerClass.AgeFormatLine(sp.age.get._1)
+        
         f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
+
+    }
+
+    def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)
+    = {
+
+        val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
+
+        val TSI = bufferElement(index + 1).select("td").text().replaceAll(" ", "").toInt
+
+        val Salary20 = bufferElement(index + 3).select("td").text().replaceAll(" ", "").replaceAll("zł/tydzień", "")
+        val SalaryBASE = bufferElement(index + 3).select("td").select("span").attr("title").split(" ")(0).replaceAll("zł/tydzień", "").trim.replaceAll(" ", "")
+        val Salary = (if (SalaryBASE.nonEmpty) SalaryBASE else Salary20).toInt
+
+        val Form = bufferElement(index + 7).select("span.denominationNumber").text().split(" ").head.toInt
+        val Condition = bufferElement(index + 10).select("span.denominationNumber").text().split(" ").head.toInt
+        val GK = bufferElement(index + 14).select("span.denominationNumber").text().split(" ").head.toInt
+        val DEF = bufferElement(index + 17).select("span.denominationNumber").text().split(" ").head.toInt
+        val PM = bufferElement(index + 20).select("span.denominationNumber").text().split(" ").head.toInt
+        val WG = bufferElement(index + 23).select("span.denominationNumber").text().split(" ").head.toInt
+        val PASS = bufferElement(index + 26).select("span.denominationNumber").text().split(" ").head.toInt
+        val SCO = bufferElement(index + 29).select("span.denominationNumber").text().split(" ").head.toInt
+        val SP = bufferElement(index + 32).select("span.denominationNumber").text().split(" ").head.toInt
+
+        (TSI, Salary, Form, Condition, GK, DEF, PM, WG, PASS, SCO, SP)
 
     }
     
@@ -367,6 +435,33 @@ object Senior{
 
 class Senior(args: Array[String]) extends PlayerClass(args){
 
+    /*var a = 0
+    println(s"${a+=1}")*/
+
     val nationality: Option[String] = if(exists) Some(Senior.Nationality(document)) else None
+
+    val onTL: Option[Boolean] = if(exists) Some(Senior.OnTL(document)) else None
+
+    val info: mutable.Buffer[Element] = document.select("td").asScala
+
+    val info2: mutable.Buffer[Element] = document.select("span").asScala
+
+    val sinceFrom: Option[String] = if(exists && has_club)Some(Senior.SinceFrom(info2(19))) else None
+
+    val daysInClub: Option[Long] = if (exists && has_club) Some(Senior.DaysInClub(Player1.SinceFrom(info2(19)))) else None
+
+    val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
+
+    val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
+    val salary: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._2) else None
+    val form: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._3) else None
+    val condition: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._4) else None
+    val gk: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._5) else None
+    val df: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._6) else None
+    val pm: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._7) else None
+    val wg: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._8) else None
+    val pass: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._9) else None
+    val sco: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._10) else None
+    val sp: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._11) else None
 
 }

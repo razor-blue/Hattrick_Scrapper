@@ -6,13 +6,14 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import org.jsoup.{Connection, Jsoup}
 
+import java.time.Duration
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import scala.collection.mutable
 import scala.io.BufferedSource
 
 def JsoupConnection(url: String): Document = {
-  val connection: Connection = Jsoup.connect(url)
+  val connection: Connection = Jsoup.connect(url).timeout(10000)
   connection.get()
 }
 
@@ -82,6 +83,7 @@ object YouthDatabase {
 
   //ok
   val DatabasePath: Map[String, String] = Map(
+    "test-TL'a" -> {databasePath + "TL_test.csv"},
     "678445" -> {databasePath + "FCB_youthPlayerDatabase.csv"},
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
@@ -97,6 +99,117 @@ object YouthDatabase {
     "6 Liga 769-1024" -> {databasePath + "Polska_youthPlayerDatabase_6L_769_1024.csv"},
     "7 Liga 769-1024" -> {databasePath + "Polska_youthPlayerDatabase_7L_769_1024.csv"}
   )
+
+  def doSthWithDatabase(pathToCsvFile: String, label: String) = {
+
+    label match{
+
+      case "clearWrongSpecialityStatus" =>
+
+        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+        bufferedSource match {
+          case Some(source) =>
+
+            val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+            var counter = 0
+
+            val dataLines: Iterator[String] = source.getLines.drop(1)
+
+            for (line <- dataLines) {
+
+              val cols: Array[String] = line.split(",").map(_.trim)
+              val lineBefore = cols.take(3).mkString(",")
+              val lineAfter = cols.drop(4).mkString(",")
+              val speciality: String = cols(3)
+              val since: String = cols(4)
+
+              val correctedSpeciality: String = if(speciality.equals(since)) "" else speciality
+              val newRecord: String = lineBefore ++ "," ++ correctedSpeciality ++ "," ++ lineAfter
+
+
+              updateRecords += newRecord.replaceAll("\"", "")
+
+              counter += 1
+              if (counter % 100 == 0) {
+                val updatedRecords = updateRecords.result()
+                writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+                updateRecords.clear()
+              }
+
+            }
+
+            val updatedRecords = updateRecords.result()
+            println(counter)
+
+            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+
+            updateRecords.clear()
+
+            source.close()
+
+
+          case None =>
+            println(s"File $pathToCsvFile does not exists.")
+
+        }
+
+      case _ => None
+
+    }
+
+  }
+
+  //
+  def cleanDatabaseByAge(pathToCsvFile: String, maxAge: Double): Unit = {
+
+    val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+    bufferedSource match {
+      case Some(source) =>
+
+        val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+        var counter = 0
+
+        val dataLines: Iterator[String] = source.getLines.drop(1)
+
+        for (line <- dataLines) {
+
+          val cols: Array[String] = line.split(",").map(_.trim)
+          val age: Double = cols(2).toDouble
+          val since = cols(4).toInt
+          println(s"$line")
+          println(s" $age")
+          println(s" ${(age <= maxAge) }")
+
+          val newRecord: String = if (age <= maxAge && since >= -1) line.replaceAll("\"", "") else null
+          updateRecords += newRecord
+
+          counter += 1
+          if (counter % 100 == 0) {
+            val updatedRecords = updateRecords.result()
+            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+            updateRecords.clear()
+          }
+
+        }
+
+        val updatedRecords = updateRecords.result()
+        println(counter)
+
+        writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+
+        updateRecords.clear()
+
+        source.close()
+
+
+      case None =>
+        println(s"File $pathToCsvFile does not exists.")
+
+    }
+
+  }
 
   //ok
   def getDatabasePathByDatabaseKey(key: String): String = DatabasePath(key)
@@ -121,7 +234,7 @@ object YouthDatabase {
   def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
 
     val yp = new Youth(Array(youthPlayerPath,id))
-
+    
     if(yp.exists)
 
       if (line.isEmpty)
@@ -171,7 +284,7 @@ object YouthDatabase {
               val b5p: Seq[String] = cols.slice(11, 17).toSeq
               val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
               updateRecords += newRecord
-            
+
             counter += 1
             if(counter % 100 == 0){
               val updatedRecords = updateRecords.result()
@@ -369,6 +482,24 @@ class YouthAnalysis {
 
   }
 
+  def this(maxAgeLimit: Double, databaseName: String)= {
+
+    this()
+
+    val pathToDatabase: String = YouthDatabase.getDatabasePathByDatabaseKey(databaseName)
+    YouthDatabase.cleanDatabaseByAge(pathToDatabase,maxAgeLimit)
+
+  }
+
+  def this(label: String, databaseName: String) = {
+
+    this()
+
+    val pathToDatabase: String = YouthDatabase.getDatabasePathByDatabaseKey(databaseName)
+    YouthDatabase.doSthWithDatabase(pathToDatabase, label)
+
+  }
+
 
 
 
@@ -376,6 +507,7 @@ class YouthAnalysis {
 
 object run extends App{
 
+  //new YouthAnalysis("test-TL'a")
   new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
@@ -390,7 +522,10 @@ object run extends App{
   //new YouthAnalysis("7 Liga 513-768")
   //new YouthAnalysis("7 Liga 769-1024")
   //new YouthAnalysis("World")
-  
+  /*"D. Wichlinski,476474847,18.049,,-2,WC 36,29,World Cup - Round II  Matchday 4,15/07/2024,88,8,-1,-1,-1,6,-1,-1,-1.0,-1.0,-1.0,5.5,-1.0,-1.0,-----,Polska,16.05.2023"
+  "Edward Lachowski,314779190,18.011,P,-1,WC 36,37,World Cup - Round IV  Matchday 3,23/08/2024,88,13,-1,4.5,-1,-1,6.5,-1,-1.0,-1.0,-1.0,-1.0,6.5,-1.0,-----,Polska,16.06.2023"
+  "Fryderyk Sabat,315111529,18.035,U,-1,WC 36,31,World Cup - Round II  Matchday 6,26/07/2024,88,9,-1,5,-1,-1,-1,-1,-1.0,5.0,-1.0,-1.0,-1.0,-1.0,-----,Polska,16.06.2023"
+*/
 }
 
 //ok
@@ -450,31 +585,56 @@ object newTest extends App{
 //ok
 class leagueIDs_DatabasePath {
 
-  def L1: (Range.Inclusive, String) = (3620 to 3620, databasePath + "Polska_youthPlayerDatabase_1L.csv")
-  def L2: (Range.Inclusive, String) = (3621 to 3624, databasePath + "Polska_youthPlayerDatabase_2L.csv")
-  def L3: (Range.Inclusive, String) = (3641 to 3704, databasePath + "Polska_youthPlayerDatabase_3L.csv")
-  def L4: (Range.Inclusive, String) = (3641 to 3704, databasePath + "Polska_youthPlayerDatabase_4L.csv")
+  def L1: (List[Int], String) = ((3620 to 3620).toList, databasePath + "Polska_youthPlayerDatabase_1L.csv")
+  def L2: (List[Int], String) = ((3621 to 3624).toList, databasePath + "Polska_youthPlayerDatabase_2L.csv")
+  def L3: (List[Int], String) = ((3641 to 3704).toList, databasePath + "Polska_youthPlayerDatabase_3L.csv")
+  def L4: (List[Int], String) = ((3641 to 3704).toList, databasePath + "Polska_youthPlayerDatabase_4L.csv")
 
-  def L1_4: (Range.Inclusive, String) = (3620 to 3704, databasePath + "Polska_youthPlayerDatabase1-4L.csv")
+  def L1_4: (List[Int], String) = ((3620 to 3704).toList, databasePath + "Polska_youthPlayerDatabase1-4L.csv")
 
-  def L5: (Range.Inclusive, String) = (9383 to 9638, databasePath + "Polska_youthPlayerDatabase_5L.csv")
+  def L5: (List[Int], String) = ((9383 to 9638).toList, databasePath + "Polska_youthPlayerDatabase_5L.csv")
 
-  def L6_1_256: (Range.Inclusive, String) = (32114 to 32369, databasePath + "Polska_youthPlayerDatabase_6L_1_256.csv")
-  def L6_257_512: (Range.Inclusive, String) = (32370 to 32625, databasePath + "Polska_youthPlayerDatabase_6L_257_512.csv")
-  def L6_513_768: (Range.Inclusive, String) = (32626 to 32881, databasePath + "Polska_youthPlayerDatabase_6L_513_768.csv")
-  def L6_769_1024: (Range.Inclusive, String) = (32882 to 33137, databasePath + "Polska_youthPlayerDatabase_6L_769_1024.csv")
+  def L6_1_256: (List[Int], String) = ((32114 to 32369).toList, databasePath + "Polska_youthPlayerDatabase_6L_1_256.csv")
+  def L6_257_512: (List[Int], String) = ((32370 to 32625).toList, databasePath + "Polska_youthPlayerDatabase_6L_257_512.csv")
+  def L6_513_768: (List[Int], String) = ((32626 to 32881).toList, databasePath + "Polska_youthPlayerDatabase_6L_513_768.csv")
+  def L6_769_1024: (List[Int], String) = ((32882 to 33137).toList, databasePath + "Polska_youthPlayerDatabase_6L_769_1024.csv")
 
-  def L7_1_256: (Range.Inclusive, String) = (58605 to 58860, databasePath + "Polska_youthPlayerDatabase_7L_1_256.csv")
-  def L7_257_512: (Range.Inclusive, String) = (58861 to 59116, databasePath + "Polska_youthPlayerDatabase_7L_257_512.csv")
-  def L7_513_768: (Range.Inclusive, String) = (59117 to 59372, databasePath + "Polska_youthPlayerDatabase_7L_513_768.csv")
-  def L7_769_1024: (Range.Inclusive, String) = (59373 to 59628, databasePath + "Polska_youthPlayerDatabase_7L_769_1024.csv")
+  def L7_1_256: (List[Int], String) = ((58605 to 58860).toList, databasePath + "Polska_youthPlayerDatabase_7L_1_256.csv")
+  def L7_257_512: (List[Int], String) = ((58861 to 59116).toList, databasePath + "Polska_youthPlayerDatabase_7L_257_512.csv")
+  def L7_513_768: (List[Int], String) = ((59117 to 59372).toList, databasePath + "Polska_youthPlayerDatabase_7L_513_768.csv")
+  def L7_769_1024: (List[Int], String) = ((59373 to 59628).toList, databasePath + "Polska_youthPlayerDatabase_7L_769_1024.csv")
+
+}
+
+class other_leagueIDs_DatabasePath {
+
+  def Kenia_L1_4: (List[Int], String) = (
+    List(
+      //Range.inclusive(60149,60149),
+      //Seq(60149),
+      List(60149),
+      Range.inclusive(60164,60167),
+      Range.inclusive(60208,60223),
+      Range.inclusive(249625,249688)
+    ).flatten,
+    databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
+
+}
+
+object test extends App{
+
+  val t = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  t._1.foreach(println(_))
+  println(t._2)
 
 }
 
 object addNewPlayersToDatabase extends App{
 
-  //csv files have to have header, unless empty line is detected and no ead is applied
-  val leagueIDs_Path: (Range.Inclusive, String) = new leagueIDs_DatabasePath().L7_769_1024
+  //csv files have to have header, unless empty line is detected and no read is applied
+  
+  //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -499,7 +659,52 @@ object addNewPlayersToDatabase extends App{
 
 }
 
-object updateDatabase extends App{}
+object prepareDatabaseForScouts extends App{
+
+  val maxAgeLimit = 17.030
+
+
+  //new YouthAnalysis(maxAgeLimit,"Ligi_1-4")
+  //new YouthAnalysis(maxAgeLimit,"5 Liga")
+  //new YouthAnalysis(maxAgeLimit,"6 Liga 1-256")
+  //new YouthAnalysis(maxAgeLimit,"6 Liga 257-512")
+  //new YouthAnalysis(maxAgeLimit,"6 Liga 513-768")
+  //new YouthAnalysis(maxAgeLimit,"6 Liga 769-1024")
+  //new YouthAnalysis(maxAgeLimit,"7 Liga 1-256")
+  //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
+  //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
+  new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
+
+
+}
+
+object doSthWithDatabases extends App{
+
+  val label: String = "clearWrongSpecialityStatus"
+
+
+  //new YouthAnalysis(label,"Ligi_1-4")
+  //new YouthAnalysis(label,"5 Liga")
+  //new YouthAnalysis(label,"6 Liga 1-256")
+  //new YouthAnalysis(label,"6 Liga 257-512")
+  //new YouthAnalysis(label,"6 Liga 513-768")
+  //new YouthAnalysis(label,"6 Liga 769-1024")
+  //new YouthAnalysis(label,"7 Liga 1-256")
+  //new YouthAnalysis(label,"7 Liga 257-512")
+  //new YouthAnalysis(label,"7 Liga 513-768")
+  //new YouthAnalysis(label,"7 Liga 769-1024")
+
+
+}
+
+object updateDatabase extends App{
+
+}
+
+
+
+
+
 
 
 

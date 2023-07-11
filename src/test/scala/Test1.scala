@@ -392,7 +392,8 @@ object Player1 {
 
   }
 
-  def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) = {
+  def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int) 
+  = {
 
     val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
