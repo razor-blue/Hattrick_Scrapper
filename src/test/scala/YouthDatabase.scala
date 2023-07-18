@@ -284,7 +284,7 @@ object YouthDatabase {
             all.foreach(f = line => {
 
               if (line.contains(id)) {
-                counter += 1;
+                counter += 1
                 //println(line)
                 updateRecords += line
               }
