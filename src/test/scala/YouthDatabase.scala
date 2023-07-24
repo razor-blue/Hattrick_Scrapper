@@ -202,7 +202,7 @@ object YouthDatabase {
 
         }
 
-      case "findMultipleRecords" => {
+      case "findMultipleRecords" =>
 
         val database: Seq[String] = Seq(
           databasePath + "Polska_youthPlayerDatabase1-4L.csv",
@@ -350,7 +350,7 @@ object YouthDatabase {
 
 
         })
-      }
+
 
       case "databaseMinusTttestRecords" =>
 
@@ -425,7 +425,7 @@ object YouthDatabase {
 
           case Some(source) =>
 
-            val readRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+            //val readRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
             val dbLines: Iterator[String] = source.getLines()
 
@@ -1062,8 +1062,8 @@ class other_leagueIDs_DatabasePath {
       Range.inclusive(249625,249688)
     ).flatten,
     databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
-  
-  def Polska_L1_7 = (
+
+  def Polska_L1_7: (List[Int], String) = (
     List(
       Range.inclusive(3620,3704),    //L1-L4
       Range.inclusive(9383,9638),    //L5
@@ -1071,7 +1071,7 @@ class other_leagueIDs_DatabasePath {
       Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase1-7L.csv")
-  
+
 
 }
 
