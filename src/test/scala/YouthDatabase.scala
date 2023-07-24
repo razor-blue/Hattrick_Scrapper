@@ -564,7 +564,7 @@ object YouthDatabase {
 
       case Some(source) =>
 
-        val sourceGetLines = source.getLines
+        val sourceGetLines = source.getLines.drop(1)
 
         //println(sourceGetLines.length) do not invoke this as this reveals source to the end and source is seen as empty
 
@@ -1070,7 +1070,7 @@ class other_leagueIDs_DatabasePath {
       Range.inclusive(32114,33137),  //L6
       Range.inclusive(58605,59628)   //L7
     ).flatten,
-    databasePath + "Polska_youthPlayerDatabase1-7L.csv")
+    databasePath + "Polska_youthPlayerDatabase.csv")
 
 
 }
@@ -1088,7 +1088,8 @@ object addNewPlayersToDatabase extends App{
   //csv files have to have header, unless empty line is detected and no read is applied
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
