@@ -89,6 +89,7 @@ object YouthDatabase {
     "678445" -> {databasePath + "FCB_youthPlayerDatabase.csv"},
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
+    "Kenia" -> {databasePath + "Kenia_youthPlayerDatabase1-4L.csv"},
     "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
     "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"},
     "5 Liga" -> {databasePath + "Polska_youthPlayerDatabase_5L.csv"},
@@ -957,7 +958,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1056,8 +1058,8 @@ class other_leagueIDs_DatabasePath {
     List(
       //Range.inclusive(60149,60149),
       //Seq(60149),
-      List(60149),
-      Range.inclusive(60164,60167),
+      List(60149),                      //L1
+      Range.inclusive(60164,60167),     //L2
       Range.inclusive(60208,60223),
       Range.inclusive(249625,249688)
     ).flatten,
@@ -1088,8 +1090,9 @@ object addNewPlayersToDatabase extends App{
   //csv files have to have header, unless empty line is detected and no read is applied
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1128,7 +1131,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 1-256")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
-  new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
+  //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
+  new YouthAnalysis(maxAgeLimit,"Polska")
 
 
 }
