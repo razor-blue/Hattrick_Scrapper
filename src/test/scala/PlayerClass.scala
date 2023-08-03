@@ -314,7 +314,7 @@ object Youth{
 
 
         println(f)
-        println(s"${currentSpecialityStatus.equals(previousSpecialityStatus)} $previousSpecialityStatus $currentSpecialityStatus $speciality")
+        //println(s"${currentSpecialityStatus.equals(previousSpecialityStatus)} $previousSpecialityStatus $currentSpecialityStatus $speciality")
         f
 
         //f"${name/*.replaceAll("\"","")*/},${id},$age,${yp.speciality.getOrElse("-")},${yp.since.get},$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,$nationality,${getTodayDate()}"
@@ -331,6 +331,8 @@ object Youth{
 class Youth(args: Array[String]) extends PlayerClass(args){
 
   lazy val stillInYouthAcademy: Boolean = id.getOrElse(false).equals(args(1).toInt)
+
+  println(s"$stillInYouthAcademy")
 
   lazy val nationality: Option[String] = if(exists) {
         try {

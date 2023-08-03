@@ -9,6 +9,7 @@ import org.jsoup.{Connection, Jsoup}
 import java.time.Duration
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
+
 import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
 
@@ -526,6 +527,8 @@ object YouthDatabase {
   def updateYouthPlayer(id: String, b5p: Seq[String], l5p: Seq[Double], line: String): String = {
 
     val yp = new Youth(Array(youthPlayerPath,id))
+
+    //println(yp.exists) to test
     
     if(yp.exists)
 
@@ -676,7 +679,7 @@ object YouthDatabase {
     println(db_ids.isEmpty)
 
 
-    val ref_ID_index = db_ids.indexOf(lastID_String)
+    val ref_ID_index = if(!lastID_String.equals("0")) db_ids.indexOf(lastID_String) else 0
 
     println(ref_ID_index)
 
@@ -694,19 +697,23 @@ object YouthDatabase {
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
           var counter = 0
 
-          val dataLines: Iterator[String] = source.getLines.drop(1)
+          val dataLines: Iterator[String] = source.getLines.drop(1+ref_ID_index)
 
           for (line <- dataLines) {
 
             val cols: Array[String] = line.split(",").map(_.trim)
             val id: String = cols(1)
 
-            val id_index: Int = db_ids.indexOf(id)
+            //println(s"Line to test: $line") to test
+
+
+            //val id_index: Int = db_ids.indexOf(id)
 
             //if (ids.isEmpty || (ids.nonEmpty && !ids.contains(id))) {  //very slow!!
-            if (id_index > ref_ID_index) {
+            //if (id_index > ref_ID_index) {
               val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
               val b5p: Seq[String] = cols.slice(11, 17).toSeq
+
               val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
               updateRecords += newRecord
 
@@ -717,7 +724,7 @@ object YouthDatabase {
                 updateRecords.clear()
               }
 
-            }
+            //}
           }
 
           val updatedRecords = updateRecords.result()
@@ -847,6 +854,7 @@ object YouthDatabase {
                          ): Unit = {
 
     val newPlayers: Seq[String] = currentPlayerIDs.filterNot(p => p.equals("0")).diff(storedPlayerIDs)
+    //val newPlayers: Seq[String] = currentPlayerIDs.filterNot(p => p.equals("0")).map(x => if(!storedPlayerIDs.contains(x)) x else null).filterNot(p => p == null)
 
     println(s"New players: $newPlayers")
 
@@ -958,8 +966,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1067,10 +1075,10 @@ class other_leagueIDs_DatabasePath {
 
   def Polska_L1_7: (List[Int], String) = (
     List(
-      Range.inclusive(3620,3704),    //L1-L4
-      Range.inclusive(9383,9638),    //L5
-      Range.inclusive(32114,33137),  //L6
-      Range.inclusive(58605,59628)   //L7
+      //Range.inclusive(3620,3704),    //L1-L4
+      //Range.inclusive(9383,9638),    //L5
+      //Range.inclusive(32114,33137),  //L6
+      //Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1195,6 +1203,13 @@ object readtttest extends App{
       println(s"File src/data/tttest.csv does not exists.")
 
   }
+
+}
+
+
+object quick_test extends App{
+
+
 
 }
 
