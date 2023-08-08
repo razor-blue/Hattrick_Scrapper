@@ -2,18 +2,19 @@ import com.github.tototoshi.csv.CSVWriter
 
 import java.io.{File, FileNotFoundException}
 import com.github.tototoshi.csv.*
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.jsoup.{Connection, Jsoup}
+
+import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 
 import java.time.Duration
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
-
 import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
-
-import scala.util.control.Breaks._
+import scala.util.control.Breaks.*
 
 def JsoupConnection(url: String): Document = {
   val connection: Connection = Jsoup.connect(url).timeout(10000)
@@ -965,8 +966,8 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
+  new YouthAnalysis(2955119)
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1078,6 +1079,7 @@ class other_leagueIDs_DatabasePath {
       //Range.inclusive(3620,3704),    //L1-L4
       //Range.inclusive(9383,9638),    //L5
       //Range.inclusive(32114,33137),  //L6
+      Range.inclusive(58737,59628)   //L7
       //Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
@@ -1099,8 +1101,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1207,7 +1209,33 @@ object readtttest extends App{
 }
 
 
-object quick_test extends App{
+object outlookCollector extends App{
+
+  val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  //val id = "332699838"
+  //val id = "332435756"
+  val id = "333148660"
+
+  val url: String = path + id
+  val connection: Connection = Jsoup.connect(url)
+  val document: Document = connection.get()
+
+  //val text: String = document.select("img[src]").attr("src")
+  //val text: Seq[Element] = document.select("img[src^=/Img/Avatar/bodies/]").asScala.toSeq
+  val bodies = document.select("img[src^=/Img/Avatar/bodies/]").attr("src").split("/")(4).split("\\.").head
+  val faces = document.select("img[src^=/Img/Avatar/faces/]").attr("src").split("/")(4).split("\\.").head
+  val eyes = document.select("img[src^=/Img/Avatar/eyes/]").attr("src").split("/")(4).split("\\.").head
+  val mouths = document.select("img[src^=/Img/Avatar/mouths/]").attr("src").split("/")(4).split("\\.").head
+  val noses = document.select("img[src^=/Img/Avatar/noses/]").attr("src").split("/")(4).split("\\.").head
+  val hair = document.select("img[src^=/Img/Avatar/hair/]").attr("src").split("/")(4).split("\\.").head
+
+  println(bodies)
+  println(faces)
+  println(eyes)
+  println(mouths)
+  println(noses)
+  println(hair)
+
 
 
 

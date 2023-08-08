@@ -332,7 +332,7 @@ class Youth(args: Array[String]) extends PlayerClass(args){
 
   lazy val stillInYouthAcademy: Boolean = id.getOrElse(false).equals(args(1).toInt)
 
-  println(s"$stillInYouthAcademy")
+  //println(s"$stillInYouthAcademy")
 
   lazy val nationality: Option[String] = if(exists) {
         try {
