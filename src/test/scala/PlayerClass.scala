@@ -89,6 +89,29 @@ object PlayerClass{
 
     def AgeFormatLine(age: Double): String = f"$age%2.3f".replace(',', '.')
 
+    def Outlook(document: Document): String = {
+
+      val bodiesNoKits = document.select("img[src^=/Img/Avatar/bodies/]").attr("src").split("/")//
+      val bodiesFromKits = document.select("img[src^=//res.hattrick.org/kits/]").attr("src").split("/")//(4).split("\\.").head
+
+      val bodies = if(bodiesNoKits.length > bodiesFromKits.length) bodiesNoKits.last.split("\\.").head.split("_").head
+      else bodiesFromKits.last.split("\\.").head.filterNot(Set('o','y').contains)
+
+      val faces: String = document.select("img[src^=/Img/Avatar/faces/]").attr("src").split("/")(4).split("\\.").head.take(2)
+      val eyes = document.select("img[src^=/Img/Avatar/eyes/]").attr("src").split("/")(4).split("\\.").head
+      val mouths = document.select("img[src^=/Img/Avatar/mouths/]").attr("src").split("/")(4).split("\\.").head
+      val noses = document.select("img[src^=/Img/Avatar/noses/]").attr("src").split("/")(4).split("\\.").head
+      val hair_tmp: String = document.select("img[src^=/Img/Avatar/hair/]").attr("src").split("/")(4).split("\\.").head.drop(2)
+      val hair = if(hair_tmp.length > 2) hair_tmp.dropRight(1) else hair_tmp
+
+      val outlook = Seq(bodies, faces, eyes, mouths, noses, hair).mkString("-")
+
+      outlook
+
+    }
+
+
+
 
 
 }
@@ -114,6 +137,9 @@ class PlayerClass(args: Array[String]) {
 
   lazy val specialityMap: Map[String, String] = Map("gra głową" -> "H", "nieprzewidywalny" -> "U", "techniczny" -> "T", "atletyczny" -> "P", "szybki" -> "Q", "witalny" -> "R", "pomocny" -> "S", "" -> "")
   lazy val speciality: Option[String] = if (exists) Some(specialityMap(document.select("td[colspan]").select("i[title]").attr("title"))) else None
+
+  lazy val outlook: Option[String] = if(exists) Some(PlayerClass.Outlook(document)) else None
+
 
 }
 
@@ -273,8 +299,10 @@ object Youth{
         println(s"$specialityStatus")
       val speciality = if (!specialityStatus.equals("")) specialityStatus.concat(s"$since") else specialityStatus
 
-        println(f"${yp.name.get},${yp.id.get},$age,$speciality,$since,${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
-        f"${yp.name.get},${yp.id.get},$age,$speciality,${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
+      val outlook: String = yp.outlook.get
+
+        println(f"${yp.name.get},${yp.id.get},$age,$speciality,$since,${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook")
+        f"${yp.name.get},${yp.id.get},$age,$speciality,${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook"
 
     }
 
@@ -288,7 +316,10 @@ object Youth{
 
       val playerAtributes: Array[String] = line.split(",").map(_.trim)
 
-      val (name, /*id, */ previousSpecialityStatus, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeazon, availability_lWeek, nationality)
+      val outlook: String = if(playerAtributes.length <= 26) yp.outlook.get
+      else playerAtributes(26)
+
+      val (name, /*id, */ previousSpecialityStatus, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
         = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
 
       val currentSpecialityStatus: String = yp.speciality.getOrElse("")
@@ -299,15 +330,21 @@ object Youth{
 
       val last5Games_updated = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
 
-      val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeazon,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()}"
+      val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook"
 
         if(!yp.stillInYouthAcademy) {
 
           val sp = new Senior(Array(seniorPlayerPath,id))
 
-            if(sp.onTL.getOrElse(true)) {
+            if(sp.onTL.get) {
               val skills = sp.skills.get
                 writeToFile(databasePath + "TL_listed.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,$last5Games_updated,${skills.productIterator.mkString(",")}"))
+            }
+
+            if(sp.exists){
+              val character = sp.character.get
+              writeToFile(databasePath + "characters.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,${outlook.replaceAll("-", ",")},$character"))
+
             }
 
         }
@@ -324,7 +361,6 @@ object Youth{
 
 
     }
-
 
 }
 
@@ -398,8 +434,13 @@ object Senior{
 
       val colsDrop5 = PlayerClass.UpdatePreparation(line)._2
       val age: String = PlayerClass.AgeFormatLine(sp.age.get._1)
-        
-        f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
+
+      println(age.toDouble)
+
+       if(age.toDouble < 18.0)
+         f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
+       else
+         null
 
     }
 
@@ -427,6 +468,21 @@ object Senior{
         (TSI, Salary, Form, Condition, GK, DEF, PM, WG, PASS, SCO, SP)
 
     }
+
+  def Character(document: Document): String = {
+
+    val gentleness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=gentleness]").text()
+    val aggressiveness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=aggressiveness]").text()
+    val honesty = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=honesty]").text()
+
+    val gentlenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
+    val aggressivenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
+
+    val character = Seq(gentleness, aggressiveness, honesty).mkString(",")
+
+    character
+
+  }
     
 }
 
@@ -460,5 +516,7 @@ class Senior(args: Array[String]) extends PlayerClass(args){
   lazy val pass: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._9) else None
   lazy val sco: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._10) else None
   lazy val sp: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._11) else None
+
+  lazy val character: Option[String] = if(exists) Some(Senior.Character(document)) else None
 
 }

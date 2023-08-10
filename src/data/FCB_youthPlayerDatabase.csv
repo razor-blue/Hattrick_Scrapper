@@ -1,23 +1,23 @@
-Player;Player ID;Age;Speciality;Days in Academy;WC X;Stage N;Description;Last Match Date;Season;Week;B_GK;B_CD;B_WB;B_IM;B_W;B_F;L_GK;L_CD;L_WB;L_IM;L_W;L_F;Last Match Details;Country;Last update
-Arkadiusz Wiedlocha;323823466;16.083;H;150;WC 37;31;World Cup - Round II  Matchday 6;07/03/2025;90;9;2;3.5;3.5;4.5;4.5;6;2;3,5;3,5;4,5;4,5;6;03.08.2023 pomocnik (90');Polska;03.08.2023
-Ireneusz Abraham;111136029;54.065;;4288;WC 36;;Final;;;;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;--------;Polska;03.08.2023
-M. Smoter;477630984;17.033;;-2;WC 37;21;World Cup - Round I  Matchday 6;10/01/2025;90;1;2;4.5;5.5;4;5.5;4;2;4,5;5,5;4;5,5;4;-----;Polska;04.07.2023
-M. Dziadosz;476753011;17.069;P;-2;WC 37;14;Continental Championship - Semifinals;02/12/2024;89;12;1.5;4.5;5;4.5;6;5.5;1,5;4;5;4,5;6;5,5;-----;Polska;04.06.2023
-M. Kamyk;477758191;17.025;;-2;WC 37;22;World Cup - Round I  Matchday 7;17/01/2025;90;2;2;4;4.5;5;5;4;1,5;4;4,5;5;5;4;-----;Polska;11.07.2023
-Pawel Pakulski;324566127;16.082;;142;WC 37;32;World Cup - Round III  Matchday 1;14/03/2025;90;10;2;5.5;5.5;4;5.5;4.5;2;5,5;5,5;4;5,5;4,5;03.08.2023 stoper (90');Polska;03.08.2023
-Piotr Grudowski;317512515;18.049;P;289;WC 36;39;World Cup - Round V  Matchday 2;02/09/2024;88;15;1;3;3;4.5;5;6;1;2,5;3;4,5;5;6;03.08.2023 boczny_obronca (90');Polska;03.08.2023
-P. Pabjan;475534906;18.086;U;-2;WC 36;31;World Cup - Round II  Matchday 6;26/07/2024;88;9;-1;5.5;-1;6;6;5.5;-1;5,5;-1;6;-1;-1;-----;Polska;
-Wiktor Zbieranski;315629965;18.110;;324;WC 36;26;World Cup - Round II  Matchday 1;05/07/2024;88;6;1.5;3.5;4.5;5.5;6;6.5;1,5;3,5;4,5;5,5;6;6,5;03.08.2023 skrzydlowy (90');Polska;03.08.2023
-Zygmunt Danik;322690232;17.011;;163;WC 37;24;World Cup - Round I  Matchday 9;31/01/2025;90;4;1;2;2;3;3;5;1;2;2;3;3;5;27.06.2023 bramkarz (90');Polska;03.08.2023
-Marcel Sobotka;327400149;16.066;;128;WC 37;35;World Cup - Round IV  Matchday 1;28/03/2025;90;12;1.5;3.5;4.5;3;3.5;4;1,5;3,5;4,5;3;3,5;4;04.07.2023 bramkarz (90');Polska;03.08.2023
-Radoslaw Tarabasz;327353904;16.039;;121;WC 38;;Final;;;;6;3;3;2;2;1;4,5;3;3;2;2;1;03.08.2023 boczny_obronca (90');Polska;03.08.2023
-Telesfor Malmur;325970372;16.098;S;107;WC 37;29;World Cup - Round II  Matchday 4;24/02/2025;90;8;2.5;5;6;4;6;5;2,5;5;6;4;6;5;03.08.2023 stoper (90');Polska;03.08.2023
-Ernest Sobieranski;329486644;16.023;H;86;WC 38;2;Friendly;09/05/2025;91;2;1.5;5;5;4.5;5;6.5;1,5;4;5;4,5;5;6,5;03.08.2023 bramkarz (90');Polska;03.08.2023
-Konrad Zakowicz;328290456;16.042;P;58;WC 37;41;World Cup - Semifinals;21/04/2025;90;16;1.5;4.5;3.5;4;4.5;4;1,5;3,5;3,5;4;4,5;4;27.07.2023 bramkarz (90');Polska;03.08.2023
-Marek Obracaj;331851425;16.016;;51;WC 38;4;Continental Championship  Matchday 2;19/05/2025;91;4;-1;5.5;4;6;4.5;3.5;-1;4,5;4;4,5;4,5;3,5;03.08.2023 pomocnik (12');Polska;03.08.2023
-Dariusz Cichon;331447355;15.071;;44;WC 38;14;Continental Championship - Semifinals;14/07/2025;91;12;-1;-1;3.5;6;5.5;6.5;-1;-1;3,5;6;5,5;6,5;03.08.2023 pomocnik (90');Polska;03.08.2023
-Cyryl Hrynczyszyn;330228696;15.082;T30;30;WC 38;12;Continental Championship  Matchday 10;04/07/2025;91;10;1.5;3;3.5;3;4.5;6.5;1,5;3;3,5;3;4,5;6,5;02.08.2023 boczny_obronca (90');Polska;03.08.2023
-Przemyslaw Birkholc;333148660;15.047;;23;WC 38;19;World Cup - Round I  Matchday 4;08/08/2025;91;15;-1;2.5;3;5.5;5.5;5;-1;2,5;3;4,5;5,5;5;03.08.2023 pomocnik (39');Polska;03.08.2023
-Baltazar Hubner;333903881;15.060;;16;WC 38;16;World Cup - Round I  Matchday 1;25/07/2025;91;13;-1;-1;3;-1;3.5;3.5;-1;-1;3;-1;3,5;3,5;02.08.2023 napastnik (90');Polska;03.08.2023
-Jarema Molas;333116541;15.067;P9;9;WC 38;15;Continental Championship - Finals;18/07/2025;91;12;-1;-1;-1;5.5;-1;5;-1;-1;-1;4;-1;5;03.08.2023 pomocnik (39');Polska;03.08.2023
-Gabor Wienziers;332230129;16.022;;2;WC 38;2;Friendly;09/05/2025;91;2;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;-1;--------;Polska;03.08.2023
+"Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update"
+"Arkadiusz Wiedlocha,323823466,16.090,H,157,WC 37,31,World Cup - Round II  Matchday 6,07/03/2025,90,9,2,3.5,3.5,4.5,4.5,6,2.0,3.5,3.5,4.5,4.5,6.0,03.08.2023 pomocnik (90'),Polska,10.08.2023,bd8-f6-e25c-m31c-n13-h4"
+"Ireneusz Abraham,111136029,54.072,,4295,WC 36,,Final,,,,-1,-1,-1,-1,-1,-1,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,--------,Polska,10.08.2023,bd10-f1-e21c-m19c-n25-h2"
+"M. Smoter,477630984,17.040,,-2,WC 37,21,World Cup - Round I  Matchday 6,10/01/2025,90,1,2,4.5,5.5,4,5.5,4,2.0,4.5,5.5,4.0,5.5,4.0,-----,Polska,04.07.2023"
+"M. Dziadosz,476753011,17.076,P,-2,WC 37,14,Continental Championship - Semifinals,02/12/2024,89,12,1.5,4.5,5,4.5,6,5.5,1.5,4.0,5.0,4.5,6.0,5.5,-----,Polska,04.06.2023"
+"M. Kamyk,477758191,17.032,,-2,WC 37,22,World Cup - Round I  Matchday 7,17/01/2025,90,2,2,4,4.5,5,5,4,1.5,4.0,4.5,5.0,5.0,4.0,-----,Polska,11.07.2023"
+"Pawel Pakulski,324566127,16.089,,150,WC 37,32,World Cup - Round III  Matchday 1,14/03/2025,90,10,2,5.5,5.5,4,5.5,4.5,2.0,5.5,5.5,4.0,5.5,4.5,03.08.2023 stoper (90'),Polska,10.08.2023,bd8-f9-e24c-m5c-n28-h1"
+"Piotr Grudowski,317512515,18.056,P,297,WC 36,39,World Cup - Round V  Matchday 2,02/09/2024,88,15,1,3,3,4.5,5,6,1.0,2.5,3.0,4.5,5.0,6.0,10.08.2023 stoper (90'),Polska,10.08.2023,bd2-f7-e22b-m34b-n28-h8"
+"P. Pabjan,475534906,18.093,U,-2,WC 36,31,World Cup - Round II  Matchday 6,26/07/2024,88,9,-1,5.5,-1,6,6,5.5,-1.0,5.5,-1.0,6.0,-1.0,-1.0,-----,Polska"
+"Zygmunt Danik,478222269,17.018,,-1,WC 37,24,World Cup - Round I  Matchday 9,31/01/2025,90,4,1,2,2,3,3,5,1.0,2.0,2.0,3.0,3.0,5.0,-----,Polska,10.08.2023,bd6-f4-e12c-m35c-n13-h5"
+"Marcel Sobotka,327400149,16.073,,136,WC 37,35,World Cup - Round IV  Matchday 1,28/03/2025,90,12,1.5,3.5,4.5,3,3.5,4,1.5,3.5,4.5,3.0,3.5,4.0,04.07.2023 bramkarz (90'),Polska,10.08.2023,bd6-f1-e12c-m7c-n1-h5"
+"Radoslaw Tarabasz,327353904,16.046,,129,WC 38,,Final,,,,6,3,3,2,2,1,4.5,3.0,3.0,2.0,2.0,1.0,03.08.2023 boczny_obronca (90'),Polska,10.08.2023,bd2-f8-e26b-m35b-n21-h3"
+"Telesfor Malmur,325970372,16.105,S,115,WC 37,29,World Cup - Round II  Matchday 4,24/02/2025,90,8,2.5,5,6,4,6,5,2.5,5.0,6.0,4.0,6.0,5.0,10.08.2023 napastnik (90'),Polska,10.08.2023,bd8-f8-e36c-m3c-n19-h14"
+"Ernest Sobieranski,329486644,16.030,H,94,WC 38,2,Friendly,09/05/2025,91,2,1.5,5,5,4.5,5.5,6.5,1.5,4.0,5.0,4.5,5.5,6.5,10.08.2023 skrzydlowy (90'),Polska,10.08.2023,bd2-f6-e25b-m39b-n10-h11"
+"Konrad Zakowicz,328290456,16.049,P,66,WC 37,41,World Cup - Semifinals,21/04/2025,90,16,1.5,4.5,3.5,4,4.5,4,1.5,3.5,3.5,4.0,4.5,4.0,27.07.2023 bramkarz (90'),Polska,10.08.2023,bd2-f3-e34c-m24c-n10-h8"
+"Marek Obracaj,331851425,16.023,,58,WC 38,4,Continental Championship  Matchday 2,19/05/2025,91,4,2,5.5,4,6,4.5,3.5,2.0,4.5,4.0,4.5,4.5,3.5,10.08.2023 bramkarz (90'),Polska,10.08.2023,bd5-f3-e22c-m6c-n19-h3"
+"Dariusz Cichon,331447355,15.078,,52,WC 38,14,Continental Championship - Semifinals,14/07/2025,91,12,-1,-1,3.5,6,5.5,6.5,-1.0,-1.0,3.5,6.0,5.5,6.5,10.08.2023 napastnik (90'),Polska,10.08.2023,bd6-f7-e26c-m33c-n37-h1"
+"Cyryl Hrynczyszyn,330228696,15.089,T38,38,WC 38,12,Continental Championship  Matchday 10,04/07/2025,91,10,1.5,3,3.5,3,4.5,6.5,1.5,3.0,3.5,3.0,4.5,6.5,10.08.2023 napastnik (90'),Polska,10.08.2023,bd6-f4-e27c-m10c-n18-h2"
+"Przemyslaw Birkholc,333148660,15.054,,30,WC 38,19,World Cup - Round I  Matchday 4,08/08/2025,91,15,-1,2.5,3,5.5,5.5,5,-1.0,2.5,3.0,4.5,5.5,5.0,10.08.2023 pomocnik (90'),Polska,10.08.2023,bd9-f3-e25b-m8b-n21-h3"
+"Baltazar Hubner,333903881,15.067,,24,WC 38,16,World Cup - Round I  Matchday 1,25/07/2025,91,13,-1,-1,3,3.5,3.5,3.5,-1.0,-1.0,3.0,3.5,3.5,3.5,10.08.2023 pomocnik (90'),Polska,10.08.2023,bd7-f7-e34a-m13a-n32-h3"
+"Gabor Wienziers,332230129,16.029,,10,WC 38,2,Friendly,09/05/2025,91,2,-1,-1,-1,-1,-1,-1,-1.0,-1.0,-1.0,-1.0,-1.0,-1.0,--------,Polska,10.08.2023,bd8-f4-e13c-m7c-n27-h5"
+"Jarema Molas,333116541,15.074,P17,17,WC 38,15,Continental Championship - Finals,18/07/2025,91,12,-1,-1,-1,5.5,4.5,5,-1.0,-1.0,-1.0,4.0,4.5,5.0,10.08.2023 skrzydlowy (90'),Polska,10.08.2023,bd5-f7-e36c-m33c-n39-h4"
+"Waclaw Walerczyk,332845983,15.059,,3,WC 38,18,World Cup - Round I  Matchday 3,01/08/2025,91,14,-1,-1,-1,4,-1,-1,-1.0,-1.0,-1.0,4.0,-1.0,-1.0,10.08.2023 pomocnik (90'),Polska,10.08.2023,bd11-f5-e27c-m35c-n15-h2"

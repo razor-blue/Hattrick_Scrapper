@@ -862,7 +862,9 @@ object YouthDatabase {
     //////-----------------
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0), /*Seq.fill(6)("").mkString(",")*/"")
+    //val test = "new_text"
+
+    for (id <- newPlayers) createRecords += updateYouthPlayer(id, Seq.fill(6)("-1.0"), Seq.fill(6)(-1.0), /*Seq.fill(6)("").mkString(",")*/"") //++ test
 
     val createdRecords = createRecords.result()
 
@@ -966,9 +968,9 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  new YouthAnalysis(2955119)
+  //new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1076,11 +1078,10 @@ class other_leagueIDs_DatabasePath {
 
   def Polska_L1_7: (List[Int], String) = (
     List(
-      //Range.inclusive(3620,3704),    //L1-L4
-      //Range.inclusive(9383,9638),    //L5
-      //Range.inclusive(32114,33137),  //L6
-      Range.inclusive(58737,59628)   //L7
-      //Range.inclusive(58605,59628)   //L7
+      Range.inclusive(3620,3704),    //L1-L4
+      Range.inclusive(9383,9638),    //L5
+      Range.inclusive(32114,33137),  //L6
+      Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1101,8 +1102,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1211,10 +1212,12 @@ object readtttest extends App{
 
 object outlookCollector extends App{
 
-  val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  //val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  val path = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
   //val id = "332699838"
   //val id = "332435756"
-  val id = "333148660"
+  //val id = "333148660"
+  val id = "477758191"
 
   val url: String = path + id
   val connection: Connection = Jsoup.connect(url)
@@ -1229,6 +1232,8 @@ object outlookCollector extends App{
   val noses = document.select("img[src^=/Img/Avatar/noses/]").attr("src").split("/")(4).split("\\.").head
   val hair = document.select("img[src^=/Img/Avatar/hair/]").attr("src").split("/")(4).split("\\.").head
 
+  val outlook = Seq(bodies,faces,eyes,mouths,noses,hair).mkString(",")
+
   println(bodies)
   println(faces)
   println(eyes)
@@ -1236,8 +1241,25 @@ object outlookCollector extends App{
   println(noses)
   println(hair)
 
+  println(outlook)
+
+}
+
+object characterCollector extends App{
+
+  val path = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
+  val id = "478180611"
+
+  val url: String = path + id
+  val connection: Connection = Jsoup.connect(url)
+  val document: Document = connection.get()
+
+  val gentleness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=gentleness]").text()
+  val aggressiveness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=aggressiveness]").text()
+  val honesty = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=honesty]").text()
 
 
+  println(s"$gentleness $aggressiveness $honesty")
 
 }
 
