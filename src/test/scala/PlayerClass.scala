@@ -413,7 +413,9 @@ object Senior{
 
     def NewDateFormat(pattern: String = "dd.MM.yyyy") = new SimpleDateFormat(pattern)
 
-    def SinceFrom(element: Element): String = element.select("span").text().split(" ")(1).replace(")", "")
+    def SinceFrom(document: Document): String = {
+      document.select("span.shy span[dir=ltr]").text().split(" ")(1).replace(")", "")
+    }
 
     def DaysInClub(joinDateString: String): Long = {
       val dateFormat = NewDateFormat() //default value = dd.mm.rrrr
@@ -434,8 +436,6 @@ object Senior{
 
       val colsDrop5 = PlayerClass.UpdatePreparation(line)._2
       val age: String = PlayerClass.AgeFormatLine(sp.age.get._1)
-
-      println(age.toDouble)
 
        if(age.toDouble < 18.0)
          f"${sp.name.get},${sp.id.get},$age,${sp.speciality.getOrElse("-")},-2," + colsDrop5
@@ -474,11 +474,13 @@ object Senior{
     val gentleness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=gentleness]").text()
     val aggressiveness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=aggressiveness]").text()
     val honesty = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=honesty]").text()
+    
+    val leadership = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=leadership]").text()
 
     val gentlenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
     val aggressivenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
 
-    val character = Seq(gentleness, aggressiveness, honesty).mkString(",")
+    val character = Seq(gentleness, aggressiveness, honesty, leadership).mkString(",")
 
     character
 
@@ -499,9 +501,11 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val info2: mutable.Buffer[Element] = document.select("span").asScala
 
-  lazy val sinceFrom: Option[String] = if(exists && has_club)Some(Senior.SinceFrom(info2(19))) else None
+  lazy val sinceFrom: Option[String] = if(exists && has_club)Some(Senior.SinceFrom(document)) else None
 
-  lazy val daysInClub: Option[Long] = if (exists && has_club) Some(Senior.DaysInClub(Senior.SinceFrom(info2(19)))) else None
+  lazy val daysInClub: Option[Long] = if (exists && has_club) {
+    Some(Senior.DaysInClub(sinceFrom.get))
+  } else None
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 

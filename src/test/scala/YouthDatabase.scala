@@ -969,8 +969,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1257,9 +1257,10 @@ object characterCollector extends App{
   val gentleness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=gentleness]").text()
   val aggressiveness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=aggressiveness]").text()
   val honesty = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=honesty]").text()
+  val leadership = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=leadership]").text()
 
 
-  println(s"$gentleness $aggressiveness $honesty")
+  println(s"$gentleness $aggressiveness $honesty $leadership")
 
 }
 
