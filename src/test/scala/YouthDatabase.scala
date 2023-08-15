@@ -497,7 +497,7 @@ object YouthDatabase {
           println(s"$age")
           println(s"${age <= maxAge }")
 
-          val newRecord: String = if (age <= maxAge && since >= -1) (cols.dropRight(1)).mkString(",") ++ "," ++ gentleness replaceAll("\"", "") else null
+          val newRecord: String = if (age <= maxAge && since >= -1) cols.dropRight(1).mkString(",") ++ "," ++ gentleness replaceAll("\"", "") else null
           updateRecords += newRecord
 
           counter += 1
@@ -1301,7 +1301,7 @@ object addLeadershipIntoCharacterDb extends App{
       for (line <- source.getLines.drop(1)) {
         val cols: Array[String] = line.split(",")
         if(cols.length == 16)
-          updateRecords += cols.dropRight(4) ++ cols.takeRight(1) mkString(",") replaceAll("\"","")
+          updateRecords += cols.dropRight(4) ++ cols.takeRight(1) mkString "," replaceAll("\"","")
         else if(cols.length > 12)
           updateRecords += line.replaceAll("\"","")
         else
@@ -1311,7 +1311,7 @@ object addLeadershipIntoCharacterDb extends App{
 
           if (sp.exists)
             val leadership: String = sp.character.get
-            updateRecords += cols.dropRight(3) ++ "," ++ leadership mkString(",") replaceAll("\"","")
+            updateRecords += cols.dropRight(3) ++ "," ++ leadership mkString "," replaceAll("\"","")
 
 
       }
