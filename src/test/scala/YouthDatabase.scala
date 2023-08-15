@@ -50,7 +50,7 @@ val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
 val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
 val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
 
-def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update")
+def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
 
 /*def read_config_db: Int = {
 
@@ -454,6 +454,26 @@ object YouthDatabase {
 
   }
 
+  def gentlenessFromCharacter(characterLine: String): String = {
+
+    val split: Array[String] = characterLine.split("-")
+    val eyes = split(2).last
+    val mouth = split(3).last
+
+    println(s"$eyes, $mouth")
+    println(s"${eyes.equals('b')}, ${mouth.equals('b')}")
+
+
+    val gentleness = if(eyes.equals('a') && mouth.equals('a'))"zlosliwy"
+    else if(eyes.equals('b') && mouth.equals('b'))"kontrowersyjny"
+    else if(!eyes.equals(mouth) )"unknown"
+    else if(eyes.equals('c') && mouth.equals('c'))"przyjemny+"
+    else "------"
+
+    gentleness
+
+  }
+
   //
   def cleanDatabaseByAge(pathToCsvFile: String, maxAge: Double): Unit = {
 
@@ -472,11 +492,12 @@ object YouthDatabase {
           val cols: Array[String] = line.split(",").map(_.trim)
           val age: Double = cols(2).toDouble
           val since = cols(4).toInt
+          val gentleness = if(cols.length <= 26) "------" else gentlenessFromCharacter(cols(26))
           println(s"$line")
-          println(s" $age")
-          println(s" ${age <= maxAge }")
+          println(s"$age")
+          println(s"${age <= maxAge }")
 
-          val newRecord: String = if (age <= maxAge && since >= -1) line.replaceAll("\"", "") else null
+          val newRecord: String = if (age <= maxAge && since >= -1) (cols.dropRight(1)).mkString(",") ++ "," ++ gentleness replaceAll("\"", "") else null
           updateRecords += newRecord
 
           counter += 1
@@ -968,8 +989,8 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
+  new YouthAnalysis(2955119)
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1130,7 +1151,8 @@ object addNewPlayersToDatabase extends App{
 
 object prepareDatabaseForScouts extends App{
 
-  val maxAgeLimit = 17.030
+  val maxAgeLimit_Poland = 17.030
+  val maxAgeLimit_Kenia = 21.000
 
 
   //new YouthAnalysis(maxAgeLimit,"Ligi_1-4")
@@ -1143,7 +1165,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1261,6 +1284,51 @@ object characterCollector extends App{
 
 
   println(s"$gentleness $aggressiveness $honesty $leadership")
+
+}
+
+object addLeadershipIntoCharacterDb extends App{
+
+  val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/characters.csv")
+
+  bufferedSource0 match {
+    case Some(source) =>
+
+      val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+
+      //println(source.getLines.length)
+
+      for (line <- source.getLines.drop(1)) {
+        val cols: Array[String] = line.split(",")
+        if(cols.length == 16)
+          updateRecords += cols.dropRight(4) ++ cols.takeRight(1) mkString(",") replaceAll("\"","")
+        else if(cols.length > 12)
+          updateRecords += line.replaceAll("\"","")
+        else
+          val id = cols(2)
+
+          val sp = new Senior(Array(seniorPlayerPath, id))
+
+          if (sp.exists)
+            val leadership: String = sp.character.get
+            updateRecords += cols.dropRight(3) ++ "," ++ leadership mkString(",") replaceAll("\"","")
+
+
+      }
+
+      source.close()
+
+      val updatedRecords: Seq[String] = updateRecords.result()
+      updatedRecords.foreach(println(_))
+
+      writeToFile("src/data/CandL.csv", false, Seq("player,since,id,body,face,eyes,mouth,nose,hair,gentleness,aggressiveness,honesty,leadership"), updatedRecords)
+
+
+    case None =>
+      println(s"File src/data/characters.csv does not exists.")
+
+  }
+
 
 }
 
