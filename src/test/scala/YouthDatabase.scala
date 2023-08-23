@@ -466,8 +466,9 @@ object YouthDatabase {
 
     val gentleness = if(eyes.equals('a') && mouth.equals('a'))"zlosliwy"
     else if(eyes.equals('b') && mouth.equals('b'))"kontrowersyjny"
-    else if(!eyes.equals(mouth) )"unknown"
+    else if(eyes.equals('a') && mouth.equals('c'))"kontrowersyjny"
     else if(eyes.equals('c') && mouth.equals('c'))"przyjemny+"
+    else if(!eyes.equals(mouth) )"unknown"
     else "------"
 
     gentleness
@@ -1101,10 +1102,10 @@ class other_leagueIDs_DatabasePath {
 
   def Polska_L1_7: (List[Int], String) = (
     List(
-      Range.inclusive(3620,3704),    //L1-L4
-      Range.inclusive(9383,9638),    //L5
-      Range.inclusive(32114,33137),  //L6
-      Range.inclusive(58605,59628)   //L7
+      //Range.inclusive(3620,3704),    //L1-L4
+      //Range.inclusive(9383,9638),    //L5
+      //Range.inclusive(32114,33137),  //L6
+      //Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
