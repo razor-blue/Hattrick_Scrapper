@@ -739,7 +739,12 @@ object YouthDatabase {
               val l5p: Seq[Double] = cols.slice(17, 23).toSeq.map(_.toDouble)
               val b5p: Seq[String] = cols.slice(11, 17).toSeq
 
-              val newRecord: String = if (cols(4).toInt >= 0) updateYouthPlayer(cols(1), b5p, l5p, line) else updateSeniorPlayer(cols(1), line)
+              val since = cols(4).toInt
+
+              val newRecord: String =
+                if (since >= 0) updateYouthPlayer(cols(1), b5p, l5p, line)
+                else if(since == -1) updateSeniorPlayer(cols(1), line)
+                else null
               updateRecords += newRecord
 
               counter += 1
@@ -993,8 +998,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
