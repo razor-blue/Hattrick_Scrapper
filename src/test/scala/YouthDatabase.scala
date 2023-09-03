@@ -8,12 +8,15 @@ import org.jsoup.{Connection, Jsoup}
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
-
 import java.time.Duration
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.DayOfWeek
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
+import scala.util.Random
 import scala.util.control.Breaks.*
 
 def JsoupConnection(url: String): Document = {
@@ -558,7 +561,14 @@ object YouthDatabase {
     if(yp.exists)
 
       if (line.isEmpty)
+      {
+        val nationality: String = yp.nationality.getOrElse("unknown")
+        val scoutingHistory: Seq[String] = yp.scoutingHistory.getOrElse((Seq("------,------,0"),"------"))._1
+
+        scoutingHistory.foreach(sh => if(!sh.contains("-")) writeToFile(databasePath + "scouting_history.csv", true, Seq.empty[String], Seq(s"$nationality,$sh")) )
+
         Youth.UpdateExistingPlayer(yp, b5p, l5p)
+      }
       else
         Youth.UpdateExistingPlayer1(yp, b5p, l5p, line.replaceAll("\"", ""))
     else
@@ -833,7 +843,7 @@ object YouthDatabase {
 
   def getYouthPlayerIDFromPlayerRecordString(line: String): String = {
 
-    val cols = line.split(",").map(_.trim)
+    val cols: Array[String] = line.split(",").map(_.trim)
     val youthPlayerId: String = cols(1)
 
     youthPlayerId
@@ -998,8 +1008,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1108,9 +1118,10 @@ class other_leagueIDs_DatabasePath {
   def Polska_L1_7: (List[Int], String) = (
     List(
       //Range.inclusive(3620,3704),    //L1-L4
-      //Range.inclusive(9383,9638),    //L5
-      //Range.inclusive(32114,33137),  //L6
-      //Range.inclusive(58605,59628)   //L7
+      Range.inclusive(3673,3704),    //L1-L4
+      Range.inclusive(9383,9638),    //L5
+      Range.inclusive(32114,33137),  //L6
+      Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1131,8 +1142,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1335,6 +1346,101 @@ object addLeadershipIntoCharacterDb extends App{
     case None =>
       println(s"File src/data/characters.csv does not exists.")
 
+  }
+
+
+}
+
+
+object scanYouthPlayerHistory extends App{
+
+  def dateToDayOfTheWeek(data: String) = {
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    val date = LocalDate.parse(data, dateFormatter)
+    val dayOfWeek = date.getDayOfWeek
+    val dayOfWeekText = dayOfWeek.toString
+
+    val engPolDayNames = Map(
+      "MONDAY" -> "poniedzialek",
+      "TUESDAY" -> "wtorek",
+      "WEDNESDAY" -> "sroda",
+      "THURSDAY" -> "czwartek",
+      "FRIDAY" -> "piatek",
+      "SATURDAY" -> "sobota",
+      "SUNDAY" -> "niedziela")
+
+    engPolDayNames(dayOfWeekText)
+
+  }
+
+  def playerScoutingHistory(id: String) = {
+
+    val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
+
+    val url: String = path + id
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    val memoryDates: String = document.select("h3.feed").text()
+    val memoryHours: String = document.select("span.date").text()
+    val memoryItems: String = document.select(".feedItem").text()
+
+    println(memoryDates)
+    println(memoryHours)
+    println(memoryItems)
+
+    val tableMemoryBool: Array[Boolean] = memoryItems.split("\\.").map(
+      mi => List("przyprowadził", "Nie otrzymał").exists(text => mi.contains(text))
+    )
+
+    tableMemoryBool.foreach(println(_))
+
+    val memoryModified: Array[String] = (memoryDates.split(" ").map(x => dateToDayOfTheWeek(x)) zip memoryHours.split(" ") /*zip memoryHours.zipWithIndex.map(x => tableMemoryBool.length - x._2)*/) /*zip tableMemoryBool*/ mkString ("-") replaceAll("[()]", "") split ("-") zip tableMemoryBool filter(p => p._2) map(_._1)
+
+    //memoryModified.foreach(println(_))
+
+    val scoutingHistory: Array[String] = memoryModified.zipWithIndex.map(x => x._1 + "," + (memoryModified.length - x._2).toString)
+
+    scoutingHistory.foreach(println(_))
+    println(scoutingHistory.head)
+
+  }
+
+  //val id = "335941970"
+  val id = "332230129"
+  //val id = "323286624"
+
+  playerScoutingHistory(id)
+
+
+}
+
+
+object tak_lub_nie extends App{
+
+  import scala.io.StdIn
+
+  def Ben_mówi(wynik_rzutu: Int): String =
+    {
+
+      if(wynik_rzutu <= 3) "TAK"
+      else if(wynik_rzutu >3 && wynik_rzutu <=6) "NIE"
+      else "HA-HA-HA"
+
+    }
+
+  private val r: Random.type = scala.util.Random
+
+
+
+  for(i <- (0 to 1000
+    )) {
+
+    val wynik_rzutu = r.nextInt(6)+1
+    //println(s"$i -> $wynik_rzutu" -> Ben_mówi(wynik_rzutu))
+    println(Ben_mówi(wynik_rzutu))
+    StdIn.readLine()
   }
 
 

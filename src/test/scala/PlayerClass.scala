@@ -11,11 +11,51 @@ import java.util.Calendar
 import scala.annotation.tailrec
 import java.text.Normalizer
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.DayOfWeek
+
 def getTodayDate(pattern: String = "dd.MM.yyyy"): String = {
 
   lazy val today: Date = Calendar.getInstance().getTime
   lazy val dateFormat = new SimpleDateFormat(pattern)
   dateFormat.format(today)
+
+}
+
+def getYesterdayDate(pattern: String = "dd.MM.yyyy"): String = {
+
+  lazy val yesterday: LocalDate = LocalDate.now().minusDays(1)
+  val formatter = DateTimeFormatter.ofPattern(pattern)
+  yesterday.format(formatter)
+
+}
+
+def dateToDayOfTheWeek(d: String): String = {
+
+  //println(d)
+
+  val data = d match {
+    case "Dzisiaj" => println(getTodayDate("dd.MM.yyyy")); getTodayDate("dd.MM.yyyy")
+    case "Wczoraj" => println(getYesterdayDate("dd.MM.yyyy")); getYesterdayDate("dd.MM.yyyy")
+    case _         => d
+  }
+
+  val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+  val date = LocalDate.parse(data, dateFormatter)
+  val dayOfWeek = date.getDayOfWeek
+  val dayOfWeekText = dayOfWeek.toString
+
+  val engPolDayNames = Map(
+    "MONDAY" -> "poniedzialek",
+    "TUESDAY" -> "wtorek",
+    "WEDNESDAY" -> "sroda",
+    "THURSDAY" -> "czwartek",
+    "FRIDAY" -> "piatek",
+    "SATURDAY" -> "sobota",
+    "SUNDAY" -> "niedziela")
+
+  engPolDayNames(dayOfWeekText)
 
 }
 
@@ -296,13 +336,14 @@ object Youth{
       val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
       val since = yp.since.get
       val specialityStatus = yp.speciality.getOrElse("")
-        println(s"$specialityStatus")
+      //  println(s"$specialityStatus")
       val speciality = if (!specialityStatus.equals("")) specialityStatus.concat(s"$since") else specialityStatus
 
       val outlook: String = yp.outlook.get
+      val scoutingDetails: String = yp.scoutingHistory.getOrElse((Seq("------,------,0"),"------"))._2
 
-        println(f"${yp.name.get},${yp.id.get},$age,$speciality,$since,${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook")
-        f"${yp.name.get},${yp.id.get},$age,$speciality,${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook"
+        println(f"${yp.name.get},${yp.id.get},$age,$speciality,$since,${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook,$scoutingDetails")
+        f"${yp.name.get},${yp.id.get},$age,$speciality,${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()},$outlook,$scoutingDetails"
 
     }
 
@@ -316,8 +357,26 @@ object Youth{
 
       val playerAtributes: Array[String] = line.split(",").map(_.trim)
 
+      //println(playerAtributes.length)
+
       val outlook: String = if(playerAtributes.length <= 26) yp.outlook.get
       else playerAtributes(26)
+
+      val scoutingDetails: String = if(playerAtributes.length <= 30) {
+
+        val scoutingHistory = yp.scoutingHistory.getOrElse((Seq("------,------,0"),"------"))//._2
+
+        val nationality: String = yp.nationality.getOrElse("unknown")
+        //val scoutingHistory: Seq[String] = yp.scoutingHistory.getOrElse((Seq("------,------,0"), "------"))._1
+
+        scoutingHistory._1.foreach(sh => if (!sh.contains("-")) writeToFile(databasePath + "scouting_history.csv", true, Seq.empty[String], Seq(s"$nationality,$sh")))
+
+        scoutingHistory._2
+
+      }
+      else playerAtributes.slice(27,30).mkString(",")
+
+      //println(scoutingDetails)
 
       val (name, /*id, */ previousSpecialityStatus, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
         = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
@@ -330,7 +389,7 @@ object Youth{
 
       val last5Games_updated = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
 
-      val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook"
+      val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
 
         if(!yp.stillInYouthAcademy) {
 
@@ -338,7 +397,7 @@ object Youth{
 
             if(sp.onTL.get) {
               val skills = sp.skills.get
-                writeToFile(databasePath + "TL_listed.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,$last5Games_updated,${skills.productIterator.mkString(",")}"))
+                writeToFile(databasePath + "TL_listed.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,$last5Games_updated,${skills.productIterator.mkString(",")},$scoutingDetails"))
             }
 
             if(sp.exists){
@@ -359,6 +418,61 @@ object Youth{
         //println(f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}")
         //f"${yp.name.get},${yp.id.get},$age,${yp.speciality.getOrElse("-")},${yp.since.get},${yp.availability.get.replaceAll(" --> ", ",")},$bestPerformances,${last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")},$lastGame,${yp.nationality.get},${getTodayDate()}"
 
+
+    }
+
+    def ScoutingHistory(id: String): (Seq[String], String) = {
+
+
+
+      val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
+
+      val url: String = path + id
+      val connection: Connection = Jsoup.connect(url)
+      val document: Document = connection.get()
+
+      val memoryDates: String = document.select("h3.feed").text()
+      val memoryHours: String = document.select("span.date").text()
+      val memoryItems: String = document.select(".feedItem").text()
+
+      //the oldest records are about scouting, the newest about hattricks, name or face change
+
+      val memoryDates1: Array[String] = memoryDates.split(" ")
+      val memoryHours1: Array[String] = memoryHours.split(" ").takeRight(memoryDates1.length)
+      val memoryItems1: Array[String] = memoryItems.split("\\.").takeRight(memoryDates1.length)
+
+      /*println(s"$memoryDates ${memoryDates1.length}")
+      println(s"$memoryHours ${memoryHours1.length}")
+      println(s"$memoryItems ${memoryItems1.length} ")
+
+      memoryDates1.foreach(println(_))
+      memoryHours1.foreach(println(_))
+      memoryItems1.foreach(println(_))*/
+
+      /*val tableMemoryBool: Array[Boolean] = memoryItems.split("\\.").map(
+        mi => List("przyprowadził", "Nie otrzymał").exists(text => mi.contains(text))
+      )*/
+
+      val tableMemoryBool: Array[Boolean] = memoryItems1.map(
+        mi => List("przyprowadził", "Nie otrzymał").exists(text => mi.contains(text))
+      )
+
+      /*println(memoryDates1.nonEmpty)
+      memoryDates1.foreach(println(_))
+      tableMemoryBool.foreach(println(_))
+      println(tableMemoryBool.contains(true))*/
+
+      val memoryModified: Array[String] =
+        if(memoryDates1.nonEmpty && memoryDates1.head!="" && tableMemoryBool.contains(true))
+          val scoutingLine = (memoryDates1/*.split(" ")*/.map(x => dateToDayOfTheWeek(x)) zip memoryHours1/*.split(" ")*/)  mkString ("-") replaceAll("[()]", "") split ("-") zip tableMemoryBool filter(p => p._2) map(_._1)
+          scoutingLine
+        else
+          Array("------,------")
+
+
+      val scoutingHistory: Seq[String] = memoryModified.zipWithIndex.map(x => x._1 + "," + (memoryModified.length - x._2).toString).toSeq
+
+      (scoutingHistory,scoutingHistory.head)
 
     }
 
@@ -403,6 +517,7 @@ class Youth(args: Array[String]) extends PlayerClass(args){
   lazy val bestPerformances: Option[String] = if(stillInYouthAcademy) Some(Youth.BestPerformances(document)) else None
   lazy val last5Performances: Option[(Seq[Double],String)] = if(stillInYouthAcademy) Some(Youth.Last5Performances(document)) else None
 
+  lazy val scoutingHistory: Option[(Seq[String], String)] = if(stillInYouthAcademy) Some(Youth.ScoutingHistory(id.get.toString)) else None
 }
 
 object Senior{
