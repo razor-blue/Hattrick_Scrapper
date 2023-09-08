@@ -503,7 +503,7 @@ object YouthDatabase {
           println(s"$age")
           println(s"${age <= maxAge }")
 
-          val newRecord: String = if (age <= maxAge && since >= -1) cols.dropRight(1).mkString(",") ++ "," ++ gentleness replaceAll("\"", "") else null
+          val newRecord: String = if (age <= maxAge && since >= -1) cols.dropRight(4).mkString(",") ++ "," ++ gentleness ++ "," ++ cols.takeRight(3).mkString(",") replaceAll("\"", "") else null
           updateRecords += newRecord
 
           counter += 1
@@ -1007,9 +1007,9 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
+  new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1117,11 +1117,11 @@ class other_leagueIDs_DatabasePath {
 
   def Polska_L1_7: (List[Int], String) = (
     List(
-      //Range.inclusive(3620,3704),    //L1-L4
-      Range.inclusive(3673,3704),    //L1-L4
-      Range.inclusive(9383,9638),    //L5
-      Range.inclusive(32114,33137),  //L6
-      Range.inclusive(58605,59628)   //L7
+      //Range.inclusive(3620,3704),    //L1-L
+      //Range.inclusive(9383,9638),    //L5
+      //Range.inclusive(32114,33137),  //L6
+      //Range.inclusive(58605,59628)   //L7
+      Range.inclusive(58642,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1184,8 +1184,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1434,13 +1434,16 @@ object tak_lub_nie extends App{
 
 
 
-  for(i <- (0 to 1000
-    )) {
 
-    val wynik_rzutu = r.nextInt(6)+1
-    //println(s"$i -> $wynik_rzutu" -> Ben_mówi(wynik_rzutu))
-    println(Ben_mówi(wynik_rzutu))
+
+  for(i <- (0 to 1000))
+  {
+
     StdIn.readLine()
+    val wynik_rzutu = r.nextInt(6)+1
+    println(s"$i -> $wynik_rzutu" -> Ben_mówi(wynik_rzutu))
+    //println(Ben_mówi(wynik_rzutu))
+
   }
 
 
