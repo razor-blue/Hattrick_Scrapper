@@ -36,8 +36,9 @@ def dateToDayOfTheWeek(d: String): String = {
   //println(d)
 
   val data = d match {
-    case "Dzisiaj" => println(getTodayDate("dd.MM.yyyy")); getTodayDate("dd.MM.yyyy")
-    case "Wczoraj" => println(getYesterdayDate("dd.MM.yyyy")); getYesterdayDate("dd.MM.yyyy")
+    //default values: "dd.MM.yyyy"
+    case "Dzisiaj" => println(getTodayDate()); getTodayDate()
+    case "Wczoraj" => println(getYesterdayDate()); getYesterdayDate()
     case _         => d
   }
 
