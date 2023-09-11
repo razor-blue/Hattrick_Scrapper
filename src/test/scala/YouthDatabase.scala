@@ -1007,8 +1007,8 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
+  //new YouthAnalysis(2955119)
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1142,8 +1142,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2

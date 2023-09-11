@@ -362,7 +362,7 @@ object Youth{
       val outlook: String = if(playerAtributes.length <= 26) yp.outlook.get
       else playerAtributes(26)
 
-      val scoutingDetails: String = if(playerAtributes.length <= 30) {
+      val scoutingDetails: String = if(playerAtributes.length < 30) { //= if want to add scouting history from all databse to csv file
 
         val scoutingHistory = yp.scoutingHistory.getOrElse((Seq("------,------,0"),"------"))//._2
 
