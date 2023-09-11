@@ -1374,7 +1374,7 @@ object scanYouthPlayerHistory extends App{
 
   }
 
-  def playerScoutingHistory(id: String) = {
+  def playerScoutingHistory(id: String): Unit = {
 
     val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
@@ -1396,7 +1396,7 @@ object scanYouthPlayerHistory extends App{
 
     tableMemoryBool.foreach(println(_))
 
-    val memoryModified: Array[String] = (memoryDates.split(" ").map(x => dateToDayOfTheWeek(x)) zip memoryHours.split(" ") /*zip memoryHours.zipWithIndex.map(x => tableMemoryBool.length - x._2)*/) /*zip tableMemoryBool*/ mkString ("-") replaceAll("[()]", "") split ("-") zip tableMemoryBool filter(p => p._2) map(_._1)
+    val memoryModified: Array[String] = (memoryDates.split(" ").map(x => dateToDayOfTheWeek(x)) zip memoryHours.split(" ") /*zip memoryHours.zipWithIndex.map(x => tableMemoryBool.length - x._2)*/) /*zip tableMemoryBool*/ mkString "-" replaceAll("[()]", "") split "-" zip tableMemoryBool filter(p => p._2) map(_._1)
 
     //memoryModified.foreach(println(_))
 
@@ -1421,7 +1421,7 @@ object tak_lub_nie extends App{
 
   import scala.io.StdIn
 
-  def Ben_mówi(wynik_rzutu: Int): String =
+  def Ben_mowi(wynik_rzutu: Int): String =o
     {
 
       if(wynik_rzutu <= 3) "TAK"
@@ -1436,12 +1436,12 @@ object tak_lub_nie extends App{
 
 
 
-  for(i <- (0 to 1000))
+  for(i <- 0 to 1000)
   {
 
     StdIn.readLine()
     val wynik_rzutu = r.nextInt(6)+1
-    println(s"$i -> $wynik_rzutu" -> Ben_mówi(wynik_rzutu))
+    println(s"$i -> $wynik_rzutu" -> Ben_mowi(wynik_rzutu))
     //println(Ben_mówi(wynik_rzutu))
 
   }
