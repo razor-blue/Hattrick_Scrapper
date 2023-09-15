@@ -1121,7 +1121,7 @@ class other_leagueIDs_DatabasePath {
       //Range.inclusive(9383,9638),    //L5
       //Range.inclusive(32114,33137),  //L6
       //Range.inclusive(58605,59628)   //L7
-      Range.inclusive(58642,59628)   //L7
+      Range.inclusive(59367,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1142,8 +1142,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1421,7 +1421,7 @@ object tak_lub_nie extends App{
 
   import scala.io.StdIn
 
-  def Ben_mowi(wynik_rzutu: Int): String =o
+  def Ben_mowi(wynik_rzutu: Int): String =
     {
 
       if(wynik_rzutu <= 3) "TAK"

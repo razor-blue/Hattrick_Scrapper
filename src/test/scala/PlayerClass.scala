@@ -379,14 +379,15 @@ object Youth{
 
       //println(scoutingDetails)
 
-      val (name, /*id, */ previousSpecialityStatus, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
-        = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
+      val (name, /*id, */ previousSpecialityStatus, previousSince, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
+        = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(4),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
 
       val currentSpecialityStatus: String = yp.speciality.getOrElse("")
       val since = yp.since.get
       val id = yp.id.get.toString
 
-      val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus)) currentSpecialityStatus else currentSpecialityStatus.concat(s"$since")
+      //val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus)) currentSpecialityStatus else currentSpecialityStatus.concat(s"$since")
+      val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus.take(1))) previousSpecialityStatus else currentSpecialityStatus.concat(s"$since")
 
       val last5Games_updated = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
 
@@ -404,6 +405,12 @@ object Youth{
             if(sp.exists){
               val character = sp.character.get
               writeToFile(databasePath + "characters.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,${outlook.replaceAll("-", ",")},$character"))
+
+              //Jak oczyszczę bazę z rekordów z błędną identyfikacją specjałek - ostatni grajek w bazie:
+              // Edmund Smuga 333622322
+              //val youth_speciality: String = previousSpecialityStatus
+              //val senior_speciality: String = sp.speciality.get
+              //writeToFile(databasePath + "specialities.csv", true, Seq.empty[String], Seq(s"$youth_speciality,$previousSince,$senior_speciality"))
 
             }
 
