@@ -16,8 +16,12 @@ import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
-import scala.util.Random
+import scala.util.{Random, Success}
 import scala.util.control.Breaks.*
+import scala.concurrent.{Await, Future}
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 def JsoupConnection(url: String): Document = {
   val connection: Connection = Jsoup.connect(url).timeout(10000)
@@ -448,6 +452,46 @@ object YouthDatabase {
             Seq.empty[String]
 
         }
+
+
+      case "removeDuplicateRecords" =>
+
+        println(pathToCsvFile)
+
+        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+        val lines: Seq[String] = bufferedSource match {
+          case Some(source) =>
+
+            val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+
+            val dataLines: Iterator[String] = source.getLines.drop(1)
+
+            for (line <- dataLines) {
+
+              val newRecord: String = line.replaceAll("\"", "")
+
+              updateRecords += newRecord
+
+            }
+
+            val updatedRecords: Seq[String] = updateRecords.result()
+
+            source.close()
+
+            updatedRecords
+
+          case None =>
+            println(s"File $pathToCsvFile does not exists.")
+            null
+
+        }
+
+        println(lines.length)
+        println(lines.distinct.length)
+
+        writeToFile("src/data/allData.csv", true, headline, lines.distinct)
+
 
 
 
@@ -1117,11 +1161,11 @@ class other_leagueIDs_DatabasePath {
 
   def Polska_L1_7: (List[Int], String) = (
     List(
-      //Range.inclusive(3620,3704),    //L1-L
+      //Range.inclusive(3620,3704),    //L1-L4
       //Range.inclusive(9383,9638),    //L5
       //Range.inclusive(32114,33137),  //L6
-      //Range.inclusive(58605,59628)   //L7
-      Range.inclusive(59367,59628)   //L7
+      Range.inclusive(32759,33137),  //L6
+      Range.inclusive(58605,59628)   //L7
     ).flatten,
     databasePath + "Polska_youthPlayerDatabase.csv")
 
@@ -1142,8 +1186,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
-  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
   val pathToCsvFile: String = leagueIDs_Path._2
@@ -1168,6 +1212,42 @@ object addNewPlayersToDatabase extends App{
 
 }
 
+object addNewPlayersToDatabase_withFutures extends App{
+
+  def doF(leagueIDs_Path: (List[Int], String), fileName: String) = {
+
+    val leagueIDs: Seq[Int] = leagueIDs_Path._1
+    val pathToCsvFile: String = leagueIDs_Path._2
+
+    leagueIDs.foreach(l_id => {
+      teamsIDFromLeagueID(l_id).map(x => youthClubIDFromTeamID(x.toInt)).filter(p => !p.equals(0)).foreach(yc => {
+
+        val currentPlayerIDs: Array[String] = YouthDatabase.getYouthPlayerIDsFromYouthClubID(yc)
+        val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToCsvFile)
+        YouthDatabase.addPlayerToDatabase(pathToCsvFile, currentPlayerIDs, storedPlayerIDs)
+
+      })
+
+      writeToFile(databasePath + fileName, false, Seq.empty[String], Seq(l_id.toString))
+
+    })
+
+  }
+
+  //csv files have to have header, unless empty line is detected and no read is applied
+
+  //val f1 = Future { doF((Range.inclusive(32964,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f1 = Future { doF((Range.inclusive(59361,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f2 = Future { doF((Range.inclusive(59102,59360).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
+
+  //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
+  //Future {for(i <- 1 to 100) {print("B");Thread.sleep(10)}}
+
+  Await.result(Future.sequence(Seq(f1, f2)), 1.day)
+
+
+}
+
 object prepareDatabaseForScouts extends App{
 
   val maxAgeLimit_Poland = 17.030
@@ -1184,8 +1264,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1195,7 +1275,8 @@ object doSthWithDatabases extends App{
   //val label: String = "clearWrongSpecialityStatus"
   //val label: String = "removePlayersThatLeftAcademy"
   //val label: String = "findMultipleRecords"
-  val label: String = "databaseMinusTttestRecords"
+  //val label: String = "databaseMinusTttestRecords"
+  val label: String = "removeDuplicateRecords"
 
 
   new YouthAnalysis(label,"Polska")
