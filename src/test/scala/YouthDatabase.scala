@@ -1050,10 +1050,10 @@ class YouthAnalysis {
 object run extends App{
 
   //new YouthAnalysis("test-TL'a")
-  new YouthAnalysis(678445)
+  //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1213,7 +1213,7 @@ object addNewPlayersToDatabase extends App{
 
 object addNewPlayersToDatabase_withFutures extends App{
 
-  def doF(leagueIDs_Path: (List[Int], String), fileName: String) = {
+  def doF(leagueIDs_Path: (List[Int], String), fileName: String): Unit = {
 
     val leagueIDs: Seq[Int] = leagueIDs_Path._1
     val pathToCsvFile: String = leagueIDs_Path._2
@@ -1266,8 +1266,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1508,7 +1508,7 @@ object tak_lub_nie extends App{
     {
 
       if(wynik_rzutu <= 3) "TAK"
-      else if(wynik_rzutu >3 && wynik_rzutu <=6) "NIE"
+      else if(/*wynik_rzutu >3 &&*/ wynik_rzutu <=6) "NIE"
       else "HA-HA-HA"
 
     }
