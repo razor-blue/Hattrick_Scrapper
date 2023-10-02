@@ -1233,14 +1233,28 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   }
 
+  /*Range.inclusive(3620, 3704), //L1-L4
+  Range.inclusive(9383, 9638), //L5
+  Range.inclusive(32114, 33137), //L6
+  Range.inclusive(58605, 59628) //L7*/
+
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  //val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
-  val f1 = Future { doF((Range.inclusive(58715,58815).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
-  val f2 = Future { doF((Range.inclusive(58816,58899).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
-  val f3 = Future { doF((Range.inclusive(33025,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
+  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32370).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f2 = Future { doF((Range.inclusive(32371,32968).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
+  val f3 = Future { doF((Range.inclusive(32969,33137).toList++Range.inclusive(58605,59034).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
+  val f4 = Future { doF((Range.inclusive(59035,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+
+
+  /*val f1 = Future {doF((Range.inclusive(32187, 32249).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
+  val f2 = Future {doF((Range.inclusive(32858, 32917).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
+  val f3 = Future {doF((Range.inclusive(32922, 32968).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
+  val f4 = Future {doF((Range.inclusive(32330, 32370).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+*/
+
+  //val f1 = Future { doF((Range.inclusive(58715,58815).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   //val f3 = Future { doF((Range.inclusive(32901,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
-  val f4 = Future { doF((Range.inclusive(59000,59101).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+
 
   //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
   //Future {for(i <- 1 to 100) {print("B");Thread.sleep(10)}}
@@ -1266,8 +1280,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
