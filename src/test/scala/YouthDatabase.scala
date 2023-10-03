@@ -50,6 +50,26 @@ def writeToFile(path: String, appendFlag: Boolean, headline: Seq[String], lines:
 
 }
 
+
+def checkCounter(
+                  counter: Int,
+                  counterThreshold: Int,
+                  updateRecords: mutable.Builder[String, Seq[String]],
+                  filenameWithPath: String,
+                  appendFlag: Boolean,
+                  headline: Seq[String]
+
+                ): Unit = {
+
+
+  if (counter % counterThreshold == 0) {
+    val updatedRecords = updateRecords.result()
+    writeToFile(filenameWithPath, appendFlag, headline, updatedRecords)
+    updateRecords.clear()
+  }
+
+}
+
 val teamPath = "https://www.hattrick.org/Club/?TeamID="
 val databasePath: String = "src/data/"
 val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
@@ -58,6 +78,8 @@ val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?Pla
 val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
 
 def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
+def headlineClean: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test),Scouting Day,Scouting Hour,Scouting Attempt")
+def headlineUpdate: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last Update,Outlook,Scouting Day,Scouting Hour,Scouting Attempt")
 
 /*def read_config_db: Int = {
 
@@ -143,18 +165,20 @@ object YouthDatabase {
               updateRecords += newRecord.replaceAll("\"", "")
 
               counter += 1
-              if (counter % 100 == 0) {
+              checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
+
+              /*if (counter % 100 == 0) {
                 val updatedRecords = updateRecords.result()
-                writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+                writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
                 updateRecords.clear()
-              }
+              }*/
 
             }
 
             val updatedRecords = updateRecords.result()
             println(counter)
 
-            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+            writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
 
             updateRecords.clear()
 
@@ -189,18 +213,20 @@ object YouthDatabase {
               updateRecords += newRecord
 
               counter += 1
-              if (counter % 100 == 0) {
+              checkCounter(counter, 100, updateRecords, "src/data/rptla.csv", true, Seq.empty[String])
+
+              /*if (counter % 100 == 0) {
                 val updatedRecords = updateRecords.result()
-                writeToFile("src/data/rptla.csv", true, headline, updatedRecords)
+                writeToFile("src/data/rptla.csv", true, Seq.empty[String], updatedRecords)
                 updateRecords.clear()
-              }
+              }*/
 
             }
 
             val updatedRecords = updateRecords.result()
             println(counter)
 
-            writeToFile("src/data/rptla.csv", true, headline, updatedRecords)
+            writeToFile("src/data/rptla.csv", true, Seq.empty[String], updatedRecords)
 
             updateRecords.clear()
 
@@ -292,7 +318,7 @@ object YouthDatabase {
         val updatedRecords: Seq[String] = updateRecords.result()
         updateRecords.clear()
 
-        writeToFile("src/data/allData.csv", true, headline, updatedRecords)
+        writeToFile("src/data/allData.csv", true, Seq.empty[String], updatedRecords)
 
 
         repeatedID.foreach(println(_))
@@ -348,7 +374,7 @@ object YouthDatabase {
                 println(reducedLine)
 
                 updateRecords.clear()
-                writeToFile("src/data/allData.csv", true, headline, Seq(reducedLine))
+                writeToFile("src/data/allData.csv", true, Seq.empty[String], Seq(reducedLine))
                 break()
               }
 
@@ -382,7 +408,7 @@ object YouthDatabase {
               }
             else
               {
-                writeToFile("src/data/new_db.csv", true, headline, Seq(line))
+                writeToFile("src/data/new_db.csv", true, Seq.empty[String], Seq(line))
                 removePlayerFromDatabase(dbLines, idsToBeRemoved)
               }
 
@@ -490,7 +516,7 @@ object YouthDatabase {
         println(lines.length)
         println(lines.distinct.length)
 
-        writeToFile("src/data/allData.csv", true, headline, lines.distinct)
+        writeToFile("src/data/allData.csv", true, Seq.empty[String], lines.distinct)
 
 
 
@@ -530,7 +556,8 @@ object YouthDatabase {
     bufferedSource match {
       case Some(source) =>
 
-        writeToFile("src/data/tttest.csv", false, headline, Seq.empty[String])
+        //creates its own header, tttest file does not need to have it as it will be overwritten
+        writeToFile("src/data/tttest.csv", false, headlineClean, Seq.empty[String])
 
         val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
         var counter = 0
@@ -543,26 +570,20 @@ object YouthDatabase {
           val age: Double = cols(2).toDouble
           val since = cols(4).toInt
           val gentleness = if(cols.length <= 26) "------" else gentlenessFromCharacter(cols(26))
-          println(s"$line")
-          println(s"$age")
-          println(s"${age <= maxAge }")
 
           val newRecord: String = if (age <= maxAge && since >= -1) cols.dropRight(4).mkString(",") ++ "," ++ gentleness ++ "," ++ cols.takeRight(3).mkString(",") replaceAll("\"", "") else null
           updateRecords += newRecord
 
+          //why header is Seq[String], not just a String? Because sometimes I want to pass empty String -> Seq.empty[String] is easier to use
           counter += 1
-          if (counter % 100 == 0) {
-            val updatedRecords = updateRecords.result()
-            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
-            updateRecords.clear()
-          }
+          checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
 
         }
 
         val updatedRecords = updateRecords.result()
         println(counter)
 
-        writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+        writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
 
         updateRecords.clear()
 
@@ -628,7 +649,7 @@ object YouthDatabase {
     for(id <- ids) createRecords += updateYouthPlayer(id,Seq.fill(6)("-1.0"),Seq.fill(6)(-1.0),/*Seq.fill(6)("").mkString(",")*/"")
     val createdRecords = createRecords.result()
 
-    writeToFile(pathToCsvFile, false, headline, createdRecords)
+    writeToFile(pathToCsvFile, false, headlineUpdate, createdRecords)
 
   }
 
@@ -802,11 +823,13 @@ object YouthDatabase {
               updateRecords += newRecord
 
               counter += 1
-              if (counter % 100 == 0) {
+              checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
+
+              /*if (counter % 100 == 0) {
                 val updatedRecords = updateRecords.result()
-                writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+                writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
                 updateRecords.clear()
-              }
+              }*/
 
             //}
           }
@@ -817,9 +840,9 @@ object YouthDatabase {
           println(counter)
 
           if(counter < 70)
-            writeToFile(pathToCsvFile, false, headline, updatedRecords)
+            writeToFile(pathToCsvFile, false, headlineUpdate, updatedRecords)
           else
-            writeToFile("src/data/tttest.csv", true, headline, updatedRecords)
+            writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
 
           updateRecords.clear()
 
@@ -951,8 +974,8 @@ object YouthDatabase {
 
     val createdRecords = createRecords.result()
 
-    writeToFile(pathToCsvFile, true, headline, createdRecords)
-    writeToFile("src/data/new.csv", true, headline, createdRecords)
+    writeToFile(pathToCsvFile, true, Seq.empty[String], createdRecords)
+    writeToFile("src/data/new.csv", true, Seq.empty[String], createdRecords)
 
     /*val file = new File(pathToCsvFile)
     val writer = CSVWriter.open(file, append = true)
@@ -1280,8 +1303,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
