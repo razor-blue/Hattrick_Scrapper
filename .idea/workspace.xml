@@ -4,20 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="VIP: testing mongoDB">
-      <change beforePath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/FCB_youthPlayerDatabase.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1-4L.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_5L.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_1_256.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_1_256.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_257_512.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_257_512.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_513_768.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_513_768.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_769_1024.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_6L_769_1024.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_1_256.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_1_256.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_257_512.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_257_512.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_513_768.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_513_768.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_769_1024.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase_7L_769_1024.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/luka_w_systemie_youthPlayerDatabase.csv" afterDir="false" />
+    <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="Polska db update">
+      <change afterPath="$PROJECT_DIR$/src/data/Polska_do_17_030_2023_10_02.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-09-15_09_39_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-09-15_09_39__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/TL_listed.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/TL_listed.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/characters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/characters.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/config2_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config2_db.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/config3_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config3_db.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/config4_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config4_db.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/new.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/new.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/tttest.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/tttest.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,6 +99,10 @@
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2L3C955aityB4cLj7PbIKm4dV1j" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -130,14 +133,7 @@
       <recent name="C:\Users\Lukasz\IdeaProjects\Scrapper\src\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.mongoTest">
-    <configuration name="MyMongoApp" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="MyMongoApp" />
-      <module name="Scrapper" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.run">
     <configuration name="Test" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="Test" />
       <module name="Scrapper" />
@@ -145,8 +141,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="addNewPlayersToDatabase" type="Application" factoryName="Application" temporary="true">
-      <option name="MAIN_CLASS_NAME" value="addNewPlayersToDatabase" />
+    <configuration name="addNewPlayersToDatabase_withFutures" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="addNewPlayersToDatabase_withFutures" />
       <module name="Scrapper" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -166,6 +162,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="prepareDatabaseForScouts" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="prepareDatabaseForScouts" />
+      <module name="Scrapper" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="run" type="Application" factoryName="Application" singleton="false" temporary="true">
       <option name="MAIN_CLASS_NAME" value="run" />
       <module name="Scrapper" />
@@ -176,19 +179,19 @@
     </configuration>
     <list>
       <item itemvalue="Application.Test" />
+      <item itemvalue="Application.addNewPlayersToDatabase_withFutures" />
+      <item itemvalue="Application.prepareDatabaseForScouts" />
       <item itemvalue="Application.mongoDB" />
       <item itemvalue="Application.mongoTest" />
-      <item itemvalue="Application.addNewPlayersToDatabase" />
-      <item itemvalue="Application.MyMongoApp" />
       <item itemvalue="Application.run" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.run" />
+        <item itemvalue="Application.prepareDatabaseForScouts" />
+        <item itemvalue="Application.addNewPlayersToDatabase_withFutures" />
         <item itemvalue="Application.mongoTest" />
         <item itemvalue="Application.mongoDB" />
-        <item itemvalue="Application.MyMongoApp" />
-        <item itemvalue="Application.run" />
-        <item itemvalue="Application.addNewPlayersToDatabase" />
       </list>
     </recent_temporary>
   </component>
@@ -226,6 +229,9 @@
     <MESSAGE value="Did some preparation for the code cleaning." />
     <MESSAGE value="Add some csv files" />
     <MESSAGE value="VIP: testing mongoDB" />
-    <option name="LAST_COMMIT_MESSAGE" value="VIP: testing mongoDB" />
+    <MESSAGE value="fcb db update" />
+    <MESSAGE value="Kenia db update" />
+    <MESSAGE value="Polska db update" />
+    <option name="LAST_COMMIT_MESSAGE" value="Polska db update" />
   </component>
 </project>
