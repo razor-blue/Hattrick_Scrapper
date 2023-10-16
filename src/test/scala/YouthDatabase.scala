@@ -1263,15 +1263,17 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32250).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32250).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32251,32700).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32701,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58605,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+*/
 
-  //val f1 = Future {doF((Range.inclusive(32187, 32249).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
-  //val f2 = Future {doF((Range.inclusive(32858, 32917).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
-  //val f3 = Future {doF((Range.inclusive(32922, 32968).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
-  //val f4 = Future {doF((Range.inclusive(32355, 32370).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+  val f1 = Future {doF((Range.inclusive(9537, 9638).toList ++ Range.inclusive(32114, 32250).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
+  val f2 = Future {doF((Range.inclusive(32540, 32700).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
+  val f3 = Future {doF((Range.inclusive(33006, 33137).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
+  val f4 = Future {doF((Range.inclusive(59175, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+
 
   //val f1 = Future { doF((Range.inclusive(58715,58815).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   //val f3 = Future { doF((Range.inclusive(32901,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
