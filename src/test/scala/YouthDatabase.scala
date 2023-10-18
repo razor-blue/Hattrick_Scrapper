@@ -140,105 +140,111 @@ object YouthDatabase {
 
       case "clearWrongSpecialityStatus" =>
 
-        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+        def enigma(dataLines: Iterator[String]) = {
 
-        bufferedSource match {
-          case Some(source) =>
-
-            val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-            var counter = 0
-
-            val dataLines: Iterator[String] = source.getLines.drop(1)
-
-            for (line <- dataLines) {
-
-              val cols: Array[String] = line.split(",").map(_.trim)
-              val lineBefore = cols.take(3).mkString(",")
-              val lineAfter = cols.drop(4).mkString(",")
-              val speciality: String = cols(3)
-              val since: String = cols(4)
-
-              val correctedSpeciality: String = if(speciality.equals(since)) "" else speciality
-              val newRecord: String = lineBefore ++ "," ++ correctedSpeciality ++ "," ++ lineAfter
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          var counter = 0
 
 
-              updateRecords += newRecord.replaceAll("\"", "")
+          for (line <- dataLines) {
 
-              counter += 1
-              checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
+            val cols: Array[String] = line.split(",").map(_.trim)
+            val lineBefore = cols.take(3).mkString(",")
+            val lineAfter = cols.drop(4).mkString(",")
+            val speciality: String = cols(3)
+            val since: String = cols(4)
 
-              /*if (counter % 100 == 0) {
-                val updatedRecords = updateRecords.result()
-                writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
-                updateRecords.clear()
-              }*/
+            val correctedSpeciality: String = if (speciality.equals(since)) "" else speciality
+            val newRecord: String = lineBefore ++ "," ++ correctedSpeciality ++ "," ++ lineAfter
+            updateRecords += newRecord.replaceAll("\"", "")
+            counter += 1
+            checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
+          }
 
-            }
+          val updatedRecords = updateRecords.result()
+          writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
+          updateRecords.clear()
 
-            val updatedRecords = updateRecords.result()
-            println(counter)
-
-            writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
-
-            updateRecords.clear()
-
-            source.close()
-
-
-          case None =>
-            println(s"File $pathToCsvFile does not exists.")
 
         }
+
+        def run_enigma(): Unit = {
+
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+          bufferedSource match {
+            case Some(source) =>
+
+              val dataLines: Iterator[String] = source.getLines.drop(1)
+
+              enigma(dataLines)
+
+              source.close()
+
+
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+          }
+
+        }
+
+        run_enigma()
 
       case "removePlayersThatLeftAcademy" =>
 
-        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+        def enigma(dataLines: Iterator[String]) = {
 
-        bufferedSource match {
-          case Some(source) =>
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          var counter = 0
 
-            val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-            var counter = 0
+          for (line <- dataLines) {
 
-            val dataLines: Iterator[String] = source.getLines.drop(1)
+            val cols: Array[String] = line.split(",").map(_.trim)
+            val since: Int = cols(4).toInt
 
-            for (line <- dataLines) {
-
-              val cols: Array[String] = line.split(",").map(_.trim)
-              val since: Int = cols(4).toInt
-
-              val newRecord: String = if(since >= -1) line.replaceAll("\"", "") else null
+            val newRecord: String = if (since >= -1) line.replaceAll("\"", "") else null
 
 
-              updateRecords += newRecord
+            updateRecords += newRecord
 
-              counter += 1
-              checkCounter(counter, 100, updateRecords, "src/data/rptla.csv", true, Seq.empty[String])
+            counter += 1
+            checkCounter(counter, 100, updateRecords, "src/data/rptla.csv", true, Seq.empty[String])
 
-              /*if (counter % 100 == 0) {
-                val updatedRecords = updateRecords.result()
-                writeToFile("src/data/rptla.csv", true, Seq.empty[String], updatedRecords)
-                updateRecords.clear()
-              }*/
+          }
 
-            }
+          val updatedRecords = updateRecords.result()
 
-            val updatedRecords = updateRecords.result()
-            println(counter)
+          writeToFile("src/data/rptla.csv", true, Seq.empty[String], updatedRecords)
 
-            writeToFile("src/data/rptla.csv", true, Seq.empty[String], updatedRecords)
-
-            updateRecords.clear()
-
-            source.close()
-
-
-          case None =>
-            println(s"File $pathToCsvFile does not exists.")
+          updateRecords.clear()
 
         }
 
-      case "findMultipleRecords" =>
+        def run_enigma(): Unit = {
+
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+          bufferedSource match {
+            case Some(source) =>
+
+              val dataLines: Iterator[String] = source.getLines.drop(1)
+
+              enigma(dataLines)
+
+              source.close()
+
+
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+
+          }
+
+        }
+
+        run_enigma()
+
+      /*not used anymore */
+      case "findMultipleRecords" => /*{
 
         val database: Seq[String] = Seq(
           databasePath + "Polska_youthPlayerDatabase1-4L.csv",
@@ -387,6 +393,7 @@ object YouthDatabase {
 
         })
 
+      }*/
 
       case "databaseMinusTttestRecords" =>
 
@@ -1075,8 +1082,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1313,10 +1320,10 @@ object prepareDatabaseForScouts extends App{
 object doSthWithDatabases extends App{
 
   //val label: String = "clearWrongSpecialityStatus"
-  //val label: String = "removePlayersThatLeftAcademy"
+  val label: String = "removePlayersThatLeftAcademy"
   //val label: String = "findMultipleRecords"
   //val label: String = "databaseMinusTttestRecords"
-  val label: String = "removeDuplicateRecords"
+  //val label: String = "removeDuplicateRecords"
 
 
   new YouthAnalysis(label,"Polska")
