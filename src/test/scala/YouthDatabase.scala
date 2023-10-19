@@ -1273,13 +1273,16 @@ object addNewPlayersToDatabase_withFutures extends App{
   /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32250).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32251,32700).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32701,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
-  val f4 = Future { doF((Range.inclusive(58605,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+  val f4 = Future { doF((Range.inclusive(58605,59000).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+  val f5 = Future { doF((Range.inclusive(59001,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config6_db.dat") }
 */
 
-  val f1 = Future {doF((Range.inclusive(9537, 9638).toList ++ Range.inclusive(32114, 32250).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
-  val f2 = Future {doF((Range.inclusive(32540, 32700).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
-  val f3 = Future {doF((Range.inclusive(33006, 33137).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
-  val f4 = Future {doF((Range.inclusive(59175, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+  val f1 = Future {doF((Range.inclusive(9575, 9638).toList ++ Range.inclusive(32114, 32250).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
+  val f2 = Future {doF((Range.inclusive(32580, 32700).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
+  val f3 = Future {doF((Range.inclusive(33039, 33137).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
+  val f4 = Future {doF((Range.inclusive(59114, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+
+
 
 
   //val f1 = Future { doF((Range.inclusive(58715,58815).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
@@ -1311,8 +1314,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
