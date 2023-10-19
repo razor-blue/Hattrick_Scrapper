@@ -140,7 +140,7 @@ object YouthDatabase {
 
       case "clearWrongSpecialityStatus" =>
 
-        def enigma(dataLines: Iterator[String]) = {
+        def enigma(dataLines: Iterator[String]): Unit = {
 
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
           var counter = 0
@@ -192,7 +192,7 @@ object YouthDatabase {
 
       case "removePlayersThatLeftAcademy" =>
 
-        def enigma(dataLines: Iterator[String]) = {
+        def enigma(dataLines: Iterator[String]): Unit = {
 
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
           var counter = 0
