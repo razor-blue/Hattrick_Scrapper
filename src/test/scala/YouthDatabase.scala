@@ -242,7 +242,7 @@ object YouthDatabase {
         }
 
         run_enigma()
-        
+
 
       case "databaseMinusTttestRecords" =>
 
@@ -272,109 +272,131 @@ object YouthDatabase {
 
         }
 
+        def enigma(sourceGetLines: Iterator[String]): Seq[String] = {
 
-        val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/tttest.csv")
-        val idsToBeRemoved: Seq[String] = bufferedSource0 match {
+          val readRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-          case Some(source) =>
+          if (sourceGetLines.nonEmpty) {
 
-            val sourceGetLines = source.getLines
+            for (line <- sourceGetLines) readRecords += line
 
-            //println(sourceGetLines.length) do not invoke this as this reveals source to the end and source is seen as empty
+            val readedRecord: Seq[String] = readRecords.result()
+            getYouthPlayerIDsFromPlayerRecordsString(readedRecord)
 
-            val readRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-
-            if (sourceGetLines.nonEmpty) {
-              //println("sourceGetLines.nonEmpty")
-              for (line <- sourceGetLines) readRecords += line
-
-              source.close()
-
-              val readedRecord: Seq[String] = readRecords.result()
-
-              getYouthPlayerIDsFromPlayerRecordsString(readedRecord)
-
-            }
-            else {
-              //println("sourceGetLines.Empty")
-              source.close()
-              Seq.empty[String]
-            }
-
-
-          case None =>
-            println(s"File src/data/tttest.csv does not exists.")
-            Seq.empty[String]
+          }
+          else {
+            Seq.empty[String] //do enigma
+          }
 
         }
+
+        def run_enigma(): Seq[String] = {
+
+          //idsToBeRemoved
+          val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/tttest.csv")
+          val idsToBeRemoved: Seq[String] = bufferedSource0 match {
+
+            case Some(source) =>
+
+              val sourceGetLines: Iterator[String] = source.getLines
+              source.close()
+             //println(sourceGetLines.length) do not invoke this as this reveals source to the end and source is seen as empty
+
+              enigma(sourceGetLines)
+
+            case None =>
+              println(s"File src/data/tttest.csv does not exists.")
+              Seq.empty[String]
+
+          }
+
+          idsToBeRemoved
+
+        }
+
+        val idsToBeRemoved = run_enigma()
+
 
         println(idsToBeRemoved)
         println(idsToBeRemoved.isEmpty)
 
 
-        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
-        bufferedSource match {
+        def enigma2(dbLines: Iterator[String]) = {
 
-          case Some(source) =>
-
-            //val readRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
-
-            val dbLines: Iterator[String] = source.getLines()
-
-            removePlayerFromDatabase(dbLines.drop(1), idsToBeRemoved)
-
-              source.close()
-
-
-
-
-
-          case None =>
-            println(s"File $pathToCsvFile does not exists.")
-            Seq.empty[String]
+          removePlayerFromDatabase(dbLines.drop(1), idsToBeRemoved)
 
         }
+
+        def run_enigma2() = {
+
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+          bufferedSource match {
+
+            case Some(source) =>
+
+              val dbLines: Iterator[String] = source.getLines()
+              source.close()
+
+              enigma2(dbLines)
+
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+              Seq.empty[String]
+
+          }
+
+        }
+
+        run_enigma2()
+
+
 
 
       case "removeDuplicateRecords" =>
 
-        println(pathToCsvFile)
+        def enigma(dataLines: Iterator[String]): Seq[String] = {
 
-        val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
-        val lines: Seq[String] = bufferedSource match {
-          case Some(source) =>
+          for (line <- dataLines) {
 
-            val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+            val newRecord: String = line.replaceAll("\"", "")
 
-            val dataLines: Iterator[String] = source.getLines.drop(1)
+            updateRecords += newRecord
 
-            for (line <- dataLines) {
+          }
 
-              val newRecord: String = line.replaceAll("\"", "")
+          val updatedRecords: Seq[String] = updateRecords.result()
 
-              updateRecords += newRecord
-
-            }
-
-            val updatedRecords: Seq[String] = updateRecords.result()
-
-            source.close()
-
-            updatedRecords
-
-          case None =>
-            println(s"File $pathToCsvFile does not exists.")
-            null
+          updatedRecords
 
         }
 
-        println(lines.length)
-        println(lines.distinct.length)
+        def run_enigma() = {
+          println(pathToCsvFile)
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+          val lines: Seq[String] = bufferedSource match {
+            case Some(source) =>
 
-        writeToFile("src/data/allData.csv", true, Seq.empty[String], lines.distinct)
+              val dataLines: Iterator[String] = source.getLines.drop(1)
+              source.close()
 
+              enigma(dataLines)
 
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+              null
+
+          }
+
+          println(lines.length)
+          println(lines.distinct.length)
+
+          writeToFile("src/data/allData.csv", true, Seq.empty[String], lines.distinct)
+
+        }
+
+        run_enigma()
 
 
       case _ => None
@@ -931,8 +953,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1163,8 +1185,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }

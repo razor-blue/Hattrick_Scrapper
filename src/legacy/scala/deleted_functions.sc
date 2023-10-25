@@ -1,5 +1,8 @@
-/*from object doSthWithDatabases */
-/*{case "findMultipleRecords"
+/*
+
+//from object doSthWithDatabases
+
+{case "findMultipleRecords"
 => 
 
   val database: Seq[String] = Seq(
