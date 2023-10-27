@@ -5,17 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4e743585-a807-4e0c-9229-f145ece62084" name="Changes" comment="Polska db update">
-      <change afterPath="$PROJECT_DIR$/src/data/Polska_do_17_030_2023_10_02.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-09-15_09_39_[Changes]1/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2023-09-15_09_39__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/Polska_youthPlayerDatabase1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/TL_listed.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/TL_listed.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/data/characters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/characters.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/config2_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config2_db.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/config3_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config3_db.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/config4_db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/config4_db.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/new.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/new.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/tttest.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/tttest.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/scala/YouthDatabase.scala" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +117,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Lukasz/IdeaProjects/Scrapper/src/data/new.csv&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Lukasz/IdeaProjects/Scrapper/src/data&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.27057612&quot;,
@@ -188,8 +184,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.run" />
-        <item itemvalue="Application.prepareDatabaseForScouts" />
         <item itemvalue="Application.addNewPlayersToDatabase_withFutures" />
+        <item itemvalue="Application.prepareDatabaseForScouts" />
         <item itemvalue="Application.mongoTest" />
         <item itemvalue="Application.mongoDB" />
       </list>
@@ -231,6 +227,9 @@
     <MESSAGE value="VIP: testing mongoDB" />
     <MESSAGE value="fcb db update" />
     <MESSAGE value="Kenia db update" />
+    <MESSAGE value="added SkilePromowanychJuniorow1.xlsx" />
+    <MESSAGE value="remove some old and unstructured databases + Polska dp update" />
+    <MESSAGE value="warnings fix" />
     <MESSAGE value="Polska db update" />
     <option name="LAST_COMMIT_MESSAGE" value="Polska db update" />
   </component>
