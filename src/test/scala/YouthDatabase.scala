@@ -321,7 +321,7 @@ object YouthDatabase {
         println(idsToBeRemoved.isEmpty)
 
 
-        def enigma2(dbLines: Iterator[String]) = {
+        def enigma2(dbLines: Iterator[String]): Unit = {
 
           removePlayerFromDatabase(dbLines.drop(1), idsToBeRemoved)
 
@@ -372,7 +372,7 @@ object YouthDatabase {
 
         }
 
-        def run_enigma() = {
+        def run_enigma(): Unit = {
           println(pathToCsvFile)
           val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
           val lines: Seq[String] = bufferedSource match {
