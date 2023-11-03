@@ -953,8 +953,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1148,14 +1148,14 @@ object addNewPlayersToDatabase_withFutures extends App{
 
 
 
-  //val f1 = Future { doF((Range.inclusive(58715,58815).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
-  //val f3 = Future { doF((Range.inclusive(32901,33137).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
+
+
 
 
   //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
   //Future {for(i <- 1 to 100) {print("B");Thread.sleep(10)}}
 
-  Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
+  Await.result(Future.sequence(Seq(f1, f2)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
 
@@ -1177,8 +1177,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
