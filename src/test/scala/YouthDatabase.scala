@@ -780,18 +780,13 @@ object YouthDatabase {
     val howManyPlayersString: String = document.select("h1").text()
 
     //to find academia without any players (true)
-    val nPlayers: Int = howManyPlayersString.contains("The team doesn't have any players") match{
-
-      case true => 0
-
-      case _ =>
-
-        val YourNYouthPlayers: String = document.select("head[id]").text()
-        val pattern = "\\d+".r
-        //println(document.select("head[id]").text())
-        pattern.findAllIn(YourNYouthPlayers).map(_.toInt).toArray.head
-
-    }
+    val nPlayers: Int = if howManyPlayersString.contains("The team doesn't have any players") then 
+      0 
+    else
+      val YourNYouthPlayers: String = document.select("head[id]").text()
+      val pattern = "\\d+".r
+      //println(document.select("head[id]").text())
+      pattern.findAllIn(YourNYouthPlayers).map(_.toInt).toArray.head
 
     //println(nPlayers)
 

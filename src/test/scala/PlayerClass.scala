@@ -481,7 +481,7 @@ object Youth{
 
       val memoryModified: Array[String] =
         if(memoryDates1.nonEmpty && memoryDates1.head!="" && tableMemoryBool.contains(true))
-          val scoutingLine = (memoryDates1/*.split(" ")*/.map(x => dateToDayOfTheWeek(x)) zip memoryHours1/*.split(" ")*/)  mkString ("-") replaceAll("[()]", "") split ("-") zip tableMemoryBool filter(p => p._2) map(_._1)
+          val scoutingLine = (memoryDates1/*.split(" ")*/.map(x => dateToDayOfTheWeek(x)) zip memoryHours1/*.split(" ")*/)  mkString "-" replaceAll("[()]", "") split "-" zip tableMemoryBool filter(p => p._2) map(_._1)
           scoutingLine
         else
           Array("------,------")
