@@ -771,14 +771,29 @@ object YouthDatabase {
   //ok
   def getYouthPlayerIDsFromYouthClubID(youthAcademyId: Int): Array[String] = {
 
+    println(youthAcademyId)
+
     val url = youthTeamPath + s"$youthAcademyId"
 
     val document = JsoupConnection(url)
 
-    val YourNYouthPlayers: String = document.select("head[id]").text()
+    val howManyPlayersString: String = document.select("h1").text()
 
-    val pattern = "\\d+".r
-    val nPlayers: Int = pattern.findAllIn(YourNYouthPlayers).map(_.toInt).toArray.head
+    //to find academia without any players (true)
+    val nPlayers: Int = howManyPlayersString.contains("The team doesn't have any players") match{
+
+      case true => 0
+
+      case _ =>
+
+        val YourNYouthPlayers: String = document.select("head[id]").text()
+        val pattern = "\\d+".r
+        //println(document.select("head[id]").text())
+        pattern.findAllIn(YourNYouthPlayers).map(_.toInt).toArray.head
+
+    }
+
+    //println(nPlayers)
 
     val playersID: Array[String] = document.select("td.hidden:not(.left)").text().split(" ")
 
@@ -952,8 +967,8 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
+  new YouthAnalysis(2955119)
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1146,16 +1161,10 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
-
-
-
-
-
-
   //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
   //Future {for(i <- 1 to 100) {print("B");Thread.sleep(10)}}
 
-  Await.result(Future.sequence(Seq(f1, f2)), 1.day)
+  Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
 
@@ -1177,8 +1186,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }

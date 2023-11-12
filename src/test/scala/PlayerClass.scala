@@ -397,13 +397,22 @@ object Youth{
 
           val sp = new Senior(Array(seniorPlayerPath,id))
 
-            if(sp.onTL.get) {
+          val character: String = sp.character.get
+
+            /*if(sp.onTL.get) {
               val skills = sp.skills.get
                 writeToFile(databasePath + "TL_listed.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,$last5Games_updated,${skills.productIterator.mkString(",")},$scoutingDetails"))
+            }*/
+
+            if (sp.onTL.get) {
+              val skills = sp.skills.get
+              val exp: String = sp.exp.get
+
+              writeToFile(databasePath + "TL_listed_new.csv", true, Seq.empty[String], Seq(s"$name,$id,${sp.age.get._1},${sp.exp.get},${sp.speciality.get},${sp.daysInClub.get},$last5Games_updated,${skills.productIterator.mkString(",")},$character,$scoutingDetails"))
             }
 
             if(sp.exists){
-              val character = sp.character.get
+
               writeToFile(databasePath + "characters.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,${outlook.replaceAll("-", ",")},$character"))
 
               //Jak oczyszczę bazę z rekordów z błędną identyfikacją specjałek - ostatni grajek w bazie:
@@ -603,9 +612,19 @@ object Senior{
     val gentlenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
     val aggressivenessMap = Map("złośliwy" -> "0", "kontrowersyjny" -> "1", "przyjemny" -> "2", "sympatyczny" -> "3", "popularny" -> "4", "uwielbiany przez zespół" -> "5")
 
-    val character = Seq(gentleness, aggressiveness, honesty, leadership).mkString(",")
+    val character: String = Seq(gentleness, aggressiveness, honesty, leadership).mkString(",")
 
     character
+
+  }
+
+  def Exp(document: Document): String = {
+
+    val experience: String = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=skill]").text().split(" ").head
+
+    //println(s"exp: ${experience}")
+
+    experience
 
   }
     
@@ -645,5 +664,6 @@ class Senior(args: Array[String]) extends PlayerClass(args){
   lazy val sp: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._11) else None
 
   lazy val character: Option[String] = if(exists) Some(Senior.Character(document)) else None
+  lazy val exp: Option[String] = if(exists) Some(Senior.Exp(document)) else None
 
 }
