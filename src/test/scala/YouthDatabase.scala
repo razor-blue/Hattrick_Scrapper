@@ -961,9 +961,9 @@ class YouthAnalysis {
 object run extends App{
 
   //new YouthAnalysis("test-TL'a")
-  new YouthAnalysis(678445)
+  //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1151,10 +1151,25 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+*/
+
+  val f1 = Future {
+    doF((Range.inclusive(3682, 3704).toList ++ Range.inclusive(9383, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
+  }
+  val f2 = Future {
+    doF((Range.inclusive(32308, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
+  }
+  val f3 = Future {
+    doF((Range.inclusive(32830, 33137).toList ++ Range.inclusive(58605, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
+  }
+  val f4 = Future {
+    doF((Range.inclusive(58904, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
+  }
+
 
   //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
   //Future {for(i <- 1 to 100) {print("B");Thread.sleep(10)}}
@@ -1181,8 +1196,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
