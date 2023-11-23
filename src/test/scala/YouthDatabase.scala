@@ -1158,17 +1158,18 @@ object addNewPlayersToDatabase_withFutures extends App{
 */
 
   val f1 = Future {
-    doF((Range.inclusive(3682, 3704).toList ++ Range.inclusive(9383, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
+    doF((Range.inclusive(32158, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
   }
   val f2 = Future {
-    doF((Range.inclusive(32308, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
+    doF((Range.inclusive(32674, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
   }
   val f3 = Future {
-    doF((Range.inclusive(32830, 33137).toList ++ Range.inclusive(58605, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
+    doF((Range.inclusive(58725, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
   }
   val f4 = Future {
-    doF((Range.inclusive(58904, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
+    doF((Range.inclusive(59628, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
   }
+
 
 
   //Future {for(i <- 1 to 100) {print("A");Thread.sleep(10)}}
