@@ -438,9 +438,7 @@ object Youth{
 
     }
 
-    def ScoutingHistory(id: String): (Seq[String], String) = {
-
-
+    def ScoutingEngine(id: String) = {
 
       val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
@@ -458,13 +456,14 @@ object Youth{
       val memoryHours1: Array[String] = memoryHours.split(" ").takeRight(memoryDates1.length)
       val memoryItems1: Array[String] = memoryItems.split("\\.").takeRight(memoryDates1.length)
 
-      /*println(s"$memoryDates ${memoryDates1.length}")
-      println(s"$memoryHours ${memoryHours1.length}")
-      println(s"$memoryItems ${memoryItems1.length} ")
+      /* println(s"$memoryDates ${memoryDates1.length}")
+       println(s"$memoryHours ${memoryHours1.length}")
+       println(s"$memoryItems ${memoryItems1.length} ")
 
-      memoryDates1.foreach(println(_))
-      memoryHours1.foreach(println(_))
-      memoryItems1.foreach(println(_))*/
+       memoryDates1.foreach(println(_))
+       memoryHours1.foreach(println(_))
+       memoryItems1.foreach(println(_))*/
+
 
       /*val tableMemoryBool: Array[Boolean] = memoryItems.split("\\.").map(
         mi => List("przyprowadził", "Nie otrzymał").exists(text => mi.contains(text))
@@ -480,18 +479,54 @@ object Youth{
       println(tableMemoryBool.contains(true))*/
 
       val memoryModified: Array[String] =
-        if(memoryDates1.nonEmpty && memoryDates1.head!="" && tableMemoryBool.contains(true))
-          val scoutingLine = (memoryDates1/*.split(" ")*/.map(x => dateToDayOfTheWeek(x)) zip memoryHours1/*.split(" ")*/)  mkString "-" replaceAll("[()]", "") split "-" zip tableMemoryBool filter(p => p._2) map(_._1)
+        if (memoryDates1.nonEmpty && memoryDates1.head != "" && tableMemoryBool.contains(true))
+          val scoutingLine = (memoryDates1 /*.split(" ")*/.map(x => dateToDayOfTheWeek(x)) zip memoryHours1 /*.split(" ")*/) mkString "-" replaceAll("[()]", "") split "-" zip tableMemoryBool filter (p => p._2) map (_._1)
           scoutingLine
         else
           Array("------,------")
 
+      val scoutingRecord: Array[String] =
+        if (memoryDates1.nonEmpty && memoryDates1.head != "" && tableMemoryBool.contains(true))
+          val scoutingLine = memoryDates1 zip memoryItems1 mkString "=" replaceAll("[()]", "") split "=" zip tableMemoryBool filter (p => p._2) map (_._1)
+          //val scoutingLine = memoryDates1 zip memoryItems1 mkString "-*-+-" replaceAll("[()]","") split "-*-+-" zip tableMemoryBool filter (p => p._2) map (_._1)
+          scoutingLine
+        else
+          Array("------,------")
+
+      (memoryModified,scoutingRecord)
+
+    }
+
+    def ScoutingHistory(id: String): (Seq[String], String) = {
+
+      val memoryModified = ScoutingEngine(id)._1
+
+      /*println("+++")
+      memoryModified.foreach(println(_))
+      */
 
       val scoutingHistory: Seq[String] = memoryModified.zipWithIndex.map(x => x._1 + "," + (memoryModified.length - x._2).toString).toSeq
 
       (scoutingHistory,scoutingHistory.head)
 
     }
+
+  def RejectionHistory(id: String): Option[Array[String]] = {
+
+    val scoutingRecord = ScoutingEngine(id)._2
+
+    val rejectionHistory: Option[Array[String]] = if (scoutingRecord.length > 1)
+      Some(scoutingRecord.drop(1))
+    else
+      None
+
+    /*println("xxx")
+    scoutingRecord.foreach(println(_))
+    if(rejectionHistory.getOrElse(Array.empty[String]).nonEmpty) rejectionHistory.get.foreach(println(_))*/
+
+    rejectionHistory
+
+  }
 
 }
 
@@ -535,6 +570,7 @@ class Youth(args: Array[String]) extends PlayerClass(args){
   lazy val last5Performances: Option[(Seq[Double],String)] = if(stillInYouthAcademy) Some(Youth.Last5Performances(document)) else None
 
   lazy val scoutingHistory: Option[(Seq[String], String)] = if(stillInYouthAcademy) Some(Youth.ScoutingHistory(id.get.toString)) else None
+  lazy val rejectionHistory: Option[Option[Array[String]]] = if(stillInYouthAcademy) Some(Youth.RejectionHistory(id.get.toString)) else None
 }
 
 object Senior{

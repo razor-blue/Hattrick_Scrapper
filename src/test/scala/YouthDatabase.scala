@@ -138,6 +138,74 @@ object YouthDatabase {
 
     label match{
 
+      case "findRejectedPlayers" =>
+
+        def enigma(dataLines: Iterator[String]): Unit = {
+
+          writeToFile("src/data/rejectionHistory.csv", false, Seq.empty[String], Seq.empty[String])
+
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          var counter = 0
+
+          for (line <- dataLines) {
+
+            val cols: Array[String] = line.split(",").map(_.trim)
+            val scouting_attempt: Int = cols(29).replaceAll("\"", "").toInt
+
+            println(s"$scouting_attempt, ${cols(1)}")
+
+            if(scouting_attempt > 1){
+
+              val yp = new Youth(Array(youthPlayerPath,cols(1)))
+              val rejectionHistory: Option[Array[String]] =
+                if(yp.exists && yp.stillInYouthAcademy)
+                  Some(yp.rejectionHistory.get.getOrElse(Array.empty[String]))
+                else None
+
+              val newRecord: Array[String] = if(rejectionHistory.getOrElse(Array.empty[String]).nonEmpty) rejectionHistory.get else Array.empty[String]
+
+              updateRecords += line.replaceAll("\"", "")
+              if(newRecord.nonEmpty)
+                newRecord.foreach(updateRecords += _.replaceAll("\"", ""))
+              else
+                None
+
+              counter += 1
+
+            }
+
+            checkCounter(counter, 10, updateRecords, "src/data/rejectionHistory.csv", true, Seq.empty[String])
+          }
+
+          val updatedRecords = updateRecords.result()
+          writeToFile("src/data/rejectionHistory.csv", true, Seq.empty[String], updatedRecords)
+          updateRecords.clear()
+
+        }
+
+        def run_enigma(): Unit = {
+
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+          bufferedSource match {
+            case Some(source) =>
+
+              val dataLines: Iterator[String] = source.getLines.drop(1)
+
+              enigma(dataLines)
+
+              source.close()
+
+
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+          }
+
+        }
+
+        run_enigma()
+
+
       case "clearWrongSpecialityStatus" =>
 
         def enigma(dataLines: Iterator[String]): Unit = {
@@ -1063,12 +1131,23 @@ class other_leagueIDs_DatabasePath {
     List(
       //Range.inclusive(60149,60149),
       //Seq(60149),
-      List(60149),                      //L1
-      Range.inclusive(60164,60167),     //L2
-      Range.inclusive(60208,60223),
+
+      //List(60149),                      //L1
+      //Range.inclusive(60164,60167),     //L2
+      //Range.inclusive(60208,60223),   //L3
+      Range.inclusive(60217,60223),     //L3
       Range.inclusive(249625,249688)
     ).flatten,
     databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
+
+  def Rosja_L1_5: (List[Int], String) = (
+    List(
+      //Range.inclusive(3187, 3207),    //L1-L3
+      //Range.inclusive(21897, 21960),  //L4
+      Range.inclusive(21942, 21960),  //L4
+      Range.inclusive(76480, 76735)   //L5
+    ).flatten,
+    databasePath + "Rosja_youthPlayerDatabase1-5L.csv")
 
   def Polska_L1_7: (List[Int], String) = (
     List(
@@ -1097,6 +1176,7 @@ object addNewPlayersToDatabase extends App{
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
   val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Rosja_L1_5
   //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
   val leagueIDs: Seq[Int] = leagueIDs_Path._1
@@ -1151,24 +1231,11 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
-*/
 
-  val f1 = Future {
-    doF((Range.inclusive(32158, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
-  }
-  val f2 = Future {
-    doF((Range.inclusive(32674, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
-  }
-  val f3 = Future {
-    doF((Range.inclusive(58725, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
-  }
-  val f4 = Future {
-    doF((Range.inclusive(59628, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
-  }
 
 
 
@@ -1206,9 +1273,10 @@ object prepareDatabaseForScouts extends App{
 object doSthWithDatabases extends App{
 
   //val label: String = "clearWrongSpecialityStatus"
-  val label: String = "removePlayersThatLeftAcademy"
+  //val label: String = "removePlayersThatLeftAcademy"
   //val label: String = "databaseMinusTttestRecords"
   //val label: String = "removeDuplicateRecords"
+  val label: String = "findRejectedPlayers"
 
 
   new YouthAnalysis(label,"Polska")
