@@ -1031,8 +1031,8 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  new YouthAnalysis("Polska")
-  //new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1132,11 +1132,10 @@ class other_leagueIDs_DatabasePath {
       //Range.inclusive(60149,60149),
       //Seq(60149),
 
-      //List(60149),                      //L1
-      //Range.inclusive(60164,60167),     //L2
-      //Range.inclusive(60208,60223),   //L3
-      Range.inclusive(60217,60223),     //L3
-      Range.inclusive(249625,249688)
+      List(60149),                      //L1
+      Range.inclusive(60164,60167),     //L2
+      Range.inclusive(60208,60223),     //L3
+      Range.inclusive(249625,249688)    //L4
     ).flatten,
     databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
 
@@ -1264,8 +1263,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }

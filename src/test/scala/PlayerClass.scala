@@ -438,7 +438,7 @@ object Youth{
 
     }
 
-    def ScoutingEngine(id: String) = {
+    def ScoutingEngine(id: String): (Array[String], Array[String]) = {
 
       val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
