@@ -1030,10 +1030,10 @@ class YouthAnalysis {
 object run extends App{
 
   //new YouthAnalysis("test-TL'a")
-  //new YouthAnalysis(678445)
+  new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(3043691)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1292,6 +1292,42 @@ object doSthWithDatabases extends App{
 
 
 }
+
+object prepare_TL_listed_forAnalysis extends App{
+
+
+  val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/TL_listed.csv")
+
+  bufferedSource0 match {
+    case Some(source) =>
+
+      val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+
+      val headline: Iterator[String] = source.getLines.take(1)
+      for (line <- source.getLines.drop(1)) {
+
+        val cols: Array[String] = line.split(",").map(_.trim)
+        val since: Int = cols(1).toInt
+
+        if (since <= 3) {
+          updateRecords += line.replaceAll("\"","")
+        }
+
+
+      }
+
+      writeToFile("src/data/TL_listed_puryfied.csv", false, headline.toSeq, updateRecords.result().distinct)
+
+
+      source.close()
+
+    case None =>
+      println(s"File src/data/tttest.csv does not exists.")
+
+  }
+
+}
+
 
 object readtttest extends App{
 
