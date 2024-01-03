@@ -1033,7 +1033,7 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(3043691)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1232,25 +1232,10 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
-  */
-
-  val f1 = Future {
-    doF((Range.inclusive(9592, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
-  }
-  val f2 = Future {
-    doF((Range.inclusive(32576, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
-  }
-  val f3 = Future {
-    doF((Range.inclusive(33117, 33137).toList ++ Range.inclusive(58605, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
-  }
-  val f4 = Future {
-    doF((Range.inclusive(59384, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
-  }
-
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
@@ -1274,8 +1259,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1565,7 +1550,7 @@ object tak_lub_nie extends App{
   def Ben_mowi(wynik_rzutu: Int): String =
     {
 
-      if(wynik_rzutu <= 3) "TAK"
+      if(wynik_rzutu <= 4) "TAK"
       else if(/*wynik_rzutu >3 &&*/ wynik_rzutu <=6) "NIE"
       else "HA-HA-HA"
 
