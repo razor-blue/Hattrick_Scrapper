@@ -1033,7 +1033,7 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(3043691)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1259,8 +1259,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
