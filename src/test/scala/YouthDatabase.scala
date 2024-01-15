@@ -1260,8 +1260,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
