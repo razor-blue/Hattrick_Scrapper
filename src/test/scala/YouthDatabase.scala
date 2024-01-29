@@ -1237,6 +1237,7 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
+
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
