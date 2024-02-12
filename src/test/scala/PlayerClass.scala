@@ -3,6 +3,8 @@ import org.jsoup.{Connection, Jsoup}
 import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 
+import java.io.File
+
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import java.text.SimpleDateFormat
@@ -249,9 +251,10 @@ object Youth{
 
     }
 
+
     def WorldCupAgeMinMax(worldCupNumber: Int): ((Double, Int, Int), (Double, Int, Int)) = {
 
-      val td = Read_td(worldCupNumber: Int).asScala
+      val td: mutable.Seq[Element] = Read_td(worldCupNumber: Int).asScala
 
       val maxAgeYears = td(3).text().split(" ")(0).toInt
       val maxAgeDays = td(3).text().split(" ")(3).toInt
@@ -512,7 +515,7 @@ object Youth{
 
     }
 
-  def RejectionHistory(id: String): Option[Array[String]] = {
+    def RejectionHistory(id: String): Option[Array[String]] = {
 
     val scoutingRecord = ScoutingEngine(id)._2
 
@@ -638,7 +641,7 @@ object Senior{
 
     }
 
-  def Character(document: Document): String = {
+    def Character(document: Document): String = {
 
     val gentleness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=gentleness]").text()
     val aggressiveness = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=aggressiveness]").text()
@@ -655,13 +658,13 @@ object Senior{
 
   }
 
-  def Exp(document: Document): String = {
+    def Exp(document: Document): String = {
 
-    val experience: String = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=skill]").text().split(" ").head
+      val experience: String = document.select("a[href^=/pl/Help/Rules/AppDenominations.aspx?lt=skill]").text().split(" ").head
 
     //println(s"exp: ${experience}")
 
-    experience
+      experience
 
   }
     
@@ -702,5 +705,87 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val character: Option[String] = if(exists) Some(Senior.Character(document)) else None
   lazy val exp: Option[String] = if(exists) Some(Senior.Exp(document)) else None
+
+}
+
+
+//to jest test czytania z pliku tekstowego jak z pliku html
+
+object test11 extends App{
+
+  def Read_td2(worldCupNumber: Int): Elements = {
+
+    val filename = WC_U21SchedulesPath + "WC" + worldCupNumber + ".dat"
+    val file = new File(filename)
+    val document: Document = Jsoup.parse(file, "UTF-8")
+
+    document.select("td")
+
+  }
+
+  print(Read_td2(37))
+
+}
+
+//obecny sezon 87 -> WC37 itd
+//06.02.2024 mamy wtorek 1 tygodnia sezonu
+//tydzień czytam ze strony
+//mecze są poniedziałek i piątek
+
+object U21_schedule_generator extends App {
+
+  def stringToDate(day: String): LocalDate = {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    val date = LocalDate.parse(day, dateFormatter)
+
+    date
+  }
+
+  val date0 = "05.02.2024"
+  val age0_years = 21
+  val age0_days = 107
+  val season0 = 87
+  //val week = 1
+  //val day = 1
+
+  def getAge(age_years: Int, age_days: Int, days: Int): String = {
+
+    if(days == 0)
+      if(age_days > 111) getAge(age_years + 1, age_days - 112, 0)
+      else if(age_days < 0) getAge(age_years - 1, age_days + 112, 0)
+      else s"${age_years}.${age_days}"
+    getAge(age_years, age_days + days, 0)
+
+  }
+  /*def getAge(date: String) = {
+
+    val days = stringToDate(date).toEpochDay - stringToDate(date0).toEpochDay
+    if(days > 0)
+
+  }*/
+  def getDate(season: Int, week: Int, day: Int): String = {
+
+    val date = if (season == 87 & week == 1 & day == 1)
+      stringToDate(date0)
+    /*else if (season == 87 & week == 1 && day > 1 && day <=7)
+    stringToDate(date0).plusDays(day)
+  else if (season == 87 & week == 1 && day > 7)
+    getDate(season, week + 1, day - 7)
+  else if(season == 87 & )*/
+    else
+    {
+      val days: Int = (season - season0) * 112 + (week - 1) * 7 + day - 1
+
+      println(days)
+
+      if (days >= 0) stringToDate(date0).plusDays(days)
+      else stringToDate(date0).minusDays(days)
+    }
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    //println(s"${date.format(formatter)}")
+    date.format(formatter)
+  }
+
+  print(getDate(88,3,5))
 
 }

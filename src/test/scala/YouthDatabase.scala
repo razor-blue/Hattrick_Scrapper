@@ -70,16 +70,20 @@ def checkCounter(
 
 }
 
-val teamPath = "https://www.hattrick.org/Club/?TeamID="
-val databasePath: String = "src/data/"
-val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
-val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
-val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
-val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  val WC_U21SchedulesPath = "src/WC_U21_Schedules/"
+  val teamPath = "https://www.hattrick.org/Club/?TeamID="
+  val databasePath: String = "src/data/"
+  val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
+  val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
+  val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
+  val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  
+  def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
 
-def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
-def headlineClean: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test),Scouting Day,Scouting Hour,Scouting Attempt")
-def headlineUpdate: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last Update,Outlook,Scouting Day,Scouting Hour,Scouting Attempt")
+  def headlineClean: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test),Scouting Day,Scouting Hour,Scouting Attempt")
+
+  def headlineUpdate: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last Update,Outlook,Scouting Day,Scouting Hour,Scouting Attempt")
+
 
 /*def read_config_db: Int = {
 
@@ -1232,11 +1236,24 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+*/
 
+  val f1 = Future {
+    doF((Range.inclusive(32191, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
+  }
+  val f2 = Future {
+    doF((Range.inclusive(32709, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
+  }
+  val f3 = Future {
+    doF((Range.inclusive(58725, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
+  }
+  val f4 = Future {
+    doF((Range.inclusive(59628, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
+  }
 
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
@@ -1261,8 +1278,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
@@ -1543,6 +1560,8 @@ object RMA extends App{
   println(document.text(id.toString))
 
 }
+
+
 
 
 object tak_lub_nie extends App{
