@@ -1236,24 +1236,12 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
-*/
 
-  val f1 = Future {
-    doF((Range.inclusive(32191, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
-  }
-  val f2 = Future {
-    doF((Range.inclusive(32709, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
-  }
-  val f3 = Future {
-    doF((Range.inclusive(58725, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
-  }
-  val f4 = Future {
-    doF((Range.inclusive(59628, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
-  }
+
 
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
