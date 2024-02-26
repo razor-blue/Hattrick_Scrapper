@@ -786,6 +786,91 @@ object U21_schedule_generator extends App {
     date.format(formatter)
   }
 
+  //val ME = Seq[(1,5,"WC Final -1 training"), (2,5,"WC Final -2 training"), (3,1,"Continental Cup round 1")]
+
+  val ME_2D = Array.ofDim[String](16, 2)
+  val WC_2D = Array.ofDim[String](16, 2)
+
+  ME_2D(0)(0) = "WC Final"
+  ME_2D(0)(1) = "WC Final -1 training"
+  ME_2D(1)(0) = "WC Final -1 training"
+  ME_2D(1)(1) = "WC Final -2 training"
+  ME_2D(2)(0) = "WC Final -2 training"
+  ME_2D(2)(1) = "Continental Championship  Matchday 1"
+  ME_2D(3)(0) = "Continental Championship  Matchday 2"
+  ME_2D(3)(1) = "Continental Championship  Matchday 3"
+  ME_2D(4)(0) = "Continental Championship  Matchday 4"
+  ME_2D(4)(1) = "Continental Championship  Matchday 5"
+  ME_2D(5)(0) = "Continental Championship  Matchday 5"
+  ME_2D(5)(1) = "Continental Championship  Matchday 6"
+  ME_2D(6)(0) = "Continental Championship  Matchday 6"
+  ME_2D(6)(1) = "Continental Championship  Matchday 7"
+  ME_2D(7)(0) = "Continental Championship  Matchday 7"
+  ME_2D(7)(1) = "Continental Championship  Matchday 8"
+  ME_2D(8)(0) = "Continental Championship  Matchday 8"
+  ME_2D(8)(1) = "Continental Championship  Matchday 9"
+  ME_2D(9)(0) = "Continental Championship  Matchday 9"
+  ME_2D(9)(1) = "Continental Championship  Matchday 10"
+  ME_2D(10)(0) = "Continental Championship  Matchday 10"
+  ME_2D(10)(1) = "Continental Championship - Quarterfinals"
+  ME_2D(11)(0) = "Continental Championship - Semifinals"
+  ME_2D(11)(1) = "Continental Championship - Finals"
+  ME_2D(12)(0) = "Continental Championship - Finals"
+  ME_2D(12)(1) = "World Cup - Round I, Matchday 1"
+  ME_2D(13)(0) = "World Cup - Round I, Matchday 2"
+  ME_2D(13)(1) = "World Cup - Round I, Matchday 3"
+  ME_2D(14)(0) = "World Cup - Round I, Matchday 3"
+  ME_2D(14)(1) = "World Cup - Round I, Matchday 4"
+  ME_2D(15)(0) = "World Cup - Round I, Matchday 4"
+  ME_2D(15)(1) = "World Cup - Round I, Matchday 5"
+  WC_2D(0)(0) = "World Cup - Round I, Matchday 5"
+  WC_2D(0)(1) = "World Cup - Round I, Matchday 6"
+  WC_2D(1)(0) = "World Cup - Round I, Matchday 6"
+  WC_2D(1)(1) = "World Cup - Round I, Matchday 7"
+  WC_2D(2)(0) = "World Cup - Round I, Matchday 7"
+  WC_2D(2)(1) = "World Cup - Round I, Matchday 8"
+  WC_2D(3)(0) = "World Cup - Round I, Matchday 8"
+  WC_2D(3)(1) = "World Cup - Round I, Matchday 9"
+  WC_2D(4)(0) = "World Cup - Round I, Matchday 9"
+  WC_2D(4)(1) = "World Cup - Round I, Matchday 10"
+  WC_2D(5)(0) = "World Cup - Round I, Matchday 10"
+  WC_2D(5)(1) = "World Cup - Round II, Matchday 1"
+  WC_2D(6)(0) = "World Cup - Round II, Matchday 2"
+  WC_2D(6)(1) = "World Cup - Round II, Matchday 3"
+  WC_2D(7)(0) = "World Cup - Round II, Matchday 4"
+  WC_2D(7)(1) = "World Cup - Round II, Matchday 5"
+  WC_2D(8)(0) = "World Cup - Round II, Matchday 5"
+  WC_2D(8)(1) = "World Cup - Round II, Matchday 6"
+  WC_2D(9)(0) = "World Cup - Round II, Matchday 6"
+  WC_2D(9)(1) = "World Cup - Round III, Matchday 1"
+  WC_2D(10)(0) = "World Cup - Round III, Matchday 2"
+  WC_2D(10)(1) = "World Cup - Round III, Matchday 3"
+  WC_2D(11)(0) = "World Cup - Round III, Matchday 3"
+  WC_2D(11)(1) = "World Cup - Round IV, Matchday 1"
+  WC_2D(12)(0) = "World Cup - Round IV, Matchday 2"
+  WC_2D(12)(1) = "World Cup - Round IV, Matchday 3"
+  WC_2D(13)(0) = "World Cup - Round IV, Matchday 3"
+  WC_2D(13)(1) = "World Cup - Round V, Matchday 1"
+  WC_2D(14)(0) = "World Cup - Round V, Matchday 2"
+  WC_2D(14)(1) = "World Cup - Round V, Matchday 3"
+  WC_2D(15)(0) = "World Cup - Semifinals"
+  WC_2D(15)(1) = "World Cup - Finals"
+
+
+
+  print(ME_2D(0)(0))
+
+
+  /*def last_game(season: Int, week: Int, day: Int): String = {
+
+    if(season % 2 == 1)
+      if()
+    else
+
+
+
+  }
+*/
   print(getDate(88,3,5))
 
 }
