@@ -753,7 +753,7 @@ object U21_schedule_generator extends App {
     if(days == 0)
       if(age_days > 111) getAge(age_years + 1, age_days - 112, 0)
       else if(age_days < 0) getAge(age_years - 1, age_days + 112, 0)
-      else s"${age_years}.${age_days}"
+      else return s"$age_years.$age_days"
     getAge(age_years, age_days + days, 0)
 
   }
