@@ -748,6 +748,7 @@ object U21_schedule_generator extends App {
   //val week = 1
   //val day = 1
 
+  @tailrec
   def getAge(age_years: Int, age_days: Int, days: Int): String = {
 
 //    println(s"${age_years}, ${age_days}, ${days}")
