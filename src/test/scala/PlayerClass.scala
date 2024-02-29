@@ -750,19 +750,23 @@ object U21_schedule_generator extends App {
 
   def getAge(age_years: Int, age_days: Int, days: Int): String = {
 
+//    println(s"${age_years}, ${age_days}, ${days}")
+
     if(days == 0)
       if(age_days > 111) getAge(age_years + 1, age_days - 112, 0)
       else if(age_days < 0) getAge(age_years - 1, age_days + 112, 0)
-      else return s"$age_years.$age_days"
-    getAge(age_years, age_days + days, 0)
+      else s"$age_years.$age_days"
+    else getAge(age_years, age_days + days, 0)
 
   }
-  /*def getAge(date: String) = {
 
-    val days = stringToDate(date).toEpochDay - stringToDate(date0).toEpochDay
-    if(days > 0)
+  def getAge(date: String): Int = {
 
-  }*/
+    val days: Long = stringToDate(date0).toEpochDay - stringToDate(date).toEpochDay
+    days.toInt
+
+  }
+
   def getDate(season: Int, week: Int, day: Int): String = {
 
     val date = if (season == 87 & week == 1 & day == 1)
@@ -776,7 +780,7 @@ object U21_schedule_generator extends App {
     {
       val days: Int = (season - season0) * 112 + (week - 1) * 7 + day - 1
 
-      println(days)
+      //println(days)
 
       if (days >= 0) stringToDate(date0).plusDays(days)
       else stringToDate(date0).minusDays(days)
@@ -858,19 +862,66 @@ object U21_schedule_generator extends App {
 
 
 
-  print(ME_2D(0)(0))
+  //print(ME_2D(0)(0))
 
 
-  /*def last_game(season: Int, week: Int, day: Int): String = {
+  def last_game(season: Int, week: Int, day: Int): Unit = { //day 0 or 1
 
-    if(season % 2 == 1)
-      if()
-    else
-
-
+    if(week > 0 && week <= 15 && day >= 0 && day <= 1)
+      if(season % 2 == 1)
+        print(ME_2D(week-1)(day))
+      else
+        print(WC_2D(week-1)(day))
+    else print(s"zły zakres week or day")
 
   }
-*/
-  print(getDate(88,3,5))
+
+  /*print(getDate(88,3,5)) //day 1 = Monday; day 5 = Fiday
+  print(" ")
+  last_game(88,3,1) //day 0 = Moday; day 1 = Friday
+  print(" ")
+  print(getAge(getDate(88,3,5)))
+  print(" ")
+  val days: Int = getAge(getDate(88,3,5))
+  print(days)
+  print(" ")
+  val age = getAge(age0_years, age0_days, days)
+  print(age0_years, age0_days, days, age)
+  print(" ")
+  print(" ")
+
+  print(s"$days/$days")*/
+
+  def pr(season: Int, week: Int, day:Int): Unit = {
+    print(s"$season/${week+1} ")
+    print(s"${getDate(season,week+1,4*day+1)} ")
+    if(season % 2 == 1)print(s"${ME_2D(week)(day)} ")
+    else print(s"${WC_2D(week)(day)} ")
+    println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
+  }
+
+  (87 to 88).map(s => {
+    (0 to 15).map(w => {
+      (0 to 1).map(d => {
+        if(s % 2 == 1)
+          if(w>0 && d==0)
+            //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
+            if(ME_2D(w)(0) != ME_2D(w-1)(1))
+              pr(s,w,d)
+            else
+              null
+          else pr(s,w,d)
+        else
+          if(w == 0 && d == 0)
+            null
+          else if(w > 0 && d==0)
+            if (WC_2D(w)(0) != WC_2D(w - 1)(1))
+              pr(s, w, d)
+            else
+              null
+          else pr(s, w, d)
+      })
+    })
+  })
 
 }
