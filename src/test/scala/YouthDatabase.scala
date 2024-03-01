@@ -1243,6 +1243,7 @@ object addNewPlayersToDatabase_withFutures extends App{
 
 
 
+
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1265,8 +1266,8 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
-  new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
 
 }
