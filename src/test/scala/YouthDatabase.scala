@@ -123,7 +123,7 @@ object YouthDatabase {
     "test-TL'a" -> {databasePath + "TL_test.csv"},
     "678445" -> {databasePath + "FCB_youthPlayerDatabase.csv"},
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
-    "3043691" -> {databasePath + "Mlode Wilki.csv"},
+    "2710178" -> {databasePath + "Tmp_Team.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
     "Kenia" -> {databasePath + "Kenia_youthPlayerDatabase1-4L.csv"},
     "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
@@ -1036,7 +1036,7 @@ object run extends App{
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
-  //new YouthAnalysis(3043691)
+  //new YouthAnalysis(2710178)
   new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
