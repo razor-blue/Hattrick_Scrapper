@@ -429,9 +429,9 @@ class Player1 (args: Array[String]){
     val has_club: Boolean = if(document.title.split("»").length == 4) true else false
 
     val name: Option[String] = if(exists) Some(document.title.split("»").head) else None
-    /*val exists = if(name.equalsIgnoreCase("hattrick")) false else true*/
-
-  println(s"$name")
+    /*val exists = if(name.equalsIgnoreCase("hattrick")) false else true*/ 
+  
+   println(s"$name")
 
     val onTL: Boolean = Player1.OnTL(document)
     //val info = document.select("a.copyToClipboard").text.split(" ")
@@ -618,7 +618,7 @@ object YouthPlayer{
     val worldCupNumber = WhichWorldCup(age, i)
     val worldCupRound = WhichRoundOfWorldCup(age, worldCupNumber)
 
-   worldCupRound
+    worldCupRound
 
   }
 

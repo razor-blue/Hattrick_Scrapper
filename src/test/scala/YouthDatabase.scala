@@ -14,14 +14,15 @@ import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
+import scala.annotation.tailrec
 import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
 import scala.util.{Random, Success}
 import scala.util.control.Breaks.*
 import scala.concurrent.{Await, Future}
-import scala.concurrent._
+import scala.concurrent.*
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 def JsoupConnection(url: String): Document = {
   val connection: Connection = Jsoup.connect(url).timeout(10000)
@@ -1035,9 +1036,9 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
+  new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1241,9 +1242,8 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
-
-
-
+  
+  
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1583,6 +1583,103 @@ object tak_lub_nie extends App{
 
 
 }
+
+
+object mnożenie_dla_Natalki extends App {
+
+  import scala.io.StdIn
+
+  private val r: Random.type = scala.util.Random
+
+  @tailrec
+  def losuj_iloczyn(zakres: Int): (Int, Int, Int) = {
+    val a = r.nextInt(11)
+    val b = r.nextInt(11)
+
+    val result = a * b
+
+    if (result <= zakres) (a, b, result)
+    else losuj_iloczyn(zakres)
+
+  }
+
+  def losuj_zadanie(zakres: Int, n: Int, limit: Int, counter: Int = 0, score: Int = 0): (Int, Int) = {
+    if (counter >= limit)
+      (score, counter)
+    else {
+      val zadanie = losuj_iloczyn(zakres)
+      val pozycja: Int = r.nextInt(n)
+
+      println(s"${zadanie._1} * ${zadanie._2} to:")
+
+      for (i <- 0 to n) {
+        if (i == pozycja) {
+          println(s"$i) ${zadanie._3}")
+        }
+        else
+          println(s"$i) ${r.nextInt(zakres)}")
+      }
+
+      print(s"${zadanie._1} * ${zadanie._2} = ")
+
+      val answer = StdIn.readLine().toInt
+
+      if (answer == zadanie._3) {
+        println(s"Dobrze!")
+        println(s"Twój wynik: ${score + 1}")
+        losuj_zadanie(zakres, (score + 1) / 10 + 1, limit, counter + 1, score + 1)
+      }
+      else {
+        println(s"Źle, poprawny wynik to ${zadanie._3}")
+        println(s"Twój wynik: ${score}")
+        losuj_zadanie(zakres, (score) / 10 + 1, limit, counter + 1, score)
+      }
+
+
+    }
+
+  }
+
+
+  val (score, counter) = losuj_zadanie(50, 1, 21)
+
+  val wynik: Double = score.toDouble / counter.toDouble * 100.0
+
+  println(f"Koniec gry. Twój wynik to: $score/$counter = " + "%.1f".format(wynik) + "%")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
