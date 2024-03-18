@@ -4,7 +4,6 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 
 import java.io.File
-
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 import java.text.SimpleDateFormat
@@ -12,7 +11,6 @@ import java.util.Date
 import java.util.Calendar
 import scala.annotation.tailrec
 import java.text.Normalizer
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
@@ -247,7 +245,9 @@ object Youth{
       val connection: Connection = Jsoup.connect(url)
       val document: Document = connection.get()
 
-        document.select("td")
+      //println(document.select("td"))
+
+      document.select("td")
 
     }
 
@@ -742,8 +742,8 @@ object U21_schedule_generator extends App {
   }
 
   val date0 = "05.02.2024"
-  val age0_years = 21
-  val age0_days = 107
+  val age0_years = 22
+  val age0_days = 40
   val season0 = 87
   //val week = 1
   //val day = 1
@@ -762,6 +762,7 @@ object U21_schedule_generator extends App {
   }
 
   def getAge(date: String): Int = {
+    /*converts date info days from starting date*/
 
     val days: Long = stringToDate(date0).toEpochDay - stringToDate(date).toEpochDay
     days.toInt
@@ -769,6 +770,7 @@ object U21_schedule_generator extends App {
   }
 
   def getDate(season: Int, week: Int, day: Int): String = {
+    /*get date for season-week-day info, adjust date of the certain time of the season (game days)*/
 
     val date = if (season == 87 & week == 1 & day == 1)
       stringToDate(date0)
@@ -793,75 +795,90 @@ object U21_schedule_generator extends App {
 
   //val ME = Seq[(1,5,"WC Final -1 training"), (2,5,"WC Final -2 training"), (3,1,"Continental Cup round 1")]
 
-  val ME_2D = Array.ofDim[String](16, 2)
-  val WC_2D = Array.ofDim[String](16, 2)
+  /*def kiedy_22yo(todayDate: String, age: )*/
 
-  ME_2D(0)(0) = "WC Final"
-  ME_2D(0)(1) = "WC Final -1 training"
-  ME_2D(1)(0) = "WC Final -1 training"
-  ME_2D(1)(1) = "WC Final -2 training"
-  ME_2D(2)(0) = "WC Final -2 training"
-  ME_2D(2)(1) = "Continental Championship  Matchday 1"
-  ME_2D(3)(0) = "Continental Championship  Matchday 2"
-  ME_2D(3)(1) = "Continental Championship  Matchday 3"
-  ME_2D(4)(0) = "Continental Championship  Matchday 4"
-  ME_2D(4)(1) = "Continental Championship  Matchday 5"
-  ME_2D(5)(0) = "Continental Championship  Matchday 5"
-  ME_2D(5)(1) = "Continental Championship  Matchday 6"
-  ME_2D(6)(0) = "Continental Championship  Matchday 6"
-  ME_2D(6)(1) = "Continental Championship  Matchday 7"
-  ME_2D(7)(0) = "Continental Championship  Matchday 7"
-  ME_2D(7)(1) = "Continental Championship  Matchday 8"
-  ME_2D(8)(0) = "Continental Championship  Matchday 8"
-  ME_2D(8)(1) = "Continental Championship  Matchday 9"
-  ME_2D(9)(0) = "Continental Championship  Matchday 9"
-  ME_2D(9)(1) = "Continental Championship  Matchday 10"
-  ME_2D(10)(0) = "Continental Championship  Matchday 10"
-  ME_2D(10)(1) = "Continental Championship - Quarterfinals"
-  ME_2D(11)(0) = "Continental Championship - Semifinals"
-  ME_2D(11)(1) = "Continental Championship - Finals"
-  ME_2D(12)(0) = "Continental Championship - Finals"
-  ME_2D(12)(1) = "World Cup - Round I, Matchday 1"
-  ME_2D(13)(0) = "World Cup - Round I, Matchday 2"
-  ME_2D(13)(1) = "World Cup - Round I, Matchday 3"
-  ME_2D(14)(0) = "World Cup - Round I, Matchday 3"
-  ME_2D(14)(1) = "World Cup - Round I, Matchday 4"
-  ME_2D(15)(0) = "World Cup - Round I, Matchday 4"
-  ME_2D(15)(1) = "World Cup - Round I, Matchday 5"
-  WC_2D(0)(0) = "World Cup - Round I, Matchday 5"
-  WC_2D(0)(1) = "World Cup - Round I, Matchday 6"
-  WC_2D(1)(0) = "World Cup - Round I, Matchday 6"
-  WC_2D(1)(1) = "World Cup - Round I, Matchday 7"
-  WC_2D(2)(0) = "World Cup - Round I, Matchday 7"
-  WC_2D(2)(1) = "World Cup - Round I, Matchday 8"
-  WC_2D(3)(0) = "World Cup - Round I, Matchday 8"
-  WC_2D(3)(1) = "World Cup - Round I, Matchday 9"
-  WC_2D(4)(0) = "World Cup - Round I, Matchday 9"
-  WC_2D(4)(1) = "World Cup - Round I, Matchday 10"
-  WC_2D(5)(0) = "World Cup - Round I, Matchday 10"
-  WC_2D(5)(1) = "World Cup - Round II, Matchday 1"
-  WC_2D(6)(0) = "World Cup - Round II, Matchday 2"
-  WC_2D(6)(1) = "World Cup - Round II, Matchday 3"
-  WC_2D(7)(0) = "World Cup - Round II, Matchday 4"
-  WC_2D(7)(1) = "World Cup - Round II, Matchday 5"
-  WC_2D(8)(0) = "World Cup - Round II, Matchday 5"
-  WC_2D(8)(1) = "World Cup - Round II, Matchday 6"
-  WC_2D(9)(0) = "World Cup - Round II, Matchday 6"
-  WC_2D(9)(1) = "World Cup - Round III, Matchday 1"
-  WC_2D(10)(0) = "World Cup - Round III, Matchday 2"
-  WC_2D(10)(1) = "World Cup - Round III, Matchday 3"
-  WC_2D(11)(0) = "World Cup - Round III, Matchday 3"
-  WC_2D(11)(1) = "World Cup - Round IV, Matchday 1"
-  WC_2D(12)(0) = "World Cup - Round IV, Matchday 2"
-  WC_2D(12)(1) = "World Cup - Round IV, Matchday 3"
-  WC_2D(13)(0) = "World Cup - Round IV, Matchday 3"
-  WC_2D(13)(1) = "World Cup - Round V, Matchday 1"
-  WC_2D(14)(0) = "World Cup - Round V, Matchday 2"
-  WC_2D(14)(1) = "World Cup - Round V, Matchday 3"
-  WC_2D(15)(0) = "World Cup - Semifinals"
-  WC_2D(15)(1) = "World Cup - Finals"
+  def schedule_1st_Season(week: Int, day: Int): String = {
 
+    val ME_2D = Array.ofDim[String](16, 2)
 
+    ME_2D(0)(0) = "World Cup - Finals"
+    ME_2D(0)(1) = "World Cup - Finals -1 training"
+    ME_2D(1)(0) = "World Cup - Finals -1 training"
+    ME_2D(1)(1) = "World Cup - Finals -2 training"
+    ME_2D(2)(0) = "World Cup - Finals -2 training"
+    ME_2D(2)(1) = "Continental Championship  Matchday 1"
+    ME_2D(3)(0) = "Continental Championship  Matchday 2"
+    ME_2D(3)(1) = "Continental Championship  Matchday 3"
+    ME_2D(4)(0) = "Continental Championship  Matchday 4"
+    ME_2D(4)(1) = "Continental Championship  Matchday 5"
+    ME_2D(5)(0) = "Continental Championship  Matchday 5"
+    ME_2D(5)(1) = "Continental Championship  Matchday 6"
+    ME_2D(6)(0) = "Continental Championship  Matchday 6"
+    ME_2D(6)(1) = "Continental Championship  Matchday 7"
+    ME_2D(7)(0) = "Continental Championship  Matchday 7"
+    ME_2D(7)(1) = "Continental Championship  Matchday 8"
+    ME_2D(8)(0) = "Continental Championship  Matchday 8"
+    ME_2D(8)(1) = "Continental Championship  Matchday 9"
+    ME_2D(9)(0) = "Continental Championship  Matchday 9"
+    ME_2D(9)(1) = "Continental Championship  Matchday 10"
+    ME_2D(10)(0) = "Continental Championship  Matchday 10"
+    ME_2D(10)(1) = "Continental Championship - Quarterfinals"
+    ME_2D(11)(0) = "Continental Championship - Semifinals"
+    ME_2D(11)(1) = "Continental Championship - Finals"
+    ME_2D(12)(0) = "Continental Championship - Finals"
+    ME_2D(12)(1) = "World Cup - Round I, Matchday 1"
+    ME_2D(13)(0) = "World Cup - Round I, Matchday 2"
+    ME_2D(13)(1) = "World Cup - Round I, Matchday 3"
+    ME_2D(14)(0) = "World Cup - Round I, Matchday 3"
+    ME_2D(14)(1) = "World Cup - Round I, Matchday 4"
+    ME_2D(15)(0) = "World Cup - Round I, Matchday 4"
+    ME_2D(15)(1) = "World Cup - Round I, Matchday 5"
+
+    ME_2D(week)(day)
+
+  }
+
+  def schedule_2nd_Season(week: Int, day: Int) =
+  {
+
+    val WC_2D = Array.ofDim[String](16, 2)
+
+    WC_2D(0)(0) = "World Cup - Round I, Matchday 5"
+    WC_2D(0)(1) = "World Cup - Round I, Matchday 6"
+    WC_2D(1)(0) = "World Cup - Round I, Matchday 6"
+    WC_2D(1)(1) = "World Cup - Round I, Matchday 7"
+    WC_2D(2)(0) = "World Cup - Round I, Matchday 7"
+    WC_2D(2)(1) = "World Cup - Round I, Matchday 8"
+    WC_2D(3)(0) = "World Cup - Round I, Matchday 8"
+    WC_2D(3)(1) = "World Cup - Round I, Matchday 9"
+    WC_2D(4)(0) = "World Cup - Round I, Matchday 9"
+    WC_2D(4)(1) = "World Cup - Round I, Matchday 10"
+    WC_2D(5)(0) = "World Cup - Round I, Matchday 10"
+    WC_2D(5)(1) = "World Cup - Round II, Matchday 1"
+    WC_2D(6)(0) = "World Cup - Round II, Matchday 2"
+    WC_2D(6)(1) = "World Cup - Round II, Matchday 3"
+    WC_2D(7)(0) = "World Cup - Round II, Matchday 4"
+    WC_2D(7)(1) = "World Cup - Round II, Matchday 5"
+    WC_2D(8)(0) = "World Cup - Round II, Matchday 5"
+    WC_2D(8)(1) = "World Cup - Round II, Matchday 6"
+    WC_2D(9)(0) = "World Cup - Round II, Matchday 6"
+    WC_2D(9)(1) = "World Cup - Round III, Matchday 1"
+    WC_2D(10)(0) = "World Cup - Round III, Matchday 2"
+    WC_2D(10)(1) = "World Cup - Round III, Matchday 3"
+    WC_2D(11)(0) = "World Cup - Round III, Matchday 3"
+    WC_2D(11)(1) = "World Cup - Round IV, Matchday 1"
+    WC_2D(12)(0) = "World Cup - Round IV, Matchday 2"
+    WC_2D(12)(1) = "World Cup - Round IV, Matchday 3"
+    WC_2D(13)(0) = "World Cup - Round IV, Matchday 3"
+    WC_2D(13)(1) = "World Cup - Round V, Matchday 1"
+    WC_2D(14)(0) = "World Cup - Round V, Matchday 2"
+    WC_2D(14)(1) = "World Cup - Round V, Matchday 3"
+    WC_2D(15)(0) = "World Cup - Semifinals"
+    WC_2D(15)(1) = "World Cup - Finals"
+
+    WC_2D(week)(day)
+
+  }
 
   //print(ME_2D(0)(0))
 
@@ -870,16 +887,16 @@ object U21_schedule_generator extends App {
 
     if(week > 0 && week <= 15 && day >= 0 && day <= 1)
       if(season % 2 == 1)
-        print(ME_2D(week-1)(day))
+        print(schedule_1st_Season(week-1,day))
       else
-        print(WC_2D(week-1)(day))
+        print(schedule_2nd_Season(week-1,day))
     else print(s"zły zakres week or day")
 
   }
 
-  /*print(getDate(88,3,5)) //day 1 = Monday; day 5 = Fiday
+  /*print(getDate(88,3,5)) //day 1 = Monday; day 5 = Friday
   print(" ")
-  last_game(88,3,1) //day 0 = Moday; day 1 = Friday
+  last_game(88,3,1) //day 0 = Monday; day 1 = Friday
   print(" ")
   print(getAge(getDate(88,3,5)))
   print(" ")
@@ -896,8 +913,8 @@ object U21_schedule_generator extends App {
   def pr(season: Int, week: Int, day:Int): Unit = {
     print(s"$season/${week+1} ")
     print(s"${getDate(season,week+1,4*day+1)} ")
-    if(season % 2 == 1)print(s"${ME_2D(week)(day)} ")
-    else print(s"${WC_2D(week)(day)} ")
+    if(season % 2 == 1)print(s"${schedule_1st_Season(week,day)} ")
+    else print(s"${schedule_2nd_Season(week,day)} ")
     println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
   }
 
@@ -907,7 +924,7 @@ object U21_schedule_generator extends App {
         if(s % 2 == 1)
           if(w>0 && d==0)
             //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
-            if(ME_2D(w)(0) != ME_2D(w-1)(1))
+            if(schedule_1st_Season(w,0) != schedule_1st_Season(w-1,1))
               pr(s,w,d)
             else
               null
@@ -916,7 +933,7 @@ object U21_schedule_generator extends App {
           if(w == 0 && d == 0)
             null
           else if(w > 0 && d==0)
-            if (WC_2D(w)(0) != WC_2D(w - 1)(1))
+            if (schedule_2nd_Season(w,0) != schedule_2nd_Season(w - 1,1))
               pr(s, w, d)
             else
               null
@@ -924,5 +941,11 @@ object U21_schedule_generator extends App {
       })
     })
   })
+
+}
+
+object test_Read_td extends App {
+
+  Youth.Read_td(37)
 
 }
