@@ -742,11 +742,17 @@ object U21_schedule_generator extends App {
   }
 
   val date0 = "05.02.2024"
-  val age0_years = 22
-  val age0_days = 40
+  val age0_years = 21
+  val age0_days = 111  //21 i 111 dni, w poniedziałek pierwszego dnia nowego sezonu, to jest mak wiek
+  //potem odejmujemy od tego
+  //42 na 19.03.2023
   val season0 = 87
   //val week = 1
   //val day = 1
+
+  val today = getTodayDate()
+
+  println(today)
 
   @tailrec
   def getAge(age_years: Int, age_days: Int, days: Int): String = {
@@ -764,7 +770,22 @@ object U21_schedule_generator extends App {
   def getAge(date: String): Int = {
     /*converts date info days from starting date*/
 
-    val days: Long = stringToDate(date0).toEpochDay - stringToDate(date).toEpochDay
+    /*Updated Comment:
+    * 1) 1-st day of a new season a player should have 22 years and 0 days to be able to play in WC finals the previous season
+    * 2) x-th day of a new season a player should have 22 years and x days to be able to play in WC finals the previous season
+    *
+    * so 2) - 1) = todayDate.toEpochDay - DateOf1stDayOfNewSeason.toEpochDay = days from season beginning to now
+    *
+    * 3) 1-st day of a new season a player should have 22 years and -y days to be able to play in a match taking place y days ofter 1st day of a new season
+    *
+    * so 1) - 3) = DateOf1stDayOfNewSeason.toEpochDay - DateOfCertainPhaseOfCampaign.toEpochDay = -y days between beginning of a season and certain match date
+    *
+    * overall: 2) - 1) + 1) - 3) = 2) - 3) = (0 + todayDate.toEpochDay - DateOfCertainPhaseOfCampaign.toEpochDay) days
+    *
+    * Those are days thay sould be added to 22 years and 0 days to see years and day at certain stage of campaign
+    * */
+
+    val days: Long = stringToDate(getTodayDate()).toEpochDay - stringToDate(date).toEpochDay
     days.toInt
 
   }
@@ -911,35 +932,55 @@ object U21_schedule_generator extends App {
   print(s"$days/$days")*/
 
   def pr(season: Int, week: Int, day:Int): Unit = {
-    print(s"$season/${week+1} ")
-    print(s"${getDate(season,week+1,4*day+1)} ")
-    if(season % 2 == 1)print(s"${schedule_1st_Season(week,day)} ")
-    else print(s"${schedule_2nd_Season(week,day)} ")
-    println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
+    print(s"<td>$season/${week+1}</td>\n")    //print(s"$season/${week+1}")
+    print(s"<td>${getDate(season,week+1,4*day+1)}</td>\n")    //print(s"${getDate(season,week+1,4*day+1)} ")
+    if(season % 2 == 1)
+      print(s"<td>${schedule_1st_Season(week,day)}</td>\n")     //print(s"${schedule_1st_Season(week,day)} ")
+    else
+      print(s"<td>${schedule_2nd_Season(week,day)}</td>\n")              //print(s"${schedule_2nd_Season(week,day)} ")
+    println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
   }
 
-  (87 to 88).map(s => {
-    (0 to 15).map(w => {
-      (0 to 1).map(d => {
-        if(s % 2 == 1)
-          if(w>0 && d==0)
+  def U21_schedule(campaign: Int) = {
+
+    val season_0 = 87
+    val campaign_0 = 37
+
+    val delta_campaign = campaign - campaign_0
+
+    val season = season_0 + 2 * delta_campaign
+
+    (season to season+1).map(s => {
+      (0 to 15).map(w => {
+        (0 to 1).map(d => {
+          if (s % 2 == 1)
+            if (w > 0 && d == 0)
             //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
-            if(schedule_1st_Season(w,0) != schedule_1st_Season(w-1,1))
-              pr(s,w,d)
-            else
-              null
-          else pr(s,w,d)
-        else
-          if(w == 0 && d == 0)
+              if (schedule_1st_Season(w, 0) != schedule_1st_Season(w - 1, 1))
+                pr(s, w, d)
+              else
+                null
+            else pr(s, w, d)
+          else if (w == 0 && d == 0)
             null
-          else if(w > 0 && d==0)
-            if (schedule_2nd_Season(w,0) != schedule_2nd_Season(w - 1,1))
+          else if (w > 0 && d == 0)
+            if (schedule_2nd_Season(w, 0) != schedule_2nd_Season(w - 1, 1))
               pr(s, w, d)
             else
               null
           else pr(s, w, d)
+        })
       })
     })
+
+  }
+
+  (37 to 42).map(i => {
+
+    println("####################################################")
+    U21_schedule(i)
+    println("####################################################")
+
   })
 
 }
