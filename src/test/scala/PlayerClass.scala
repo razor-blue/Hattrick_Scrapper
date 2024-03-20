@@ -975,7 +975,7 @@ object U21_schedule_generator extends App {
 
   }
 
-  (37 to 42).map(i => {
+  (37 to 42).foreach(i => {
 
     println("####################################################")
     U21_schedule(i)
