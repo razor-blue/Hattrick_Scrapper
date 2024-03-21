@@ -417,7 +417,9 @@ object Youth{
             if(sp.exists){
 
               writeToFile(databasePath + "characters.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,${outlook.replaceAll("-", ",")},$character"))
-              writeToFile(databasePath + "specialities.csv", true, Seq.empty[String], Seq(s"$name,$id,$speciality,${speciality.take(1)},${speciality.drop(1)},${sp.speciality.get}"))
+              if(sp.nationality.equals("Polska")) {
+                writeToFile(databasePath + "specialities.csv", true, Seq.empty[String], Seq(s"$name,$id,$speciality,${speciality.take(1)},${speciality.drop(1)},${sp.speciality.get}"))
+              }
 
               //Jak oczyszczę bazę z rekordów z błędną identyfikacją specjałek - ostatni grajek w bazie:
               // Edmund Smuga 333622322
