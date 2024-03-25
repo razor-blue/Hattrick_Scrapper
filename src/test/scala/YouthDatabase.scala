@@ -1606,7 +1606,7 @@ object tak_lub_nie extends App{
 }
 
 
-object mnożenie_dla_Natalki extends App {
+object mnozenie_dla_Natalki extends App {
 
   import scala.io.StdIn
 
@@ -1624,6 +1624,7 @@ object mnożenie_dla_Natalki extends App {
 
   }
 
+  @tailrec
   def losuj_zadanie(zakres: Int, n: Int, limit: Int, counter: Int = 0, score: Int = 0): (Int, Int) = {
     if (counter >= limit)
       (score, counter)
@@ -1652,8 +1653,8 @@ object mnożenie_dla_Natalki extends App {
       }
       else {
         println(s"Źle, poprawny wynik to ${zadanie._3}")
-        println(s"Twój wynik: ${score}")
-        losuj_zadanie(zakres, (score) / 10 + 1, limit, counter + 1, score)
+        println(s"Twój wynik: $score")
+        losuj_zadanie(zakres, score / 10 + 1, limit, counter + 1, score)
       }
 
 

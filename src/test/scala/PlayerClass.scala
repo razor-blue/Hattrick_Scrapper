@@ -248,7 +248,7 @@ object Youth{
       //println(document.select("td"))
 
       document.select("td")
-
+ 
     }
 
 
@@ -417,7 +417,7 @@ object Youth{
             if(sp.exists){
 
               writeToFile(databasePath + "characters.csv", true, Seq.empty[String], Seq(s"$name,${sp.daysInClub.get},$id,${outlook.replaceAll("-", ",")},$character"))
-              if(sp.nationality.equals("Polska")) {
+              if(sp.nationality.get.equals("Polska")) {
                 writeToFile(databasePath + "specialities.csv", true, Seq.empty[String], Seq(s"$name,$id,$speciality,${speciality.take(1)},${speciality.drop(1)},${sp.speciality.get}"))
               }
 
@@ -990,5 +990,16 @@ object U21_schedule_generator extends App {
 object test_Read_td extends App {
 
   Youth.Read_td(37)
+
+}
+
+object seniorPlayerTest extends App{
+
+  val sp = new Senior(Array(seniorPlayerPath, "482711138"))
+
+  val nationality = sp.nationality.get
+  println(nationality)
+  println(nationality.equals("Polska"))
+  println(nationality.eq("Polska"))        //to jest false
 
 }
