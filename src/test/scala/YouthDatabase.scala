@@ -1139,10 +1139,18 @@ class other_leagueIDs_DatabasePath {
       //Range.inclusive(60149,60149),
       //Seq(60149),
 
-      List(60149),                      //L1
-      Range.inclusive(60164,60167),     //L2
-      Range.inclusive(60208,60223),     //L3
-      Range.inclusive(249625,249688)    //L4
+      //List(60149),                      //L1
+      //Range.inclusive(60164,60167),     //L2
+      //Range.inclusive(60208,60223),     //L3
+      //Range.inclusive(249625,249688),   //L4
+
+
+      /*Palestyna*/
+      List(252357),                     //L1
+      Range.inclusive(252363, 252366),  //L2
+      Range.inclusive(252367, 252382),  //L3
+      Range.inclusive(252399, 252462)   //L4
+
     ).flatten,
     databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
 
@@ -1237,11 +1245,24 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+*/
 
+  val f1 = Future {
+    doF((Range.inclusive(3620, 3704).toList ++ Range.inclusive(9383, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
+  }
+  val f2 = Future {
+    doF((Range.inclusive(32226, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
+  }
+  val f3 = Future {
+    doF((Range.inclusive(32751, 33137).toList ++ Range.inclusive(58605, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
+  }
+  val f4 = Future {
+    doF((Range.inclusive(58726, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
+  }
 
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
