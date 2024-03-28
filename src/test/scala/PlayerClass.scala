@@ -940,7 +940,7 @@ object U21_schedule_generator extends App {
       print(s"<td>${schedule_1st_Season(week,day)}</td>\n")     //print(s"${schedule_1st_Season(week,day)} ")
     else
       print(s"<td>${schedule_2nd_Season(week,day)}</td>\n")              //print(s"${schedule_2nd_Season(week,day)} ")
-    (getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1)))).split(".").foreach(x => println(s"<td>${x.head} age and ${x(1)} days</td>"))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
+    getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split(".").foreach(x => println(s"<td>${x.head} age and ${x(1)} days</td>"))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
   }
 
   def U21_schedule(campaign: Int) = {
