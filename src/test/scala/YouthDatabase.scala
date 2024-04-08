@@ -126,6 +126,7 @@ object YouthDatabase {
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
     "2710178" -> {databasePath + "Tmp_Team.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
+    "tttest" -> {databasePath + "tttest.csv"},
     "Kenia" -> {databasePath + "Kenia_youthPlayerDatabase1-4L.csv"},
     "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
     "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"},
@@ -472,6 +473,59 @@ object YouthDatabase {
 
         run_enigma()
 
+      case "removeDaysFromSpeciality" =>
+
+        def enigma(dataLines: Iterator[String]): Unit = {
+
+          val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+          var counter = 0
+
+
+          for (line <- dataLines) {
+
+            val cols: Array[String] = line.split(",").map(_.trim)
+            val lineBefore = cols.take(3).mkString(",")
+            val lineAfter = cols.drop(4).mkString(",")
+            val speciality: String = cols(3)
+            //val since: String = cols(4)
+
+            val correctedSpeciality: String = if (!speciality.equals("")) speciality.take(1) else speciality
+            val newRecord: String = lineBefore ++ "," ++ correctedSpeciality ++ "," ++ lineAfter
+            updateRecords += newRecord.replaceAll("\"", "")
+            counter += 1
+            checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
+          }
+
+          val updatedRecords = updateRecords.result()
+          writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
+          updateRecords.clear()
+
+
+        }
+
+        def run_enigma(): Unit = {
+
+          val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+          bufferedSource match {
+            case Some(source) =>
+
+              val dataLines: Iterator[String] = source.getLines.drop(1)
+
+              enigma(dataLines)
+
+              source.close()
+
+
+            case None =>
+              println(s"File $pathToCsvFile does not exists.")
+          }
+
+        }
+
+        run_enigma()
+
+
 
       case _ => None
 
@@ -508,16 +562,20 @@ object YouthDatabase {
     bufferedSource match {
       case Some(source) =>
 
+        //read file before its override
+        val dataLines: Iterator[String] = source.getLines.drop(1)
+
+
         //creates its own header, tttest file does not need to have it as it will be overwritten
-        writeToFile("src/data/tttest.csv", false, headlineClean, Seq.empty[String])
+        writeToFile("src/data/P.csv", false, headlineClean, Seq.empty[String])
 
         val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
         var counter = 0
 
-        val dataLines: Iterator[String] = source.getLines.drop(1)
+
 
         for (line <- dataLines) {
-
+          
           val cols: Array[String] = line.split(",").map(_.trim)
           val age: Double = cols(2).toDouble
           val since = cols(4).toInt
@@ -528,18 +586,20 @@ object YouthDatabase {
 
           //why header is Seq[String], not just a String? Because sometimes I want to pass empty String -> Seq.empty[String] is easier to use
           counter += 1
-          checkCounter(counter, 100, updateRecords, "src/data/tttest.csv", true, Seq.empty[String])
-
+          checkCounter(counter, 100, updateRecords, "src/data/P.csv", true, Seq.empty[String])
+          
         }
 
         val updatedRecords = updateRecords.result()
         println(counter)
 
-        writeToFile("src/data/tttest.csv", true, Seq.empty[String], updatedRecords)
+        writeToFile("src/data/P.csv", true, Seq.empty[String], updatedRecords)
 
         updateRecords.clear()
 
         source.close()
+
+
 
 
       case None =>
@@ -1036,9 +1096,9 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
+  new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1139,10 +1199,10 @@ class other_leagueIDs_DatabasePath {
       //Range.inclusive(60149,60149),
       //Seq(60149),
 
-      //List(60149),                      //L1
-      //Range.inclusive(60164,60167),     //L2
-      //Range.inclusive(60208,60223),     //L3
-      //Range.inclusive(249625,249688),   //L4
+      List(60149),                      //L1
+      Range.inclusive(60164,60167),     //L2
+      Range.inclusive(60208,60223),     //L3
+      Range.inclusive(249625,249688),   //L4
 
 
       /*Palestyna*/
@@ -1245,12 +1305,24 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
+  /*val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+*/
 
-
+  val f1 = Future {
+    doF((Range.inclusive(9635, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")
+  }
+  val f2 = Future {
+    doF((Range.inclusive(32655, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")
+  }
+  val f3 = Future {
+    doF((Range.inclusive(58690, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")
+  }
+  val f4 = Future {
+    doF((Range.inclusive(59628, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")
+  }
 
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
@@ -1275,8 +1347,11 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit,"7 Liga 257-512")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 513-768")
   //new YouthAnalysis(maxAgeLimit,"7 Liga 769-1024")
-  new YouthAnalysis(maxAgeLimit_Poland,"Polska")
+  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Poland,"Polska")
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
+
+  //new YouthAnalysis("removeDaysFromSpeciality","Polska")
 
 
 }
