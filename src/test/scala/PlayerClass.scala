@@ -715,6 +715,7 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
 object test11 extends App{
 
+  //test function that read previously written dat file with age schedule for U21 competitions
   def Read_td2(worldCupNumber: Int): Elements = {
 
     val filename = WC_U21SchedulesPath + "WC" + worldCupNumber + ".dat"
@@ -764,8 +765,13 @@ object U21_schedule_generator extends App {
     if(days == 0)
       if(age_days > 111) getAge(age_years + 1, age_days - 112, 0)
       else if(age_days < 0) getAge(age_years - 1, age_days + 112, 0)
-      else s"$age_years.$age_days"
+      else {
+        println(s"$age_years.$age_days")
+        s"$age_years.$age_days"
+      }
     else getAge(age_years, age_days + days, 0)
+
+
 
   }
 
@@ -940,7 +946,9 @@ object U21_schedule_generator extends App {
       print(s"<td>${schedule_1st_Season(week,day)}</td>\n")     //print(s"${schedule_1st_Season(week,day)} ")
     else
       print(s"<td>${schedule_2nd_Season(week,day)}</td>\n")              //print(s"${schedule_2nd_Season(week,day)} ")
-    getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split(".").foreach(x => println(s"<td>${x.head} age and ${x(1)} days</td>"))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
+    //getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split("\\.").foreach(x => println(s"<td>${x(0)} age and ${x(1)} days</td>"))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
+    val max_age = getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split("\\.")
+    println(s"<td>${max_age(0)} age and ${max_age(1)} days</td>")
   }
 
   def U21_schedule(campaign: Int) = {
@@ -989,7 +997,7 @@ object U21_schedule_generator extends App {
 
 object test_Read_td extends App {
 
-  Youth.Read_td(37)
+  println(Youth.Read_td(37).asScala)
 
 }
 
