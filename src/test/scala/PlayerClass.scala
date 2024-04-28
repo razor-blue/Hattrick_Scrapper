@@ -39,7 +39,7 @@ def dateToDayOfTheWeek(d: String): String = {
     //default values: "dd.MM.yyyy"
     case "Dzisiaj" => println(getTodayDate()); getTodayDate()
     case "Wczoraj" => println(getYesterdayDate()); getYesterdayDate()
-    case _         => d
+    case _         => println(d); d
   }
 
   val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -194,12 +194,48 @@ object Youth{
         val arrayString: Array[String] = document.select("table.youthPlayerPerformance").select("td.middle").
           text().replaceAll("-", "-1 -").replaceAll("boczny obrońca", "boczny_obrońca").split(" ")
 
-        @tailrec
+        //arrayString.foreach(println(_))
+        val nn: Elements = document.select("table.youthPlayerPerformance").select("td.middle")//.asScala
+
+        //var positionRatingMap = Map[String, String]()
+        var result = ""
+        nn.forEach { td =>
+           // Sprawdź czy obecny element zawiera klasę "right", co oznacza pozycję zawodnika
+          if (td.hasClass("right")) {
+            //position = td.text() // Pozycja zawodnika
+            //result += td.text() + ","
+            null
+          } else {
+            // Jeśli nie, to sprawdź czy jest to element hattrick-rating, jeśli tak, pobierz rating
+            if (td.select("hattrick-rating").size() > 0) {
+              val rating = td.select("hattrick-rating").attr("rating")
+              //positionRatingMap += (position -> rating)
+              result += rating + ","
+            } else {
+            // Jeśli nie, pobierz znak "-"
+              //positionRatingMap += (position -> "-")
+              result += "-1,"
+            }
+          }
+
+        }
+
+        // Usuń ostatni przecinek z wyniku
+        if (result.nonEmpty) {
+          result = result.dropRight(1)
+        }
+
+        // Wyświetl wynik
+        //ntln(result)
+
+        /*@tailrec
         def addString(str: String, stringToAdd: Array[String], index: Int): String =
             if (index >= stringToAdd.length) str
             else addString(str + "," + stringToAdd(index), stringToAdd, index + 3)
 
-        addString(arrayString(1), arrayString, 4)
+        addString(arrayString(1), arrayString, 4)*/
+
+        result
 
     }
 
@@ -207,9 +243,14 @@ object Youth{
 
       val arrayString1: mutable.Buffer[String] = document.select("div.mainBox").select("td.middle").asScala.map(x => x.text().replaceAll("boczny obrońca", "boczny_obrońca"))
       val arrayString2 = document.select("div.mainBox").select("span.stars-full").asScala
+      //val arrayString2 = document.select("div.mainBox").select("td.nowrap-middle").asScala
       val arrayString3 = document.select("div.mainBox").select("td.top").asScala
 
-      val nGames = arrayString2.length
+      val nGames = arrayString3.length
+
+      //arrayString1.foreach(println(_))
+      //arrayString2.foreach(println(_))
+      //arrayString3.foreach(println(_))
 
       val dictionary = Seq("bramkarz", "stoper", "boczny_obrońca", "pomocnik", "skrzydłowy", "napastnik")
       val dictionaryMap = Map("bramkarz" -> 0, "stoper" -> 1, "boczny_obrońca" -> 2, "pomocnik" -> 3, "skrzydłowy" -> 4, "napastnik" -> 5)
@@ -224,7 +265,13 @@ object Youth{
         val nPositionsPlayed = dictionary.count(p => arrayString1(2 + i * 3).contains(p))
         val minutesPlayed: Int = if (nPositionsPlayed == 1) arrayString1(2 + i * 3).split(" ").last.replaceAll("[(')]", "").toInt else 0
         val positionPlayed: Int = if (nPositionsPlayed == 1  && minutesPlayed == 90) dictionaryMap(arrayString1(2 + i * 3).split(" ").head) else -1
-        val starsPlayed: Double = if (arrayString3(i).text().nonEmpty) {arrayString3(i).text().toDouble} else -1.0
+        //val starsPlayed: Double = if (arrayString3(i).text().nonEmpty) {arrayString3(i).text().toDouble} else -1.0
+        val starsPlayed: Double = if (arrayString3(i).select("hattrick-rating").attr("rating").nonEmpty)
+        {
+          //arrayString3(i).text().toDouble
+          arrayString3(i).select("hattrick-rating").attr("rating").toDouble
+        }
+        else -1.0
 
             (positionPlayed, starsPlayed)
         })
@@ -251,13 +298,19 @@ object Youth{
  
     }
 
+    def Read_td_S(worldCupNumber: Int): String = {
+
+      U21_schedule_generator(worldCupNumber).replaceAll("<td>","").replaceAll("</td>","")
+
+    }
+
 
     def WorldCupAgeMinMax(worldCupNumber: Int): ((Double, Int, Int), (Double, Int, Int)) = {
 
       val td: mutable.Seq[Element] = Read_td(worldCupNumber: Int).asScala
 
-      val maxAgeYears = td(3).text().split(" ")(0).toInt
-      val maxAgeDays = td(3).text().split(" ")(3).toInt
+      val maxAgeYears = td(15).text().split(" ")(0).toInt //3->15
+      val maxAgeDays = td(15).text().split(" ")(3).toInt
 
       val minAgeYears = td(167).text().split(" ")(0).toInt
       val minAgeDays = td(167).text().split(" ")(3).toInt
@@ -266,6 +319,25 @@ object Youth{
       val ageMin = minAgeYears + minAgeDays / 1000.0
 
         ((ageMin, minAgeYears, minAgeDays), (ageMax, maxAgeYears, maxAgeDays))
+
+    }
+
+    def WorldCupAgeMinMax_S(worldCupNumber: Int) = {
+
+      val td: Array[String] = Read_td_S(worldCupNumber).split("\n")
+
+      //td.foreach(println(_))
+
+      val maxAgeYears: Int = td(15).split(" ")(0).toInt  //3->15; trzeba w tym stringu pr zrobić jakieś eparatory po których tu rozdzielę
+      val maxAgeDays: Int = td(15).split(" ")(3).toInt
+
+      val minAgeYears: Int = td(167).split(" ")(0).toInt
+      val minAgeDays: Int = td(167).split(" ")(3).toInt
+
+      val ageMax: Double = maxAgeYears + maxAgeDays / 1000.0
+      val ageMin: Double = minAgeYears + minAgeDays / 1000.0
+
+      ((ageMin, minAgeYears, minAgeDays), (ageMax, maxAgeYears, maxAgeDays))
 
     }
 
@@ -282,6 +354,20 @@ object Youth{
 
     }
 
+    def WhichWorldCup_S(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
+
+      val ageMin = WorldCupAgeMinMax_S(worldCupNumber)._1._1
+      val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
+
+      val ageCurrent = playerAge._1
+
+      //println(s"___${ageMin},${ageMax},${ageCurrent}___")
+
+      if (ageCurrent >= ageMin) worldCupNumber
+      else WhichWorldCup_S(playerAge, worldCupNumber + 1)
+
+    }
+
     @tailrec
     def f(td: mutable.Buffer[Element], worldCupNumber: Int, playerAge: Double, index: Int): String = {
 
@@ -291,8 +377,25 @@ object Youth{
       val date = td(index - 6).text()
       val week = td(index - 7).text().replaceAll("/", ",")
 
-        if (playerAge > age) s"WC ${worldCupNumber - 1} --> $round_id --> $round --> $date --> $week"
+        if (playerAge > age) s"WC ${worldCupNumber /*- 1*/} --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
         else f(td, worldCupNumber, playerAge, index + 4)
+
+    }
+
+    @tailrec
+    def f_S(td: Array[String], worldCupNumber: Int, playerAge: Double, index: Int, round_id_overcounting: Boolean): String = {
+
+      //println(s"${td(index).split(" ")(0).toDouble}, ${td(index).split(" ")(3).toDouble / 1000.0}")
+
+      val age = td(index).split(" ")(0).toDouble + td(index).split(" ")(3).toDouble / 1000.0
+      val round_id = if(round_id_overcounting) ((index - 7) / 4.0 + 1.0).toInt + 42; else ((index - 7) / 4.0 + 1.0).toInt
+
+      val round = td(index - 5).replaceAll(",", " ")
+      val date = td(index - 6)
+      val week = td(index - 7).replaceAll("/", ",")
+
+      if (playerAge > age) s"WC ${worldCupNumber/* - 1*/} --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
+      else f_S(td, worldCupNumber, playerAge, index + 4, round_id_overcounting)
 
     }
 
@@ -311,12 +414,34 @@ object Youth{
 
     }
 
+    def WhichRoundOfWorldCup_S(playerAge: (Double, Int, Int), worldCupNumber: Int): String = {
+
+      val td: Array[String] = Read_td_S(worldCupNumber).split("\n")
+
+      val age: ((Double, Int, Int), (Double, Int, Int)) = WorldCupAgeMinMax_S(worldCupNumber)
+
+      val ageMin = age._1._1
+      val ageMax = age._2._1
+
+      /*println(playerAge)
+      println(age)*/
+
+      /*if (playerAge._1 > ageMax) s"WC ${worldCupNumber - 1} --> 42,World Cup - Finals,,,"
+      else if (playerAge._1 <= ageMin) s"WC $worldCupNumber --> 42,World Cup - Finals,,,"
+      else f_S(td, worldCupNumber, playerAge._1, 7)*/
+
+      if (playerAge._1 > ageMax) f_S(td, worldCupNumber-1, playerAge._1, 7, true)
+      else f_S(td, worldCupNumber, playerAge._1, 7, false)
+
+    }
+
     def Availability(age: (Double, Int, Int)): String = {
 
       val i = 37
 
-      val worldCupNumber = WhichWorldCup(age, i)
-      val worldCupRound = WhichRoundOfWorldCup(age, worldCupNumber)
+      val worldCupNumber = WhichWorldCup_S(age, i)
+      //print(worldCupNumber)
+      val worldCupRound = WhichRoundOfWorldCup_S(age, worldCupNumber)
 
         worldCupRound
 
@@ -335,6 +460,7 @@ object Youth{
 
       val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
       val lastGame = last5Games._2
+      println(lastGame)
       val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
 
       val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
@@ -361,7 +487,7 @@ object Youth{
 
       val playerAtributes: Array[String] = line.split(",").map(_.trim)
 
-      //println(playerAtributes.length)
+
 
       val outlook: String = if(playerAtributes.length <= 26) yp.outlook.get
       else playerAtributes(26)
@@ -382,8 +508,12 @@ object Youth{
 
       //println(scoutingDetails)
 
-      val (name, /*id, */ previousSpecialityStatus, previousSince, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
+      /*val (name, /*id, */ previousSpecialityStatus, previousSince, availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, nationality)
         = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(4),playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10),playerAtributes(24))
+      */
+
+      val (name, /*id, */ previousSpecialityStatus, previousSince, /*availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, */nationality)
+        = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(4)/*,playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10)*/,playerAtributes(24))
 
       val currentSpecialityStatus: String = yp.speciality.getOrElse("")
       val since = yp.since.get
@@ -392,9 +522,12 @@ object Youth{
       //val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus)) currentSpecialityStatus else currentSpecialityStatus.concat(s"$since")
       val speciality = if(currentSpecialityStatus.equals(previousSpecialityStatus.take(1))) previousSpecialityStatus else currentSpecialityStatus.concat(s"$since")
 
-      val last5Games_updated = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
+      val last5Games_updated: String = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
 
-      val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
+      val aval: Array[String] = yp.availability.get.split("-->").map(_.trim)
+
+      //val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
+      val f: String = f"$name,$id,$age,$speciality,$since,${aval(0)},${aval(1)},${aval(2)},${aval(3)},${aval(4)},$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
 
         if(!yp.stillInYouthAcademy) {
 
@@ -458,11 +591,11 @@ object Youth{
 
       //the oldest records are about scouting, the newest about hattricks, name or face change
 
-      val memoryDates1: Array[String] = memoryDates.split(" ")
+      val memoryDates1: Array[String] = memoryDates.split(" ")//.map(x => x.replaceAll("\\.","/"))
       val memoryHours1: Array[String] = memoryHours.split(" ").takeRight(memoryDates1.length)
       val memoryItems1: Array[String] = memoryItems.split("\\.").takeRight(memoryDates1.length)
 
-      /* println(s"$memoryDates ${memoryDates1.length}")
+       /*println(s"$memoryDates ${memoryDates1.length}")
        println(s"$memoryHours ${memoryHours1.length}")
        println(s"$memoryItems ${memoryItems1.length} ")
 
@@ -735,7 +868,19 @@ object test11 extends App{
 //tydzień czytam ze strony
 //mecze są poniedziałek i piątek
 
-object U21_schedule_generator extends App {
+def U21_schedule_generator(n: Int): String = {
+
+  val date0 = "05.02.2024"
+  val age0_years = 21
+  val age0_days = 111 //21 i 111 dni, w poniedziałek pierwszego dnia nowego sezonu, to jest mak wiek
+  //potem odejmujemy od tego
+  //42 na 19.03.2023
+  val season0 = 87
+  //val week = 1
+  //val day = 1
+
+
+
 
   def stringToDate(day: String): LocalDate = {
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -744,38 +889,30 @@ object U21_schedule_generator extends App {
     date
   }
 
-  val date0 = "05.02.2024"
-  val age0_years = 21
-  val age0_days = 111  //21 i 111 dni, w poniedziałek pierwszego dnia nowego sezonu, to jest mak wiek
-  //potem odejmujemy od tego
-  //42 na 19.03.2023
-  val season0 = 87
-  //val week = 1
-  //val day = 1
 
-  val today = getTodayDate()
 
-  println(today)
+
+
+  //println(today)
 
   @tailrec
   def getAge(age_years: Int, age_days: Int, days: Int): String = {
 
-//    println(s"${age_years}, ${age_days}, ${days}")
+    //    println(s"${age_years}, ${age_days}, ${days}")
 
-    if(days == 0)
-      if(age_days > 111) getAge(age_years + 1, age_days - 112, 0)
-      else if(age_days < 0) getAge(age_years - 1, age_days + 112, 0)
+    if (days == 0)
+      if (age_days > 111) getAge(age_years + 1, age_days - 112, 0)
+      else if (age_days < 0) getAge(age_years - 1, age_days + 112, 0)
       else {
-        println(s"$age_years.$age_days")
+        //println(s"$age_years.$age_days")
         s"$age_years.$age_days"
       }
     else getAge(age_years, age_days + days, 0)
 
 
-
   }
 
-  def getAge(date: String): Int = {
+  def getAgeFromString(date: String): Int = {
     /*converts date info days from starting date*/
 
     /*Updated Comment:
@@ -794,6 +931,8 @@ object U21_schedule_generator extends App {
     * */
 
     val days: Long = stringToDate(getTodayDate()).toEpochDay - stringToDate(date).toEpochDay
+    //println(s"1) ${getTodayDate()}")
+    //println(s"2) ${stringToDate(getTodayDate())}")
     days.toInt
 
   }
@@ -808,8 +947,7 @@ object U21_schedule_generator extends App {
   else if (season == 87 & week == 1 && day > 7)
     getDate(season, week + 1, day - 7)
   else if(season == 87 & )*/
-    else
-    {
+    else {
       val days: Int = (season - season0) * 112 + (week - 1) * 7 + day - 1
 
       //println(days)
@@ -822,7 +960,7 @@ object U21_schedule_generator extends App {
     date.format(formatter)
   }
 
-  //val ME = Seq[(1,5,"WC Final -1 training"), (2,5,"WC Final -2 training"), (3,1,"Continental Cup round 1")]
+  //val ME = Seq[(1,5,"WC Final -1 training"), (2,5,"WC Final -2 trainings"), (3,1,"Continental Cup round 1")]
 
   /*def kiedy_22yo(todayDate: String, age: )*/
 
@@ -833,24 +971,24 @@ object U21_schedule_generator extends App {
     ME_2D(0)(0) = "World Cup - Finals"
     ME_2D(0)(1) = "World Cup - Finals -1 training"
     ME_2D(1)(0) = "World Cup - Finals -1 training"
-    ME_2D(1)(1) = "World Cup - Finals -2 training"
-    ME_2D(2)(0) = "World Cup - Finals -2 training"
-    ME_2D(2)(1) = "Continental Championship  Matchday 1"
-    ME_2D(3)(0) = "Continental Championship  Matchday 2"
-    ME_2D(3)(1) = "Continental Championship  Matchday 3"
-    ME_2D(4)(0) = "Continental Championship  Matchday 4"
-    ME_2D(4)(1) = "Continental Championship  Matchday 5"
-    ME_2D(5)(0) = "Continental Championship  Matchday 5"
-    ME_2D(5)(1) = "Continental Championship  Matchday 6"
-    ME_2D(6)(0) = "Continental Championship  Matchday 6"
-    ME_2D(6)(1) = "Continental Championship  Matchday 7"
-    ME_2D(7)(0) = "Continental Championship  Matchday 7"
-    ME_2D(7)(1) = "Continental Championship  Matchday 8"
-    ME_2D(8)(0) = "Continental Championship  Matchday 8"
-    ME_2D(8)(1) = "Continental Championship  Matchday 9"
-    ME_2D(9)(0) = "Continental Championship  Matchday 9"
-    ME_2D(9)(1) = "Continental Championship  Matchday 10"
-    ME_2D(10)(0) = "Continental Championship  Matchday 10"
+    ME_2D(1)(1) = "World Cup - Finals -2 trainings"
+    ME_2D(2)(0) = "World Cup - Finals -2 trainings"
+    ME_2D(2)(1) = "Continental Championship, Matchday 1"
+    ME_2D(3)(0) = "Continental Championship, Matchday 2"
+    ME_2D(3)(1) = "Continental Championship, Matchday 3"
+    ME_2D(4)(0) = "Continental Championship, Matchday 4"
+    ME_2D(4)(1) = "Continental Championship, Matchday 5"
+    ME_2D(5)(0) = "Continental Championship, Matchday 5"
+    ME_2D(5)(1) = "Continental Championship, Matchday 6"
+    ME_2D(6)(0) = "Continental Championship, Matchday 6"
+    ME_2D(6)(1) = "Continental Championship, Matchday 7"
+    ME_2D(7)(0) = "Continental Championship, Matchday 7"
+    ME_2D(7)(1) = "Continental Championship, Matchday 8"
+    ME_2D(8)(0) = "Continental Championship, Matchday 8"
+    ME_2D(8)(1) = "Continental Championship, Matchday 9"
+    ME_2D(9)(0) = "Continental Championship, Matchday 9"
+    ME_2D(9)(1) = "Continental Championship, Matchday 10"
+    ME_2D(10)(0) = "Continental Championship, Matchday 10"
     ME_2D(10)(1) = "Continental Championship - Quarterfinals"
     ME_2D(11)(0) = "Continental Championship - Semifinals"
     ME_2D(11)(1) = "Continental Championship - Finals"
@@ -867,8 +1005,7 @@ object U21_schedule_generator extends App {
 
   }
 
-  def schedule_2nd_Season(week: Int, day: Int) =
-  {
+  def schedule_2nd_Season(week: Int, day: Int) = {
 
     val WC_2D = Array.ofDim[String](16, 2)
 
@@ -914,11 +1051,11 @@ object U21_schedule_generator extends App {
 
   def last_game(season: Int, week: Int, day: Int): Unit = { //day 0 or 1
 
-    if(week > 0 && week <= 15 && day >= 0 && day <= 1)
-      if(season % 2 == 1)
-        print(schedule_1st_Season(week-1,day))
+    if (week > 0 && week <= 15 && day >= 0 && day <= 1)
+      if (season % 2 == 1)
+        print(schedule_1st_Season(week - 1, day))
       else
-        print(schedule_2nd_Season(week-1,day))
+        print(schedule_2nd_Season(week - 1, day))
     else print(s"zły zakres week or day")
 
   }
@@ -939,65 +1076,79 @@ object U21_schedule_generator extends App {
 
   print(s"$days/$days")*/
 
-  def pr(season: Int, week: Int, day:Int): Unit = {
-    print(s"<td>$season/${week+1}</td>\n")    //print(s"$season/${week+1}")
-    print(s"<td>${getDate(season,week+1,4*day+1)}</td>\n")    //print(s"${getDate(season,week+1,4*day+1)} ")
-    if(season % 2 == 1)
-      print(s"<td>${schedule_1st_Season(week,day)}</td>\n")     //print(s"${schedule_1st_Season(week,day)} ")
+  def pr(season: Int, week: Int, day: Int): String = {
+
+    //print(s"<td>$season/${week+1}</td>\n")    //print(s"$season/${week+1}")
+    //print(s"<td>${getDate(season,week+1,4*day+1)}</td>\n")    //print(s"${getDate(season,week+1,4*day+1)} ")
+    var scheduleString = s"<td>$season/${week + 1}</td>\n" + s"<td>${getDate(season, week + 1, 4 * day + 1)}</td>\n"
+    if (season % 2 == 1)
+    //print(s"<td>${schedule_1st_Season(week,day)}</td>\n")     //print(s"${schedule_1st_Season(week,day)} ")
+      scheduleString += s"<td>${schedule_1st_Season(week, day)}</td>\n"
     else
-      print(s"<td>${schedule_2nd_Season(week,day)}</td>\n")              //print(s"${schedule_2nd_Season(week,day)} ")
+    //print(s"<td>${schedule_2nd_Season(week,day)}</td>\n")              //print(s"${schedule_2nd_Season(week,day)} ")
+      scheduleString += s"<td>${schedule_2nd_Season(week, day)}</td>\n"
     //getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split("\\.").foreach(x => println(s"<td>${x(0)} age and ${x(1)} days</td>"))   //println(getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))))
-    val max_age = getAge(age0_years, age0_days, getAge(getDate(season,week+1,4*day+1))).split("\\.")
-    println(s"<td>${max_age(0)} age and ${max_age(1)} days</td>")
+    val max_age = getAge(age0_years, age0_days, getAgeFromString(getDate(season, week + 1, 4 * day + 1))).split("\\.")
+    //println(s"<td>${max_age(0)} age and ${max_age(1)} days</td>")
+    scheduleString += s"<td>${max_age(0)} age and ${max_age(1)} days</td>\n"
+    //println(scheduleString.replaceAll("<td>","").replaceAll("</td>",""))
+    //println("---")
+    scheduleString
+
   }
 
-  def U21_schedule(campaign: Int) = {
+  def U21_schedule(campaign: Int): String = {
 
     val season_0 = 87
     val campaign_0 = 37
+
+    var td = s""
 
     val delta_campaign = campaign - campaign_0
 
     val season = season_0 + 2 * delta_campaign
 
-    (season to season+1).map(s => {
+    (season to season + 1).map(s => {
       (0 to 15).map(w => {
         (0 to 1).map(d => {
           if (s % 2 == 1)
             if (w > 0 && d == 0)
             //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
               if (schedule_1st_Season(w, 0) != schedule_1st_Season(w - 1, 1))
-                pr(s, w, d)
+                td += s"${pr(s, w, d)}"
               else
-                null
-            else pr(s, w, d)
+                ""
+            else td += s"${pr(s, w, d)}"
           else if (w == 0 && d == 0)
-            null
+            ""
           else if (w > 0 && d == 0)
             if (schedule_2nd_Season(w, 0) != schedule_2nd_Season(w - 1, 1))
-              pr(s, w, d)
+              td += s"${pr(s, w, d)}"
             else
-              null
-          else pr(s, w, d)
+              ""
+          else td += s"${pr(s, w, d)}"
         })
       })
     })
 
+    //println(td)
+    td
   }
+  U21_schedule(n)
+}
 
-  (37 to 42).foreach(i => {
 
-    println("####################################################")
-    U21_schedule(i)
-    println("####################################################")
+object test_schedule_generator extends App{
 
-  })
+  U21_schedule_generator(37)
 
 }
 
+
 object test_Read_td extends App {
 
-  println(Youth.Read_td(37).asScala)
+  //println(Youth.Read_td(37).asScala)
+  println(Youth.Read_td_S(37))
 
 }
 
@@ -1009,5 +1160,20 @@ object seniorPlayerTest extends App{
   println(nationality)
   println(nationality.equals("Polska"))
   println(nationality.eq("Polska"))        //to jest false
+
+}
+
+object youthPlayerTest extends App{
+
+  val yp = new Youth(Array(youthPlayerPath, "348798279"))
+
+  val nationality = yp.nationality.get
+  println(nationality)
+  println(nationality.equals("Polska"))
+  println(nationality.eq("Polska"))        //to jest false
+  println(yp.availability.get)
+  println(yp.scoutingHistory.get)
+  println(yp.bestPerformances.get)
+  println(yp.last5Performances.get)
 
 }
