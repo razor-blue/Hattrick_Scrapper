@@ -322,7 +322,7 @@ object Youth{
 
     }
 
-    def WorldCupAgeMinMax_S(worldCupNumber: Int) = {
+    def WorldCupAgeMinMax_S(worldCupNumber: Int): ((Double, Int, Int), (Double, Int, Int)) = {
 
       val td: Array[String] = Read_td_S(worldCupNumber).split("\n")
 
@@ -354,6 +354,7 @@ object Youth{
 
     }
 
+    @tailrec
     def WhichWorldCup_S(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
 
       val ageMin = WorldCupAgeMinMax_S(worldCupNumber)._1._1
@@ -377,7 +378,7 @@ object Youth{
       val date = td(index - 6).text()
       val week = td(index - 7).text().replaceAll("/", ",")
 
-        if (playerAge > age) s"WC ${worldCupNumber /*- 1*/} --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
+        if (playerAge > age) s"WC $worldCupNumber /*- 1*/ --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
         else f(td, worldCupNumber, playerAge, index + 4)
 
     }
@@ -394,7 +395,7 @@ object Youth{
       val date = td(index - 6)
       val week = td(index - 7).replaceAll("/", ",")
 
-      if (playerAge > age) s"WC ${worldCupNumber/* - 1*/} --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
+      if (playerAge > age) s"WC $worldCupNumber/* - 1*/ --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
       else f_S(td, worldCupNumber, playerAge, index + 4, round_id_overcounting)
 
     }
