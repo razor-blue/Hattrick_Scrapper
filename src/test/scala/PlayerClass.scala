@@ -37,9 +37,9 @@ def dateToDayOfTheWeek(d: String): String = {
 
   val data = d match {
     //default values: "dd.MM.yyyy"
-    case "Dzisiaj" => println(getTodayDate()); getTodayDate()
-    case "Wczoraj" => println(getYesterdayDate()); getYesterdayDate()
-    case _         => println(d); d
+    case "Dzisiaj" => /*println(getTodayDate());*/ getTodayDate()
+    case "Wczoraj" => /*println(getYesterdayDate());*/ getYesterdayDate()
+    case _         => /*println(d);*/ d
   }
 
   val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
@@ -358,7 +358,7 @@ object Youth{
     def WhichWorldCup_S(playerAge: (Double, Int, Int), worldCupNumber: Int): Int = {
 
       val ageMin = WorldCupAgeMinMax_S(worldCupNumber)._1._1
-      val ageMax = WorldCupAgeMinMax(worldCupNumber)._2._1
+      val ageMax = WorldCupAgeMinMax_S(worldCupNumber)._2._1
 
       val ageCurrent = playerAge._1
 
@@ -378,7 +378,7 @@ object Youth{
       val date = td(index - 6).text()
       val week = td(index - 7).text().replaceAll("/", ",")
 
-        if (playerAge > age) s"WC $worldCupNumber /*- 1*/ --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
+        if (playerAge > age) s"WC $worldCupNumber --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
         else f(td, worldCupNumber, playerAge, index + 4)
 
     }
@@ -395,7 +395,7 @@ object Youth{
       val date = td(index - 6)
       val week = td(index - 7).replaceAll("/", ",")
 
-      if (playerAge > age) s"WC $worldCupNumber/* - 1*/ --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
+      if (playerAge > age) s"WC $worldCupNumber --> $round_id --> $round --> $date --> $week" //-1 provides mistake in WC number
       else f_S(td, worldCupNumber, playerAge, index + 4, round_id_overcounting)
 
     }
@@ -461,7 +461,7 @@ object Youth{
 
       val last5Games: (Seq[Double], String) = yp.last5Performances.getOrElse((Seq(-1.0, -1.0, -1.0, -1.0, -1.0, -1.0), "-----"))
       val lastGame = last5Games._2
-      println(lastGame)
+      //println(lastGame)
       val bestPerformances: String = yp.bestPerformances.getOrElse(b5p.mkString(","))
 
       val age: String = PlayerClass.AgeFormatLine(yp.age.get._1)
@@ -515,7 +515,8 @@ object Youth{
 
       val (name, /*id, */ previousSpecialityStatus, previousSince, /*availability_wc, availability_num, availability_descr, availability_lastM, availability_lSeason, availability_lWeek, */nationality)
         = (playerAtributes(0)/*,playerAtributes(1)*/,playerAtributes(3),playerAtributes(4)/*,playerAtributes(5),playerAtributes(6),playerAtributes(7),playerAtributes(8),playerAtributes(9),playerAtributes(10)*/,playerAtributes(24))
-
+      
+      
       val currentSpecialityStatus: String = yp.speciality.getOrElse("")
       val since = yp.since.get
       val id = yp.id.get.toString
@@ -525,7 +526,7 @@ object Youth{
 
       val last5Games_updated: String = last5Games._1.zip(l5p).map(x => math.max(x._1, x._2)).mkString(",")
 
-      val aval: Array[String] = yp.availability.get.split("-->").map(_.trim)
+      lazy val aval: Array[String] = yp.availability.get.split("-->").map(_.trim)
 
       //val f: String = f"$name,$id,$age,$speciality,$since,$availability_wc,$availability_num,$availability_descr,$availability_lastM,$availability_lSeason,$availability_lWeek,$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
       val f: String = f"$name,$id,$age,$speciality,$since,${aval(0)},${aval(1)},${aval(2)},${aval(3)},${aval(4)},$bestPerformances,$last5Games_updated,$lastGame,$nationality,${getTodayDate()},$outlook,$scoutingDetails"
