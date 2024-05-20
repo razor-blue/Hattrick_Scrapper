@@ -752,6 +752,28 @@ object Senior{
          null
 
     }
+    
+    def GeneralInfo(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int) = {
+      
+      bufferElement.foreach(println(_))
+      println(bufferElement(4).text)
+      println(bufferElement(6).text)
+      val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
+
+      val TSI = bufferElement(index + 1).select("td").text().replaceAll(" ", "").toInt
+      val Salary20 = bufferElement(index + 3).select("td").text().replaceAll(" ", "").replaceAll("zł/tydzień", "")
+      val SalaryBASE = bufferElement(index + 3).select("td").select("span").attr("title").split(" ")(0).replaceAll("zł/tydzień", "").trim.replaceAll(" ", "")
+      val Salary = (if (SalaryBASE.nonEmpty) SalaryBASE else Salary20).toInt
+      val Form = bufferElement(index + 7).select("span.denominationNumber").text().split(" ").head.toInt
+      val Condition = bufferElement(index + 10).select("span.denominationNumber").text().split(" ").head.toInt
+      println(TSI)
+      println(Salary)
+      println(Form)
+      println(Condition)
+
+      (TSI,Salary,Form,Condition)
+
+    }
 
     def Skills(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)
     = {
@@ -828,6 +850,8 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 
+  lazy val generalInfo = Some(Senior.GeneralInfo(info))
+  
   lazy val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
   lazy val salary: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._2) else None
   lazy val form: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._3) else None

@@ -78,7 +78,9 @@ def checkCounter(
   val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
   val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
   val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
-  
+
+  def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,character,TSI,Salary,Form,Condition,Exp,Leadership,GK,DEF,PM,WG,PASS,SCO,Last_Update")
+
   def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
 
   def headlineClean: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test),Scouting Day,Scouting Hour,Scouting Attempt")
@@ -1008,6 +1010,65 @@ object YouthDatabase {
 
 }
 
+object SeniorDatabase{
+
+  val DatabasePath: Map[String, String] = Map(
+    "test spec" -> {databasePath + "specialities_kopia1.csv"}
+  )
+
+  def getDatabasePathByDatabaseKey(key: String): String = DatabasePath(key)
+
+  def createDatabaseFromSpecialityCsv(pathToDatabase: String) = {
+
+  }
+
+  def updateDatabase(pathToDatabase: String) = {
+
+  }
+
+  def updateSeniorPlayer(id: String, skills: Seq[String]): String = {
+
+    val sp = new Senior(Array(seniorPlayerPath, id))
+
+    if !sp.exists then
+      println("nie istnieje")
+      null
+    else
+      val name: String = sp.name.get
+      val age = sp.age.get._1
+      val nationality = sp.nationality.get
+      val generalInfo = sp.generalInfo.get
+      //val salary = sp.salary.get
+      val speciality = sp.speciality.get//OrElse("")
+      //val form = sp.form.get
+      //val condition = sp.condition.get
+      val exp = sp.exp.get
+
+      val f = s"$name,$id,$age,$speciality,$exp"
+      //val f = s"$name,$id,$age,$exp"
+      println(f)
+      f
+
+  }
+
+  def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
+
+    ids.foreach(println(_))
+
+    val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+    for (id <- ids) {
+      println(id)
+      createRecords += updateSeniorPlayer(id, Seq.fill(7)("-1.0"))
+    }
+    val createdRecords = createRecords.result()
+
+    writeToFile(pathToCsvFile, false, headlineSenior, createdRecords)
+
+  }
+
+
+}
+
 
 /*object createCustomYouthClubDatabase extends App{
 
@@ -1022,6 +1083,23 @@ object YouthDatabase {
 
 }*/
 
+class SeniorAnalysis {
+
+  def this(databaseName: String) = {
+
+    this()
+
+    println(databaseName)
+
+    val pathToDatabase: String = SeniorDatabase.getDatabasePathByDatabaseKey(databaseName)
+
+    println(pathToDatabase)
+
+    SeniorDatabase.createDatabase(pathToDatabase,Seq("483353672"))//.updateDatabase(pathToDatabase)
+
+  }
+
+}
 
 class YouthAnalysis {
 
@@ -1096,10 +1174,10 @@ object run extends App{
 
   //new YouthAnalysis("test-TL'a")
   //new YouthAnalysis(678445)
-  //new YouthAnalysis(2955119)
+  new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
   //new YouthAnalysis("Polska")
-  new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1336,10 +1414,10 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
-  //new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
 
   //new YouthAnalysis("removeDaysFromSpeciality", "Kenia")
-  new YouthAnalysis(maxAgeLimit_Kenia,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Kenia,"tttest")
 
 
 
@@ -1624,7 +1702,11 @@ object RMA extends App{
 
 }
 
+object test_SeniorAnalysis extends App{
 
+  SeniorAnalysis("test spec")
+
+}
 
 
 object tak_lub_nie extends App{
