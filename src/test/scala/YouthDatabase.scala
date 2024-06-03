@@ -883,7 +883,7 @@ object YouthDatabase {
         val databaseKey: String = getDatabaseKeyByDatabasePath(pathToCsvFile)
 
         if (databaseKey.matches("\\d+"))
-        {
+          {
 
           val youthClubID: Int = databaseKey.toInt
 
@@ -894,8 +894,8 @@ object YouthDatabase {
 
           YouthDatabase.createDatabase(pathToCsvFile, playerIDs)
 
-        }
-        else {
+          }
+          else {
           println(s"Cannot update $databaseKey. File does not exist.")
 
         }
