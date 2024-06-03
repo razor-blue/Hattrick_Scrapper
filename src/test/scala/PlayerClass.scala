@@ -850,7 +850,7 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 
-  lazy val generalInfo = Some(Senior.GeneralInfo(info))
+  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info))
   
   lazy val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
   lazy val salary: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._2) else None
