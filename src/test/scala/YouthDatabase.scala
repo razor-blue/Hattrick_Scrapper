@@ -76,7 +76,7 @@ def checkCounter(
   val databasePath: String = "src/data/"
   val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
   val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
-  val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
+  val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId="
   val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
 
   def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,character,TSI,Salary,Form,Condition,Exp,Leadership,GK,DEF,PM,WG,PASS,SCO,Last_Update")
@@ -1013,52 +1013,32 @@ object YouthDatabase {
 object SeniorDatabase{
 
   val DatabasePath: Map[String, String] = Map(
-    "test spec" -> {databasePath + "specialities_kopia1.csv"}
+    "test spec" -> {databasePath + "specialities_kopia1.csv"},
+    "specialities_kopia" -> {databasePath + "specialities_kopia.csv"},
+    "testtest" -> {databasePath + "testtest.csv"}
   )
 
   def getDatabasePathByDatabaseKey(key: String): String = DatabasePath(key)
 
-  def createDatabaseFromSpecialityCsv(pathToDatabase: String) = {
+  def createDatabaseFromSpecialityCsv(pathToDatabase: String, outputPath: String): Unit = {
 
   }
 
-  def updateDatabase(pathToDatabase: String) = {
+  def updateDatabase(pathToDatabase: String): Unit = {
 
   }
 
-  def updateSeniorPlayer(id: String, skills: Seq[String]): String = {
-
-    val sp = new Senior(Array(seniorPlayerPath, id))
-
-    if !sp.exists then
-      println("nie istnieje")
-      null
-    else
-      val name: String = sp.name.get
-      val age = sp.age.get._1
-      val nationality = sp.nationality.get
-      val generalInfo = sp.generalInfo.get
-      //val salary = sp.salary.get
-      val speciality = sp.speciality.get//OrElse("")
-      //val form = sp.form.get
-      //val condition = sp.condition.get
-      val exp = sp.exp.get
-
-      val f = s"$name,$id,$age,$speciality,$exp"
-      //val f = s"$name,$id,$age,$exp"
-      println(f)
-      f
-
-  }
 
   def createDatabase(pathToCsvFile: String, ids: Seq[String]): Unit = {
 
-    ids.foreach(println(_))
-
+    //ids.foreach(println(_))
+    var counter = 0
     val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
     for (id <- ids) {
-      println(id)
-      createRecords += updateSeniorPlayer(id, Seq.fill(7)("-1.0"))
+      //println(id)
+      createRecords += Senior.updateSeniorPlayer(id, Seq.fill(7)("-1.0"))//only usage
+      counter += 1
+      checkCounter(counter, 100, createRecords, pathToCsvFile, true, Seq.empty[String])
     }
     val createdRecords = createRecords.result()
 
@@ -1095,7 +1075,26 @@ class SeniorAnalysis {
 
     println(pathToDatabase)
 
-    SeniorDatabase.createDatabase(pathToDatabase,Seq("483353672"))//.updateDatabase(pathToDatabase)
+    SeniorDatabase.createDatabase(pathToDatabase,Seq("479962675","483890976"))//.updateDatabase(pathToDatabase)
+
+  }
+
+  def this(databaseName: String, label: String, outputPath: String) = {
+
+    this()
+
+    val pathToDatabase: String = databasePath + databaseName
+    val pathToOutputFile: String = databasePath + outputPath
+
+    label match{
+
+      case "create" =>
+        val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+        //storedPlayerIDs.foreach(println(_))
+        SeniorDatabase.createDatabase(pathToOutputFile,storedPlayerIDs)
+        
+
+    }
 
   }
 
@@ -1388,8 +1387,6 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
-
-
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1417,12 +1414,9 @@ object prepareDatabaseForScouts extends App{
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
   new YouthAnalysis(maxAgeLimit_Poland,"tttest")
-  
+
   //new YouthAnalysis("removeDaysFromSpeciality", "Kenia")
   //new YouthAnalysis(maxAgeLimit_Kenia,"tttest")
-
-
-
 
 }
 
@@ -1706,7 +1700,8 @@ object RMA extends App{
 
 object test_SeniorAnalysis extends App{
 
-  SeniorAnalysis("test spec")
+  //SeniorAnalysis("test spec")
+  SeniorAnalysis("specialities_kopia.csv","create","testtest.csv")
 
 }
 

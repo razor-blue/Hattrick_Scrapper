@@ -169,7 +169,7 @@ class PlayerClass(args: Array[String]) {
   lazy val id: Option[Int] = if (exists) Some(document.select("span.idNumber").text().replaceAll("[()]", "").toInt) else None
 
   lazy val name: Option[String] = if (exists) {
-        //document.title.split("»").head.trim
+        //document.title.split("»").foreach(println(_))/*.head.trim*/
         Some(PlayerClass.RemoveDiacritics(document.title.split("»").head.replaceAll(",","").trim))
     } else None
 
@@ -752,12 +752,58 @@ object Senior{
          null
 
     }
-    
-    def GeneralInfo(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int) = {
+
+  def updateSeniorPlayer(id: String, skills: Seq[String]): String = {
+
+    val sp = new Senior(Array(seniorPlayerPath, id))
+
+    if !sp.exists then
+      println("nie istnieje")
+      null
+    else
+      val name: String = sp.name.get
+      val age = sp.age.get._1
+      val nationality = sp.nationality.get
+      //tsi,salary,form,condition
+      val generalInfo = sp.generalInfo.get
+      val (tsi, salary, form, condition) = sp.generalInfo.get
+      val speciality = sp.speciality.get //OrElse("")
+      val exp = sp.exp.get
+      val character = sp.character.get
+      val skills = sp.skills
+
+      val gk = skills.map(_._5.toString).getOrElse("-")
+      val df = skills.map(_._6.toString).getOrElse("-")
+      val pm = skills.map(_._7.toString).getOrElse("-")
+      val wg = skills.map(_._8.toString).getOrElse("-")
+      val pass = skills.map(_._9.toString).getOrElse("-")
+      val sco = skills.map(_._10.toString).getOrElse("-")
+      val sf = skills.map(_._11.toString).getOrElse("-")
+
+
+      val f = s"$name,$id,$age,$speciality,$exp,$tsi,$salary,$form,$condition,$character,$gk,$df,$pm,$wg,$pass,$sco,$sf,${getTodayDate()}"
+      //val f = s"$name,$id,$age,$exp"
+      println(f)
+      f
+
+  }
+
+
+  def GeneralInfo(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int) = {
       
-      bufferElement.foreach(println(_))
-      println(bufferElement(4).text)
-      println(bufferElement(6).text)
+      //bufferElement.foreach(println(_))
+      var counter = 0
+      bufferElement.foreach(s => if(s.toString.contains("class=\"nowrap middle\""))
+        {
+          counter += 1
+          if(counter == 3)
+            {
+              println(s)
+              counter = 0
+            }
+
+        })
+
       val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
       val TSI = bufferElement(index + 1).select("td").text().replaceAll(" ", "").toInt
@@ -766,10 +812,6 @@ object Senior{
       val Salary = (if (SalaryBASE.nonEmpty) SalaryBASE else Salary20).toInt
       val Form = bufferElement(index + 7).select("span.denominationNumber").text().split(" ").head.toInt
       val Condition = bufferElement(index + 10).select("span.denominationNumber").text().split(" ").head.toInt
-      println(TSI)
-      println(Salary)
-      println(Form)
-      println(Condition)
 
       (TSI,Salary,Form,Condition)
 
