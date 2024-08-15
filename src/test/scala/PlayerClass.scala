@@ -14,6 +14,7 @@ import java.text.Normalizer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
+import scala.util.matching.Regex
 
 def getTodayDate(pattern: String = "dd.MM.yyyy"): String = {
 
@@ -793,16 +794,22 @@ object Senior{
       
       //bufferElement.foreach(println(_))
       var counter = 0
-      bufferElement.foreach(s => if(s.toString.contains("class=\"nowrap middle\""))
+      //tu się skupić
+      //bufferElement.foreach(s => if(s.toString.contains("class=\"nowrap middle center\""))
+      bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) {
+        counter += 1
+        if (counter == 3) //==1 wypisze wszystko
         {
-          counter += 1
-          if(counter == 3)
-            {
-              println(s)
-              counter = 0
-            }
+          println(s)
+          val ss = s.toString.split(">", 2)(1).split("<", 2)(0).split(" ")
+          val (pozycja, minuty) = (ss(0), ss(1).drop(2).dropRight(3))
+          println(s"$pozycja $minuty")
 
-        })
+
+          counter = 0
+        }
+
+      })
 
       val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
@@ -1222,9 +1229,11 @@ object test_Read_td extends App {
 
 object seniorPlayerTest extends App{
 
-  val sp = new Senior(Array(seniorPlayerPath, "482711138"))
+  val sp = new Senior(Array(seniorPlayerPath, "485522130"))
 
   val nationality = sp.nationality.get
+  val generalInfo = sp.generalInfo.get
+  println(generalInfo)
   println(nationality)
   println(nationality.equals("Polska"))
   println(nationality.eq("Polska"))        //to jest false

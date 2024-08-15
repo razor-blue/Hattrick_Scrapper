@@ -47,6 +47,7 @@ def writeToFile(path: String, appendFlag: Boolean, headline: Seq[String], lines:
   val writer = CSVWriter.open(file, appendFlag)
   if(!appendFlag)writer.writeRow(headline)
   lines.foreach(x => if (x != null) writer.writeRow(Seq(x)))
+  writer.flush()
   writer.close()
 
 }
@@ -79,7 +80,7 @@ def checkCounter(
   val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId="
   val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
 
-  def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,character,TSI,Salary,Form,Condition,Exp,Leadership,GK,DEF,PM,WG,PASS,SCO,Last_Update")
+  def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,Exp,TSI,Salary,Form,Condition,Character,Aggressiveness,Honesty,Leadership,GK,DEF,PM,WG,PASS,SCO,SP,Last_Skills_Update")
 
   def headline: Seq[String] = Seq("Player,Player ID,Age,Speciality,Days in Academy,WC X,Stage N,Description,Last Match Date,Season,Week,B_GK,B_CD,B_WB,B_IM,B_W,B_F,L_GK,L_CD,L_WB,L_IM,L_W,L_F,Last Match Details,Country,Last update,Usposobienie(test)")
 
@@ -904,6 +905,15 @@ object YouthDatabase {
 
   }
 
+  def getYouthPlayerNameFromPlayerRecordString(line: String): String = {
+
+    val cols: Array[String] = line.split(",").map(_.trim)
+    val youthPlayerName: String = cols(0)
+
+    youthPlayerName
+
+  }
+
   //ok
   def getYouthPlayerIDsFromYouthClubID(youthAcademyId: Int): Array[String] = {
 
@@ -971,10 +981,77 @@ object YouthDatabase {
         }
         source.close
         val youthPlayerIDs: Seq[String] = IDsbuffer.result()
-        youthPlayerIDs
+        youthPlayerIDs.drop(1)
       case None =>
         Seq.empty[String]
     }
+  }
+
+  def getYouthPlayerNamesFromYouthDatabase(pathToCsvFile: String): Seq[String] = {
+
+    val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+    bufferedSource match {
+      case Some(source) =>
+        val Namesbuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+        for (line <- source.getLines) {
+          val youthPlayerName: String = getYouthPlayerNameFromPlayerRecordString(line)
+          Namesbuffer += youthPlayerName
+        }
+        source.close
+        val youthPlayerNames: Seq[String] = Namesbuffer.result()
+        youthPlayerNames.drop(1)
+      case None =>
+        Seq.empty[String]
+    }
+  }
+
+  def getYouthPlayerLinesFromYouthDatabase(pathToCsvFile: String): Seq[String] = {
+
+    val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+    bufferedSource match {
+      case Some(source) =>
+        val LinesBuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+        for (line <- source.getLines) {
+          val youthPlayerLine: String = line
+          LinesBuffer += youthPlayerLine
+        }
+        source.close
+        val youthPlayerLines: Seq[String] = LinesBuffer.result()
+        youthPlayerLines.drop(1)
+      case None =>
+        Seq.empty[String]
+    }
+
+  }
+
+  def getYouthPlayerLinesFromYouthDatabase(pathToCsvFile: String, PlayerIDs: Seq[String]): Seq[String] = {
+
+    val bufferedSource: Option[BufferedSource] = tryBufferedSource(pathToCsvFile)
+
+    bufferedSource match {
+      case Some(source) =>
+        val LinesBuffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+        for (line <- source.getLines.drop(1)) {
+          val youthPlayerLine: String = line
+          val id: String = youthPlayerLine.split(",")(1)
+
+          if(PlayerIDs.contains(id) && youthPlayerLine.nonEmpty)
+            LinesBuffer += youthPlayerLine
+          else
+            null
+
+        }
+        source.close
+        val youthPlayerLines: Seq[String] = LinesBuffer.result()
+
+        youthPlayerLines
+
+      case None =>
+        Seq.empty[String]
+    }
+
   }
 
   //ok
@@ -1024,7 +1101,83 @@ object SeniorDatabase{
 
   }
 
-  def updateDatabase(pathToDatabase: String): Unit = {
+  def updateDatabase(pathToDatabase: String, pathToCsvFile: String, ids: Seq[String], alreadyUpdatedIDs: Seq[String]): Unit = {
+
+    val last_id = if (alreadyUpdatedIDs.nonEmpty) alreadyUpdatedIDs.last else null
+    println(last_id)
+    println()
+
+    val index = ids.indexOf(last_id)
+    val IDsToUpdate: Seq[String] = if (index != -1) ids.drop(index + 1) else ids
+
+    IDsToUpdate.foreach(println(_))
+
+    val playerLinesToUpdate = YouthDatabase.getYouthPlayerLinesFromYouthDatabase(pathToDatabase: String, IDsToUpdate: Seq[String])
+
+    playerLinesToUpdate.foreach(println(_))
+
+    updateDatabase(pathToCsvFile, playerLinesToUpdate, true)
+    
+    /*var counter = 0
+    val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+    for (id <- ids) {
+      //println(id)
+      val f = Senior.updateSeniorPlayer(id, Seq.fill(7)("-1.0"))
+      if (!f.eq(null))
+        f_splitted = f.split(",")
+
+        createRecords += (names(counter) ++ "," ++ f.split(",").drop(1).mkString(",")).replaceAll("\"", "")
+        println((names(counter) ++ "," ++ f.split(",").drop(1).mkString(",")).replaceAll("\"", ""))
+      else
+        null //only usage
+
+      counter += 1
+      checkCounter(counter, 100, createRecords, pathToCsvFile, true, Seq.empty[String])
+    }
+    val createdRecords: Seq[String] = createRecords.result()
+
+    writeToFile(pathToCsvFile, false, headlineSenior, createdRecords)*/
+
+  }
+
+  def updateDatabase(pathToCsvFile: String, lines: Seq[String], appendFlag: Boolean): Unit = {
+
+    //ids.foreach(println(_))
+    var counter = 0
+    val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+    for (line <- lines) {
+      //println(id)
+      val s = line.split(",")
+      val (name, id, age, speciality, character_leadership) = (s(0), s(1), s(2), s(3), Seq(s(9),s(10),s(11),s(12)).mkString(","))
+      val skills: String = s.slice(13, 20).mkString(",")
+      val lastSkillsUpdate = s(20)
+
+      println(s"$name, $skills")
+
+      val f = Senior.updateSeniorPlayer(id, Seq.fill(7)("-1.0"))
+      if (!f.eq(null))
+        val f_splitted: Array[String] = f.split(",")
+        val new_skills = f_splitted.slice(13,20).mkString(",")
+        val (currentSkills,currentSkillsUpdateDate) =
+          if(f(13).eq(null) && !s(13).eq(null))
+            (skills,lastSkillsUpdate)
+          else
+            (new_skills,f_splitted(20))
+
+
+        val f_new = Seq(name,id,f_splitted(2),speciality,f_splitted.slice(4,9).mkString(","),character_leadership,currentSkills,currentSkillsUpdateDate).mkString(",")
+        println(f_new)
+        createRecords += f_new.replaceAll("\"", "")
+
+      else
+        null //only usage
+
+      counter += 1
+      checkCounter(counter, 100, createRecords, pathToCsvFile, true, Seq.empty[String])
+    }
+    val createdRecords: Seq[String] = createRecords.result()
+
+    writeToFile(pathToCsvFile, true, headlineSenior, createdRecords)
 
   }
 
@@ -1042,7 +1195,46 @@ object SeniorDatabase{
     }
     val createdRecords = createRecords.result()
 
-    writeToFile(pathToCsvFile, false, headlineSenior, createdRecords)
+    writeToFile(pathToCsvFile, true, headlineSenior, createdRecords)
+
+  }
+
+  def createDatabase(pathToCsvFile: String, ids: Seq[String], names: Seq[String], alreadyCreated: Seq[String]): Unit = {
+
+    val last_id = if (alreadyCreated.nonEmpty) alreadyCreated.last else null
+    println(last_id)
+    println()
+
+    val index = ids.indexOf(last_id)
+    val IDsToCreate: Seq[String] = if (index != -1) ids.drop(index + 1) else ids
+    val NamesToCreate: Seq[String] = if (index != -1) names.drop(index + 1) else names
+
+    IDsToCreate.foreach(println(_))
+
+    createDatabase(pathToCsvFile, IDsToCreate, NamesToCreate, true)
+
+  }
+
+  def createDatabase(pathToCsvFile: String, ids: Seq[String], names: Seq[String], appendFlag: Boolean): Unit = {
+
+    //ids.foreach(println(_))
+    var counter = 0
+    val createRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+    for (id <- ids) {
+      //println(id)
+      val f = Senior.updateSeniorPlayer(id, Seq.fill(7)("-1.0"))
+      if(!f.eq(null))
+        createRecords += (names(counter) ++ "," ++  f.split(",").drop(1).mkString(",")).replaceAll("\"","")
+        println((names(counter) ++ "," ++  f.split(",").drop(1).mkString(",")).replaceAll("\"",""))
+      else
+        null //only usage
+
+      counter += 1
+      checkCounter(counter, 100, createRecords, pathToCsvFile, true, Seq.empty[String])
+    }
+    val createdRecords: Seq[String] = createRecords.result()
+
+    writeToFile(pathToCsvFile, true, headlineSenior, createdRecords)
 
   }
 
@@ -1090,8 +1282,43 @@ class SeniorAnalysis {
 
       case "create" =>
         val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
-        //storedPlayerIDs.foreach(println(_))
-        SeniorDatabase.createDatabase(pathToOutputFile,storedPlayerIDs)
+        val storedPlayerNames: Seq[String] = YouthDatabase.getYouthPlayerNamesFromYouthDatabase(pathToDatabase)
+
+        val alreadyCreated = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToOutputFile)
+
+        if(alreadyCreated.nonEmpty)
+          println("already")
+          SeniorDatabase.createDatabase(pathToOutputFile,storedPlayerIDs,storedPlayerNames,alreadyCreated)
+        else
+          println("begin")
+          SeniorDatabase.createDatabase(pathToOutputFile,storedPlayerIDs,storedPlayerNames,false)
+
+      case "update" =>
+        val storedPlayerIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+        val storedPlayerLines: Seq[String] = YouthDatabase.getYouthPlayerLinesFromYouthDatabase(pathToDatabase)
+
+        val alreadyUpdatedIDs: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToOutputFile)
+
+        if(alreadyUpdatedIDs.nonEmpty)
+          println("already")
+          SeniorDatabase.updateDatabase(pathToDatabase,pathToOutputFile, storedPlayerIDs, alreadyUpdatedIDs)
+        else
+          println("begin")
+          SeniorDatabase.updateDatabase(pathToOutputFile, storedPlayerLines, false)
+          
+
+/*
+        val last_id = if(updatedPlayerIDs.nonEmpty) updatedPlayerIDs.last else null
+        println(last_id)
+
+        val index = storedPlayerIDs.indexOf(last_id)
+        val storedPlayerIDsToUpdate: Seq[String] = if (index != -1) storedPlayerIDs.drop(index + 1) else storedPlayerIDs
+
+        println()
+        storedPlayerIDsToUpdate.foreach(println(_))
+
+        SeniorDatabase.updateDatabase(pathToOutputFile)*/
+
         
 
     }
@@ -1175,7 +1402,7 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1386,6 +1613,10 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+
+
+
+
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
@@ -1701,7 +1932,8 @@ object RMA extends App{
 object test_SeniorAnalysis extends App{
 
   //SeniorAnalysis("test spec")
-  SeniorAnalysis("specialities_kopia.csv","create","testtest.csv")
+  SeniorAnalysis("specialities.csv","create","testtest.csv")
+  //SeniorAnalysis("testtest.csv","update","testtest1.csv")
 
 }
 
