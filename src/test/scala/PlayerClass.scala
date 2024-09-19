@@ -790,28 +790,65 @@ object Senior{
   }
 
 
+  //ERROR to ma czytać info a nie info1
   def GeneralInfo(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int) = {
       
       //bufferElement.foreach(println(_))
+
+      val PosTime_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+      val ConStar_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+
       var counter = 0
-      //tu się skupić
-      //bufferElement.foreach(s => if(s.toString.contains("class=\"nowrap middle center\""))
-      bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) {
+    bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) { //potrzebne do pozycja minuty
         counter += 1
-        if (counter == 3) //==1 wypisze wszystko
+        if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
         {
-          println(s)
+          //println(s)
+
+          //dobrze odczytuje pozycje i minuty
           val ss = s.toString.split(">", 2)(1).split("<", 2)(0).split(" ")
           val (pozycja, minuty) = (ss(0), ss(1).drop(2).dropRight(3))
           println(s"$pozycja $minuty")
 
+          PosTime_buffer += s"$pozycja $minuty "
 
           counter = 0
         }
 
       })
 
-      val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
+      val posTime = PosTime_buffer.result()
+
+    counter = 0
+    bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle center\"")) { //potrzebne do pozycja minuty
+      counter += 1
+      if (counter == 1 /*% 3 == 1*/ ) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
+      {
+        //println(s)
+
+        //tu ma czytać gwiazdki i kondycję - na razie nie czyta
+        val stars = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ", 2)(1).split("\"")(1)
+        val end_condition = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ")(2).split("\"")(1)
+        println(end_condition)
+        println(s"$stars")
+
+        ConStar_buffer += s"$end_condition $stars"
+
+        counter = 0
+      }
+
+    })
+
+    val conStars = ConStar_buffer.result()
+
+
+
+
+    val matchInfo: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
+    
+    matchInfo.foreach(println(_))
+
+    val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
       val TSI = bufferElement(index + 1).select("td").text().replaceAll(" ", "").toInt
       val Salary20 = bufferElement(index + 3).select("td").text().replaceAll(" ", "").replaceAll("zł/tydzień", "")
@@ -888,6 +925,8 @@ class Senior(args: Array[String]) extends PlayerClass(args){
   lazy val onTL: Option[Boolean] = if(exists) Some(Senior.OnTL(document)) else None
 
   lazy val info: mutable.Buffer[Element] = document.select("td").asScala
+  //lazy val info1: mutable.Buffer[Element] = document.select("hattrick-rating").asScala
+  lazy val info1: mutable.Buffer[Element] = document.select("td.nowrap.middle").asScala
 
   lazy val info2: mutable.Buffer[Element] = document.select("span").asScala
 
@@ -899,8 +938,9 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 
-  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info))
-  
+  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info)) //test: info1 dla czytania gwiazdek i kondycji
+  //lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info1)) //test: info dla normalnej pracy
+
   lazy val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
   lazy val salary: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._2) else None
   lazy val form: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._3) else None

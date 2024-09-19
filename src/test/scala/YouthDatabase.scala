@@ -1159,7 +1159,7 @@ object SeniorDatabase{
         val f_splitted: Array[String] = f.split(",")
         val new_skills = f_splitted.slice(13,20).mkString(",")
         val (currentSkills,currentSkillsUpdateDate) =
-          if(f(13).eq(null) && !s(13).eq(null))
+          if(f_splitted(13).equals("-") && !s(13).equals("-"))
             (skills,lastSkillsUpdate)
           else
             (new_skills,f_splitted(20))
@@ -1169,11 +1169,11 @@ object SeniorDatabase{
         println(f_new)
         createRecords += f_new.replaceAll("\"", "")
 
-      else
+      else  //acctually does not exist
         null //only usage
 
       counter += 1
-      checkCounter(counter, 100, createRecords, pathToCsvFile, true, Seq.empty[String])
+      checkCounter(counter, 1, createRecords, pathToCsvFile, true, Seq.empty[String])
     }
     val createdRecords: Seq[String] = createRecords.result()
 
@@ -1398,7 +1398,7 @@ class YouthAnalysis {
 
 object run extends App{
 
-  //new YouthAnalysis("test-TL'a")
+  //new YouthAnalysis("test-TL'a") 
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
@@ -1425,7 +1425,9 @@ def teamsIDFromLeagueID(leagueID: Int): Seq[String] = {
 
   val document = JsoupConnection(url)
 
-  val teamsID: Seq[String] = document.select("td.series-table-team").select("a").attr("href").split("&")(1).split("=")(1).split(",").toSeq
+  //println(url)
+  //println(document.select("td.table-padding-start-small"))
+  val teamsID: Seq[String] = document.select("td.table-padding-start-small").select("a").attr("href").split("&")(1).split("=")(1).split(",").toSeq
 
   println(s"$teamsID")
 
@@ -1613,8 +1615,6 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
-
-
 
 
 
@@ -1874,7 +1874,7 @@ object scanYouthPlayerHistory extends App{
 
   def playerScoutingHistory(id: String): Unit = {
 
-    val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
+    val path = "https://www88.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
     val url: String = path + id
     val connection: Connection = Jsoup.connect(url)
@@ -1931,8 +1931,8 @@ object RMA extends App{
 object test_SeniorAnalysis extends App{
 
   //SeniorAnalysis("test spec")
-  SeniorAnalysis("specialities.csv","create","testtest.csv")
-  //SeniorAnalysis("testtest.csv","update","testtest1.csv")
+  //SeniorAnalysis("specialities.csv","create","testtest.csv") //ok?
+  SeniorAnalysis("players_08082024.csv","update","testtest1.csv")
 
 }
 
