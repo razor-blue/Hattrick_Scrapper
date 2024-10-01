@@ -1427,7 +1427,8 @@ def teamsIDFromLeagueID(leagueID: Int): Seq[String] = {
 
   //println(url)
   //println(document.select("td.table-padding-start-small"))
-  val teamsID: Seq[String] = document.select("td.table-padding-start-small").select("a").attr("href").split("&")(1).split("=")(1).split(",").toSeq
+  //println(document.select("div.league-table-team-wrapper"))
+  val teamsID: Seq[String] = document.select("div.league-table-team-wrapper").select("a").attr("href").split("&")(1).split("=")(1).split(",").toSeq
 
   println(s"$teamsID")
 
@@ -1615,9 +1616,7 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
   val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
-
-
-
+  
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1645,6 +1644,7 @@ object prepareDatabaseForScouts extends App{
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
   new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+
   //new YouthAnalysis("removeDaysFromSpeciality", "Kenia")
   //new YouthAnalysis(maxAgeLimit_Kenia,"tttest")
 
