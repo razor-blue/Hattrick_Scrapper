@@ -79,6 +79,7 @@ def checkCounter(
   val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
   val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId="
   val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  val seniorMatchidPath = "https://www.hattrick.org/Club/Matches/Match.aspx?matchID="
 
   def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,Exp,TSI,Salary,Form,Condition,Character,Aggressiveness,Honesty,Leadership,GK,DEF,PM,WG,PASS,SCO,SP,Last_Skills_Update")
 
@@ -1399,10 +1400,10 @@ class YouthAnalysis {
 object run extends App{
 
   //new YouthAnalysis("test-TL'a") 
-  new YouthAnalysis(678445)
+  //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
@@ -1933,78 +1934,95 @@ object RMA extends App{
 
 object test_SeniorAnalysis extends App{
 
-  //SeniorAnalysis("test spec")
+  SeniorAnalysis("test spec")
   //SeniorAnalysis("specialities.csv","create","testtest.csv") //ok?
-  SeniorAnalysis("players_08082024.csv","update","testtest1.csv")
+  //SeniorAnalysis("players_08082024.csv","update","testtest1.csv")
 
 }
 
 object test_condition_selector extends App {
 
-  val path = "https://www.hattrick.org/Club/Matches/Match.aspx?matchID=739903684"
+  def matchPlayerAnalyzer(matchid: String, playerid: String) = {
 
-  val url: String = path
-  val connection: Connection = Jsoup.connect(url)
-  val document: Document = connection.get()
+    val path = seniorMatchidPath+matchid
 
-  val scriptElements: Elements = document.select("script[type=text/javascript]")
+    println(path)
 
-  // Wyświetlenie każdego z nich
-  //println(scriptElements.asScala(24)) //.foreach(println(_))
+    val url: String = path
+    val connection: Connection = Jsoup.connect(url)
+    val document: Document = connection.get()
+
+    val scriptElements: Elements = document.select("script[type=text/javascript]")
+
+    // Wyświetlenie każdego z nich
+    scriptElements.asScala.foreach(println(_))
 
 
+    val scriptContent: Array[Array[String]] = scriptElements.asScala(24).html().split("\\{").map(_.split(","))
 
-  val scriptContent: Array[Array[String]] = scriptElements.asScala(24).html().split("\\{").map(_.split(","))
+    //scriptContent.foreach(x => {x.foreach(print(_));println();println("****************************************************");println()})
 
-  //scriptContent.foreach(x => {x.foreach(print(_));println();println("****************************************************");println()})
+    //scriptContent.filter(_.head == "\"minute\":90")/*.filter(_.head == "\"playerId\":440376843")*/.foreach(x => {x.foreach(print(_)); println()})//do testów
 
-  //scriptContent.filter(_.head == "\"minute\":90")/*.filter(_.head == "\"playerId\":440376843")*/.foreach(x => {x.foreach(print(_)); println()})//do testów
+    val only90: Array[String] = scriptContent.dropWhile(_.head != "\"minute\":90").filter(_.head == "\"playerId\":" + playerid).head
+    only90.foreach(println(_))
 
-  val only90: Array[String] = scriptContent.dropWhile(_.head != "\"minute\":90").filter(_.head == "\"playerId\":482173788").head
-  only90.foreach(println(_))
+    val stars: String = only90(1).split(":")(1)
 
-  val stars: String = only90(1).split(":")(1)
+    val position = only90(2).split(":")(1) match {
+      case "100" => "GK"
+      case "101" => "WB"
+      case "102" => "CD"
+      case "103" => "CD"
+      case "104" => "CD"
+      case "105" => "WB"
+      case "106" => "W"
+      case "107" => "IM"
+      case "108" => "IM"
+      case "109" => "IM"
+      case "110" => "W"
+      case "111" => "F"
+      case "112" => "F"
+      case "113" => "F"
+      case _ => "XX"
 
-  val position = only90(2).split(":")(1) match{
-    case "100" => "GK"
-    case "101" => "WB"
-    case "102" => "CD"
-    case "103" => "CD"
-    case "104" => "CD"
-    case "105" => "WB"
-    case "106" => "W"
-    case "107" => "IM"
-    case "108" => "IM"
-    case "109" => "IM"
-    case "110" => "W"
-    case "111" => "F"
-    case "112" => "F"
-    case "113" => "F"
-    case _ => "XX"
+    }
+
+    val behaviour = only90(3).split(":")(1) match {
+      case "0" => ""
+      case "0" => "N"
+      case "1" => "-OFF"
+      case "2" => "-DEF"
+      case _ => "---"
+
+    }
+
+    val isKicker: String = only90(5).split(":")(1) match {
+      case "true" => "-SP"
+      case _ => ""
+    }
+
+    val condition = "%.0f".format(only90(6).split(":")(1).dropRight(1).toDouble * 100.0).replace(",", ".")+"%"
+    val stamina = "%.2f".format(9.0 - (9.9 - only90(6).split(":")(1).dropRight(1).toDouble * 10.0)).replace(",", ".")
+
+    val last_position = position + behaviour + isKicker
+
+    println(stars)
+    println(last_position)
+    println(condition)
+    println(stamina)
+
+    (last_position,stars,condition,stamina)
+
 
   }
 
-  val behaviour = only90(3).split(":")(1) match{
-    case "0" => ""
-    case "0" => "N"
-    case "1" => "-OFF"
-    case "2" => "-DEF"
-    case _ => "---"
+  println(matchPlayerAnalyzer("739903684", "487670053")._2)
 
-  }
 
-  val isKicker: String = only90(5).split(":")(1) match{
-    case "true" => "-SP"
-    case _ => ""
-  }
 
-  val stamina = "%.2f".format(9.0 - (9.9 - only90(6).split(":")(1).dropRight(1).toDouble*10.0)).replace(",",".")
 
-  val last_position = position+behaviour+isKicker
 
-  println(stars)
-  println(last_position)
-  println(stamina)
 
 
 
