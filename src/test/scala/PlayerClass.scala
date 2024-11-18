@@ -767,7 +767,8 @@ object Senior{
       val nationality = sp.nationality.get
       //tsi,salary,form,condition
       val generalInfo = sp.generalInfo.get
-      val (tsi, salary, form, condition) = sp.generalInfo.get
+      val (tsi, salary, form, condition) = sp.generalInfo.get //tu jest info o meczach
+      //i danych z meczów
       val speciality = sp.speciality.get //OrElse("")
       val exp = sp.exp.get
       val character = sp.character.get
@@ -795,19 +796,29 @@ object Senior{
       
       //bufferElement.foreach(println(_))
 
+      val Matchid_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
       val PosTime_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
       val ConStar_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
       var counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) { //potrzebne do pozycja minuty
+      //println(s)
         counter += 1
-        if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
+        if (counter == 1)
         {
-          //println(s)
+          val matchid = s.toString.split("=")(4).split("&").head
+          println(matchid)
+
+          Matchid_buffer += s"$matchid "
+
+        }
+        else if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
+        {
+          println(s)
 
           //dobrze odczytuje pozycje i minuty
-          val ss = s.toString.split(">", 2)(1).split("<", 2)(0).split(" ")
-          val (pozycja, minuty) = (ss(0), ss(1).drop(2).dropRight(3))
+          val ss = s.toString.split(">", 2)(1).split("<", 2)(0).split("\\(",2)
+          val (pozycja, minuty) = (ss(0).dropRight(2), ss(1).dropRight(3))
           println(s"$pozycja $minuty")
 
           PosTime_buffer += s"$pozycja $minuty "
@@ -817,6 +828,7 @@ object Senior{
 
       })
 
+      val matchid: Seq[String] = Matchid_buffer.result()
       val posTime = PosTime_buffer.result()
 
     counter = 0
@@ -844,8 +856,9 @@ object Senior{
 
 
 
-    val matchInfo: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
-    
+    val matchInfo_tmp: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
+    val matchInfo: Seq[String] = matchid.zip(matchInfo_tmp).map(x => x._1.concat(x._2))
+
     matchInfo.foreach(println(_))
 
     val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
