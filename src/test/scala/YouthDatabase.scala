@@ -1619,8 +1619,6 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
 
-
-
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1946,8 +1944,6 @@ object test_condition_selector extends App {
 
     val path = seniorMatchidPath+matchid
 
-    println(path)
-
     val url: String = path
     val connection: Connection = Jsoup.connect(url)
     val document: Document = connection.get()
@@ -1955,7 +1951,7 @@ object test_condition_selector extends App {
     val scriptElements: Elements = document.select("script[type=text/javascript]")
 
     // Wyświetlenie każdego z nich
-    scriptElements.asScala.foreach(println(_))
+    //scriptElements.asScala.foreach(println(_))
 
 
     val scriptContent: Array[Array[String]] = scriptElements.asScala(24).html().split("\\{").map(_.split(","))
@@ -2017,7 +2013,7 @@ object test_condition_selector extends App {
 
   }
 
-  println(matchPlayerAnalyzer("739903684", "487670053")._2)
+  println(matchPlayerAnalyzer("739903712", "479962675")._2)
 
 
 

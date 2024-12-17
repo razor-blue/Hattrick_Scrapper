@@ -14,6 +14,7 @@ import java.text.Normalizer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.DayOfWeek
+import javax.swing.plaf.DesktopIconUI
 import scala.util.matching.Regex
 
 def getTodayDate(pattern: String = "dd.MM.yyyy"): String = {
@@ -94,6 +95,13 @@ class QuickScanYouthPlayer(args: Array[String]) {
 
 object PlayerClass{
 
+    def Id(document: Document): Int = {
+
+      document.select("span.idNumber").text().replaceAll("[()]", "").toInt
+
+    }
+
+
     def Age(document: Document): (Double, Int, Int) = {
 
       val wiek = document.select("div.byline").text()
@@ -167,7 +175,7 @@ class PlayerClass(args: Array[String]) {
   lazy val exists: Boolean = if (document.title.split("»").length <= 2) false else true
   lazy val has_club: Boolean = if (document.title.split("»").length == 4) true else false
 
-  lazy val id: Option[Int] = if (exists) Some(document.select("span.idNumber").text().replaceAll("[()]", "").toInt) else None
+  lazy val id: Option[Int] = if (exists) Some(PlayerClass.Id(document)) else None
 
   lazy val name: Option[String] = if (exists) {
         //document.title.split("»").foreach(println(_))/*.head.trim*/
@@ -792,13 +800,16 @@ object Senior{
 
 
   //ERROR to ma czytać info a nie info1
-  def GeneralInfo(bufferElement: mutable.Buffer[Element]): (Int, Int, Int, Int) = {
+  def GeneralInfo(bufferElement: mutable.Buffer[Element], playerId: String): (Int, Int, Int, Int) = {
       
       //bufferElement.foreach(println(_))
 
       val Matchid_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
       val PosTime_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
       val ConStar_buffer: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
+
+      val MatchDetailsStars_buffer = Seq.newBuilder[String]
+      val MatchDetailsStamina_buffer = Seq.newBuilder[String]
 
       var counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) { //potrzebne do pozycja minuty
@@ -809,7 +820,11 @@ object Senior{
           val matchid = s.toString.split("=")(4).split("&").head
           println(matchid)
 
+          val playerMatchDetails: (String, String, String, String) = matchPlayerAnalyzer(matchid, playerId)
+
           Matchid_buffer += s"$matchid "
+          MatchDetailsStars_buffer   += s"${playerMatchDetails._1}"
+          MatchDetailsStamina_buffer += s"${playerMatchDetails._4}"
 
         }
         else if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
@@ -830,6 +845,8 @@ object Senior{
 
       val matchid: Seq[String] = Matchid_buffer.result()
       val posTime = PosTime_buffer.result()
+      val matchDetailsStars = MatchDetailsStars_buffer.result()
+      val matchDetailsStamina = MatchDetailsStamina_buffer.result()
 
     counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle center\"")) { //potrzebne do pozycja minuty
@@ -858,8 +875,12 @@ object Senior{
 
     val matchInfo_tmp: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
     val matchInfo: Seq[String] = matchid.zip(matchInfo_tmp).map(x => x._1.concat(x._2))
+    val matchInfo1: Seq[String] = matchDetailsStars.zip(matchInfo).map(x => x._1.concat(x._2))
+    val matchInfo2: Seq[String] = matchDetailsStamina.zip(matchInfo1).map(x => x._1.concat(x._2))
 
-    matchInfo.foreach(println(_))
+    println("******")
+    matchInfo2.foreach(println(_))
+    println("******")
 
     val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
@@ -925,11 +946,82 @@ object Senior{
       experience
 
   }
+
+    def matchPlayerAnalyzer(matchid: String, playerid: String) = {
+
+      val seniorMatchidPath = "https://www.hattrick.org/Club/Matches/Match.aspx?matchID="
+
+      val path = seniorMatchidPath + matchid
+
+      val url: String = path
+      val connection: Connection = Jsoup.connect(url)
+      val document: Document = connection.get()
+
+      val scriptElements: Elements = document.select("script[type=text/javascript]")
+
+      val scriptContent: Array[Array[String]] = scriptElements.asScala(24).html().split("\\{").map(_.split(","))
+
+      val only90: Array[String] = scriptContent.dropWhile(_.head != "\"minute\":90").filter(_.head == "\"playerId\":" + playerid).head
+      only90.foreach(println(_))
+
+      val stars: String = only90(1).split(":")(1)
+
+      val position = only90(2).split(":")(1) match {
+        case "100" => "GK"
+        case "101" => "WB"
+        case "102" => "CD"
+        case "103" => "CD"
+        case "104" => "CD"
+        case "105" => "WB"
+        case "106" => "W"
+        case "107" => "IM"
+        case "108" => "IM"
+        case "109" => "IM"
+        case "110" => "W"
+        case "111" => "F"
+        case "112" => "F"
+        case "113" => "F"
+        case _ => "XX"
+
+      }
+
+      val behaviour = only90(3).split(":")(1) match {
+        case "0" => ""
+        case "0" => "N"
+        case "1" => "-OFF"
+        case "2" => "-DEF"
+        case _ => "---"
+
+      }
+
+      val isKicker: String = only90(5).split(":")(1) match {
+        case "true" => "-SP"
+        case _ => ""
+      }
+
+      val condition = "%.0f".format(only90(6).split(":")(1).dropRight(1).toDouble * 100.0).replace(",", ".") + "%"
+      val stamina = "%.2f".format(9.0 - (9.9 - only90(6).split(":")(1).dropRight(1).toDouble * 10.0)).replace(",", ".")
+
+      val last_position = position + behaviour + isKicker
+
+      /*println(stars)
+      println(last_position)
+      println(condition)
+      println(stamina)*/
+
+      (last_position, stars, condition, stamina)
+
+
+    }
     
 }
 
 class Senior(args: Array[String]) extends PlayerClass(args){
 
+  val playerId: String = args(1)
+
+  //println(s"ID: $playerId")
+  //println(s"ID: ${PlayerClass.Id(document)}")
     /*var a = 0
     println(s"${a+=1}")*/
 
@@ -951,7 +1043,7 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 
-  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info)) //test: info1 dla czytania gwiazdek i kondycji
+  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info, playerId)) //test: info1 dla czytania gwiazdek i kondycji
   //lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info1)) //test: info dla normalnej pracy
 
   lazy val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
