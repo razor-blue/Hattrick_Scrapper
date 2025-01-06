@@ -1680,7 +1680,7 @@ object doSthWithDatabases extends App{
 object prepare_TL_listed_forAnalysis extends App{
 
 
-  val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/TL_listed.csv")
+  val bufferedSource0: Option[BufferedSource] = tryBufferedSource("src/data/TL_listed_new.csv")
 
   bufferedSource0 match {
     case Some(source) =>
@@ -1691,16 +1691,17 @@ object prepare_TL_listed_forAnalysis extends App{
       for (line <- source.getLines.drop(1)) {
 
         val cols: Array[String] = line.split(",").map(_.trim)
-        val since: Int = cols(1).toInt
+        val since: Int = cols(5).toInt
 
         if (since <= 3) {
+          println(line)
           updateRecords += line.replaceAll("\"","")
         }
 
 
       }
 
-      writeToFile("src/data/TL_listed_puryfied.csv", false, headline.toSeq, updateRecords.result().distinct)
+      writeToFile("src/data/TL_listed_new_puryfied.csv", false, headline.toSeq, updateRecords.result().distinct)
 
 
       source.close()
