@@ -810,6 +810,7 @@ object Senior{
 
       val MatchDetailsStars_buffer = Seq.newBuilder[String]
       val MatchDetailsStamina_buffer = Seq.newBuilder[String]
+      val MatchDetailsCondition_buffer = Seq.newBuilder[String]
 
       var counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) { //potrzebne do pozycja minuty
@@ -825,6 +826,7 @@ object Senior{
           Matchid_buffer += s"$matchid "
           MatchDetailsStars_buffer   += s"${playerMatchDetails._1}"
           MatchDetailsStamina_buffer += s"${playerMatchDetails._4}"
+          MatchDetailsCondition_buffer += s"${playerMatchDetails._3}"
 
         }
         else if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
@@ -847,6 +849,7 @@ object Senior{
       val posTime = PosTime_buffer.result()
       val matchDetailsStars = MatchDetailsStars_buffer.result()
       val matchDetailsStamina = MatchDetailsStamina_buffer.result()
+      val matchDetailsCondition = MatchDetailsCondition_buffer.result()
 
     counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle center\"")) { //potrzebne do pozycja minuty
@@ -855,11 +858,11 @@ object Senior{
       {
         //println(s)
 
-        //tu ma czytać gwiazdki i kondycję - na razie nie czyta
+        //tu ma czytać gwiazdki i kondycję - na razie nie czyta; czyta ale na koniec meczu, nie 90'; pominać w analizie
         val stars = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ", 2)(1).split("\"")(1)
         val end_condition = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ")(2).split("\"")(1)
-        println(end_condition)
-        println(s"$stars")
+        //println(end_condition)
+        //println(s"$stars")
 
         ConStar_buffer += s"$end_condition $stars"
 
@@ -868,17 +871,20 @@ object Senior{
 
     })
 
-    val conStars = ConStar_buffer.result()
+    val conStars = ConStar_buffer.result()//to generuje błędne wyniki kondycji i gwiazdek, bo są na koniec meczu, nie 90'
 
 
 
-
-    val matchInfo_tmp: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
-    val matchInfo: Seq[String] = matchid.zip(matchInfo_tmp).map(x => x._1.concat(x._2))
+    posTime.foreach(println(_))
+    //val matchInfo_tmp: Seq[String] = posTime.zip(conStars).map(x => x._1.concat(x._2))
+    val matchInfo: Seq[String] = matchid.zip(posTime).map(x => x._1.concat(x._2))
     val matchInfo1: Seq[String] = matchDetailsStars.zip(matchInfo).map(x => x._1.concat(x._2))
     val matchInfo2: Seq[String] = matchDetailsStamina.zip(matchInfo1).map(x => x._1.concat(x._2))
 
     println("******")
+    matchDetailsCondition.foreach(println(_))
+    matchDetailsStamina.foreach(println(_))
+    println("++")
     matchInfo2.foreach(println(_))
     println("******")
 
@@ -962,7 +968,10 @@ object Senior{
       val scriptContent: Array[Array[String]] = scriptElements.asScala(24).html().split("\\{").map(_.split(","))
 
       val only90: Array[String] = scriptContent.dropWhile(_.head != "\"minute\":90").filter(_.head == "\"playerId\":" + playerid).head
+
+      println("----")
       only90.foreach(println(_))
+      println("----")
 
       val stars: String = only90(1).split(":")(1)
 
@@ -1004,10 +1013,10 @@ object Senior{
 
       val last_position = position + behaviour + isKicker
 
-      /*println(stars)
+      println(stars)
       println(last_position)
       println(condition)
-      println(stamina)*/
+      println(stamina)
 
       (last_position, stars, condition, stamina)
 
