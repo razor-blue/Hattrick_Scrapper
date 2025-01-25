@@ -6,7 +6,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.jsoup.{Connection, Jsoup}
 
-import scala.collection.mutable
+import scala.collection.{IterableOnceOps, immutable, mutable}
 import scala.jdk.CollectionConverters.*
 import java.time.Duration
 import java.time.LocalDate
@@ -15,7 +15,6 @@ import java.time.DayOfWeek
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import scala.annotation.tailrec
-import scala.collection.{immutable, mutable}
 import scala.io.BufferedSource
 import scala.util.{Random, Success}
 import scala.util.control.Breaks.*
@@ -131,7 +130,10 @@ object YouthDatabase {
     "2710178" -> {databasePath + "Tmp_Team.csv"},
     "Polska" -> {databasePath + "Polska_youthPlayerDatabase.csv"},
     "tttest" -> {databasePath + "tttest.csv"},
+    "characters" -> {databasePath + "characters.csv"},
+    "curr" -> {databasePath + "tttest.csv"},
     "Kenia" -> {databasePath + "Kenia_youthPlayerDatabase1-4L.csv"},
+    "Rwanda" -> {databasePath + "Rwanda_youthPlayerDatabase1-4L.csv"},
     "World" -> {databasePath + "World_youthPlayerDatabase.csv"},
     "Ligi_1-4" -> {databasePath + "Polska_youthPlayerDatabase1-4L.csv"},
     "5 Liga" -> {databasePath + "Polska_youthPlayerDatabase_5L.csv"},
@@ -433,7 +435,9 @@ object YouthDatabase {
 
       case "removeDuplicateRecords" =>
 
-        def enigma(dataLines: Iterator[String]): Seq[String] = {
+        def enigma(dataLines: Seq[String]): Seq[String] = {
+          println("haha")
+          dataLines.take(1).foreach(println(_))
 
           val updateRecords: mutable.Builder[String, Seq[String]] = Seq.newBuilder[String]
 
@@ -457,8 +461,23 @@ object YouthDatabase {
           val lines: Seq[String] = bufferedSource match {
             case Some(source) =>
 
-              val dataLines: Iterator[String] = source.getLines.drop(1)
-              source.close()
+              def read_dl(source: BufferedSource): Seq[String] = {
+                try {
+                  //val dataLines: Iterator[String] = source.getLines.drop(1)
+                  source.getLines.drop(1).toSeq
+                }
+                catch {
+                  case e: Exception => println(s"Error: ${e.getMessage}")
+                  Iterator.empty.toSeq
+                } finally {
+                  source.close() // Upewnij się, że strumień jest zamykany
+                }
+              }
+
+              //dataLines.foreach(println(_))
+              //source.close()
+
+              val dataLines = read_dl(source)
 
               enigma(dataLines)
 
@@ -1400,11 +1419,12 @@ class YouthAnalysis {
 object run extends App{
 
   //new YouthAnalysis("test-TL'a") 
-  new YouthAnalysis(678445)
+  //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
+  //new YouthAnalysis("Rwanda")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1522,6 +1542,16 @@ class other_leagueIDs_DatabasePath {
     ).flatten,
     databasePath + "Kenia_youthPlayerDatabase1-4L.csv")
 
+  def Rwanda_L1_4: (List[Int], String) = (
+    List(
+
+      Range.inclusive(268262, 268282), //L1-L3
+      Range.inclusive(268347, 268410), //L4
+
+
+    ).flatten,
+    databasePath + "Rwanda_youthPlayerDatabase1-4L.csv")
+
   def Rosja_L1_5: (List[Int], String) = (
     List(
       //Range.inclusive(3187, 3207),    //L1-L3
@@ -1557,7 +1587,8 @@ object addNewPlayersToDatabase extends App{
 
   //val leagueIDs_Path: (List[Int], String) = new leagueIDs_DatabasePath().L1_4
 
-  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
+  val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Rwanda_L1_4
+  //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Kenia_L1_4
   //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Rosja_L1_5
   //val leagueIDs_Path: (List[Int], String) = new other_leagueIDs_DatabasePath().Polska_L1_7
 
@@ -1630,7 +1661,7 @@ object addNewPlayersToDatabase_withFutures extends App{
 object prepareDatabaseForScouts extends App{
 
   val maxAgeLimit_Poland = 17.030
-  val maxAgeLimit_Kenia = 21.000
+  val maxAgeLimit_Rwanda = 21.000
 
 
   //new YouthAnalysis(maxAgeLimit,"Ligi_1-4")
@@ -1647,10 +1678,10 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
-  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Poland,"tttest")
 
-  //new YouthAnalysis("removeDaysFromSpeciality", "Kenia")
-  //new YouthAnalysis(maxAgeLimit_Kenia,"tttest")
+  //new YouthAnalysis("removeDaysFromSpeciality", "Rwanda")
+  new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
 
 }
 
@@ -1659,12 +1690,13 @@ object doSthWithDatabases extends App{
   //val label: String = "clearWrongSpecialityStatus"
   //val label: String = "removePlayersThatLeftAcademy"
   //val label: String = "databaseMinusTttestRecords"
-  //val label: String = "removeDuplicateRecords"
+  val label: String = "removeDuplicateRecords"
   //val label: String = "findRejectedPlayers"
-  val label: String = "removeDaysFromSpeciality"
+  //val label: String = "removeDaysFromSpeciality"
 
 
-  new YouthAnalysis(label,"Polska")
+  //new YouthAnalysis(label,"Polska")
+  new YouthAnalysis(label,"curr")
   //new YouthAnalysis(label,"Ligi_1-4")
   //new YouthAnalysis(label,"5 Liga")
   //new YouthAnalysis(label,"6 Liga 1-256")
