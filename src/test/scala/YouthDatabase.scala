@@ -1650,8 +1650,6 @@ object addNewPlayersToDatabase_withFutures extends App{
   val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
 
 
-
-
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1678,10 +1676,10 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
-  //new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
 
   //new YouthAnalysis("removeDaysFromSpeciality", "Rwanda")
-  new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
 
 }
 
