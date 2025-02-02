@@ -1422,7 +1422,7 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Rwanda")
   //new YouthAnalysis("Ligi_1-4")

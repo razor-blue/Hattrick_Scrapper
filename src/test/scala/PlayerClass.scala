@@ -1342,7 +1342,7 @@ def U21_schedule_generator(n: Int): String = {
         (0 to 1).map(d => {
           if (s % 2 == 1)
             if (w > 0 && d == 0)
-            //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
+              //println(s"${ME_2D(w)(0)} ${ME_2D(w-1)(1)}")
               if (schedule_1st_Season(w, 0) != schedule_1st_Season(w - 1, 1))
                 td += s"${pr(s, w, d)}"
               else
@@ -1369,7 +1369,7 @@ def U21_schedule_generator(n: Int): String = {
 
 object test_schedule_generator extends App{
 
-  U21_schedule_generator(37)
+  println(U21_schedule_generator(41))
 
 }
 
