@@ -125,6 +125,7 @@ object YouthDatabase {
   //ok
   val DatabasePath: Map[String, String] = Map(
     "test-TL'a" -> {databasePath + "TL_test.csv"},
+    "WC2" -> {databasePath + "WC2.csv"},
     "678445" -> {databasePath + "FCB_youthPlayerDatabase.csv"},
     "2955119" -> {databasePath + "luka_w_systemie_youthPlayerDatabase.csv"},
     "2710178" -> {databasePath + "Tmp_Team.csv"},
@@ -656,7 +657,7 @@ object YouthDatabase {
 
     val yp = new Youth(Array(youthPlayerPath,id))
 
-    //println(yp.exists) to test
+    println(yp.exists) //to test
     
     if(yp.exists)
 
@@ -1422,7 +1423,7 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
   //new YouthAnalysis("Rwanda")
   //new YouthAnalysis("Ligi_1-4")
@@ -1946,6 +1947,21 @@ object scanYouthPlayerHistory extends App{
 
   playerScoutingHistory(id)
 
+
+}
+
+object WC2_database extends App{
+
+  val pathToDatabase: String = YouthDatabase.getDatabasePathByDatabaseKey("WC2")
+
+  //val ids: Seq[String] = Seq("375054176", "373919828")
+  //val core_ids = Seq("375054176","373919828","373492547","375253541","373877439","373837379","374229724","374535314","373616802","374073826","374492952","374483825","376532404","377643973","375112051","374679968","374498567","375734000","378494549","373907491","377669160","375105261","378916413","373957734")
+  val new_ids = Seq("")
+  val ids = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+
+  YouthDatabase.updateDatabase(pathToDatabase)
+
+  YouthDatabase.addPlayerToDatabase(pathToDatabase,new_ids,ids)
 
 }
 
