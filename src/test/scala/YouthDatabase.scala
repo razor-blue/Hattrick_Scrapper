@@ -72,13 +72,13 @@ def checkCounter(
 }
 
   val WC_U21SchedulesPath = "src/WC_U21_Schedules/"
-  val teamPath = "https://www.hattrick.org/Club/?TeamID="
+  val teamPath = "https://www85.hattrick.org/Club/?TeamID="
   val databasePath: String = "src/data/"
-  val youthTeamPath = "https://www.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
-  val leaguePath = "https://www.hattrick.org/World/Series/?LeagueLevelUnitID="
-  val seniorPlayerPath = "https://www.hattrick.org/pl/Club/Players/Player.aspx?playerId="
-  val youthPlayerPath = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
-  val seniorMatchidPath = "https://www.hattrick.org/Club/Matches/Match.aspx?matchID="
+  val youthTeamPath = "https://www85.hattrick.org/Club/Players/YouthPlayers.aspx?YouthTeamID="
+  val leaguePath = "https://www85.hattrick.org/World/Series/?LeagueLevelUnitID="
+  val seniorPlayerPath = "https://www85.hattrick.org/pl/Club/Players/Player.aspx?playerId="
+  val youthPlayerPath = "https://www85.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
+  val seniorMatchidPath = "https://www85.hattrick.org/Club/Matches/Match.aspx?matchID="
 
   def headlineSenior: Seq[String] = Seq("Player,Player ID,Age,Speciality,Exp,TSI,Salary,Form,Condition,Character,Aggressiveness,Honesty,Leadership,GK,DEF,PM,WG,PASS,SCO,SP,Last_Skills_Update")
 
@@ -657,7 +657,7 @@ object YouthDatabase {
 
     val yp = new Youth(Array(youthPlayerPath,id))
 
-    println(yp.exists) //to test
+    //println(yp.exists) //to test
     
     if(yp.exists)
 
@@ -1186,7 +1186,7 @@ object SeniorDatabase{
             (new_skills,f_splitted(20))
 
 
-        val f_new = Seq(name,id,f_splitted(2),speciality,f_splitted.slice(4,9).mkString(","),character_leadership,currentSkills,currentSkillsUpdateDate).mkString(",")
+        val f_new = Seq(name,id,f_splitted(2),speciality,f_splitted.slice(4,10).mkString(","),character_leadership,currentSkills,currentSkillsUpdateDate).mkString(",")
         println(f_new)
         createRecords += f_new.replaceAll("\"", "")
 
@@ -1288,7 +1288,7 @@ class SeniorAnalysis {
 
     println(pathToDatabase)
 
-    SeniorDatabase.createDatabase(pathToDatabase,Seq("479962675","483890976"))//.updateDatabase(pathToDatabase)
+    SeniorDatabase.createDatabase(pathToDatabase,Seq("479962675"))//.updateDatabase(pathToDatabase)
 
   }
 
@@ -1423,9 +1423,9 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  new YouthAnalysis("Polska")
+  //new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
-  //new YouthAnalysis("Rwanda")
+  new YouthAnalysis("Rwanda")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1645,10 +1645,11 @@ object addNewPlayersToDatabase_withFutures extends App{
 
   //csv files have to have header, unless empty line is detected and no read is applied
 
-  val f1 = Future { doF((Range.inclusive(3620,3704).toList++Range.inclusive(9383,9638).toList++Range.inclusive(32114,32225).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config2_db.dat") }
-  val f2 = Future { doF((Range.inclusive(32226,32750).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config3_db.dat") }
-  val f3 = Future { doF((Range.inclusive(32751,33137).toList++Range.inclusive(58605,58725).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config4_db.dat") }
-  val f4 = Future { doF((Range.inclusive(58726,59628).toList,databasePath + "Polska_youthPlayerDatabase.csv"),"config5_db.dat") }
+  val f1 = Future {doF((Range.inclusive(3620, 3704).toList ++ Range.inclusive(9383, 9638).toList ++ Range.inclusive(32114, 32225).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config2_db.dat")}
+  val f2 = Future {doF((Range.inclusive(32226, 32750).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config3_db.dat")}
+  val f3 = Future {doF((Range.inclusive(32751, 33137).toList ++ Range.inclusive(58605, 58725).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config4_db.dat")}
+  val f4 = Future {doF((Range.inclusive(58726, 59628).toList, databasePath + "Polska_youthPlayerDatabase.csv"), "config5_db.dat")}
+
 
 
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
@@ -1677,10 +1678,10 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
-  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Poland,"tttest")
 
   //new YouthAnalysis("removeDaysFromSpeciality", "Rwanda")
-  //new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
+  new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
 
 }
 
@@ -1789,7 +1790,7 @@ object readtttest extends App{
 object outlookCollector extends App{
 
   //val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayer.aspx?YouthPlayerID="
-  val path = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
+  val path = "https://www85.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
   //val id = "332699838"
   //val id = "332435756"
   //val id = "333148660"
@@ -1823,7 +1824,7 @@ object outlookCollector extends App{
 
 object characterCollector extends App{
 
-  val path = "https://www.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
+  val path = "https://www85.hattrick.org/pl/Club/Players/Player.aspx?PlayerID="
   val id = "478180611"
 
   val url: String = path + id
@@ -1910,7 +1911,7 @@ object scanYouthPlayerHistory extends App{
 
   def playerScoutingHistory(id: String): Unit = {
 
-    val path = "https://www88.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
+    val path = "https://www85.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
     val url: String = path + id
     val connection: Connection = Jsoup.connect(url)
@@ -1956,7 +1957,7 @@ object WC2_database extends App{
 
   //val ids: Seq[String] = Seq("375054176", "373919828")
   //val core_ids = Seq("375054176","373919828","373492547","375253541","373877439","373837379","374229724","374535314","373616802","374073826","374492952","374483825","376532404","377643973","375112051","374679968","374498567","375734000","378494549","373907491","377669160","375105261","378916413","373957734")
-  val new_ids = Seq("")
+  val new_ids = Seq("375701493","377415606")
   val ids = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
 
   YouthDatabase.updateDatabase(pathToDatabase)

@@ -590,7 +590,7 @@ object Youth{
 
     def ScoutingEngine(id: String): (Array[String], Array[String]) = {
 
-      val path = "https://www.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
+      val path = "https://www85.hattrick.org/pl/Club/Players/YouthPlayerHistory.aspx?YouthPlayerID="
 
       val url: String = path + id
       val connection: Connection = Jsoup.connect(url)
@@ -775,7 +775,7 @@ object Senior{
       val nationality = sp.nationality.get
       //tsi,salary,form,condition
       val generalInfo = sp.generalInfo.get
-      val (tsi, salary, form, condition) = sp.generalInfo.get //tu jest info o meczach
+      val (tsi, salary, form, condition, stamina_history) = sp.generalInfo.get //tu jest info o meczach
       //i danych z meczów
       val speciality = sp.speciality.get //OrElse("")
       val exp = sp.exp.get
@@ -791,7 +791,7 @@ object Senior{
       val sf = skills.map(_._11.toString).getOrElse("-")
 
 
-      val f = s"$name,$id,$age,$speciality,$exp,$tsi,$salary,$form,$condition,$character,$gk,$df,$pm,$wg,$pass,$sco,$sf,${getTodayDate()}"
+      val f = s"$name,$id,$age,$speciality,$exp,$tsi,$salary,$form,$condition,$stamina_history,$character,$gk,$df,$pm,$wg,$pass,$sco,$sf,${getTodayDate()}"
       //val f = s"$name,$id,$age,$exp"
       println(f)
       f
@@ -800,7 +800,7 @@ object Senior{
 
 
   //ERROR to ma czytać info a nie info1
-  def GeneralInfo(bufferElement: mutable.Buffer[Element], playerId: String): (Int, Int, Int, Int) = {
+  def GeneralInfo(bufferElement: mutable.Buffer[Element], playerId: String): (Int, Int, Int, Int,String) = {
       
       //bufferElement.foreach(println(_))
 
@@ -811,6 +811,8 @@ object Senior{
       val MatchDetailsStars_buffer = Seq.newBuilder[String]
       val MatchDetailsStamina_buffer = Seq.newBuilder[String]
       val MatchDetailsCondition_buffer = Seq.newBuilder[String]
+      val MatchDetailsPositions_buffer = Seq.newBuilder[String]
+      val MatchDetailsSinglePosition_buffer = Seq.newBuilder[String]
 
       var counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle\"")) { //potrzebne do pozycja minuty
@@ -821,12 +823,14 @@ object Senior{
           val matchid = s.toString.split("=")(4).split("&").head
           println(matchid)
 
-          val playerMatchDetails: (String, String, String, String) = matchPlayerAnalyzer(matchid, playerId)
+          val playerMatchDetails: (String, String, String, String, String, String) = matchPlayerAnalyzer(matchid, playerId)
 
           Matchid_buffer += s"$matchid "
           MatchDetailsStars_buffer   += s"${playerMatchDetails._1}"
           MatchDetailsStamina_buffer += s"${playerMatchDetails._4}"
           MatchDetailsCondition_buffer += s"${playerMatchDetails._3}"
+          MatchDetailsPositions_buffer += s"${playerMatchDetails._5}"
+          MatchDetailsSinglePosition_buffer += s"${playerMatchDetails._6}"
 
         }
         else if (counter == 3 /*% 3 == 1*/) //==1 wypisze wszystko; ==3 wypisze pozycję i minuty
@@ -847,9 +851,15 @@ object Senior{
 
       val matchid: Seq[String] = Matchid_buffer.result()
       val posTime = PosTime_buffer.result()
-      val matchDetailsStars = MatchDetailsStars_buffer.result()
+      val matchDetailsStars: Seq[String] = MatchDetailsStars_buffer.result()
       val matchDetailsStamina = MatchDetailsStamina_buffer.result()
       val matchDetailsCondition = MatchDetailsCondition_buffer.result()
+      val matchDetailsPositions = MatchDetailsPositions_buffer.result()
+      val matchDetailsSinglePosition: Seq[String] = MatchDetailsSinglePosition_buffer.result()
+
+    val test: Seq[(String, String)] = matchDetailsSinglePosition.zip(matchDetailsStars).filter(p => p._1 == "IM")
+    test.foreach(println(_))
+    
 
     counter = 0
     bufferElement.foreach(f = s => if (s.toString.contains("class=\"nowrap middle center\"")) { //potrzebne do pozycja minuty
@@ -859,10 +869,11 @@ object Senior{
         //println(s)
 
         //tu ma czytać gwiazdki i kondycję - na razie nie czyta; czyta ale na koniec meczu, nie 90'; pominać w analizie
+        //edit: tak te gwiazdki są złe, i końcowa kondycja też
         val stars = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ", 2)(1).split("\"")(1)
         val end_condition = s.toString.split(">", 2)(1).split(">", 2)(0).split(" ")(2).split("\"")(1)
         //println(end_condition)
-        //println(s"$stars")
+        //println(s"stars: $end_condition")
 
         ConStar_buffer += s"$end_condition $stars"
 
@@ -882,11 +893,19 @@ object Senior{
     val matchInfo2: Seq[String] = matchDetailsStamina.zip(matchInfo1).map(x => x._1.concat(x._2))
 
     println("******")
+    matchDetailsStars.foreach(println(_))
     matchDetailsCondition.foreach(println(_))
+    println(matchDetailsCondition.mkString("-"))
     matchDetailsStamina.foreach(println(_))
+    println(matchDetailsStamina.mkString("-"))
+    println(matchDetailsPositions)
     println("++")
+    matchInfo.foreach(println(_))
+    matchInfo1.foreach(println(_))
     matchInfo2.foreach(println(_))
     println("******")
+
+    val stamina_history: String = matchDetailsStamina.mkString("-")
 
     val index: Int = bufferElement.indexOf(bufferElement.find(_.text == "TSI").get)
 
@@ -897,7 +916,7 @@ object Senior{
       val Form = bufferElement(index + 7).select("span.denominationNumber").text().split(" ").head.toInt
       val Condition = bufferElement(index + 10).select("span.denominationNumber").text().split(" ").head.toInt
 
-      (TSI,Salary,Form,Condition)
+      (TSI,Salary,Form,Condition,stamina_history)
 
     }
 
@@ -955,7 +974,7 @@ object Senior{
 
     def matchPlayerAnalyzer(matchid: String, playerid: String) = {
 
-      val seniorMatchidPath = "https://www.hattrick.org/Club/Matches/Match.aspx?matchID="
+      val seniorMatchidPath = "https://www85.hattrick.org/Club/Matches/Match.aspx?matchID="
 
       val path = seniorMatchidPath + matchid
 
@@ -995,11 +1014,13 @@ object Senior{
       }
 
       val behaviour = only90(3).split(":")(1) match {
-        case "0" => ""
-        case "0" => "N"
+        //case "0" => ""
+        case "0" => "-N"
         case "1" => "-OFF"
         case "2" => "-DEF"
-        case _ => "---"
+        case "3" => "-TM"
+        case "4" => "-TW"
+        case _   => "---"
 
       }
 
@@ -1012,13 +1033,14 @@ object Senior{
       val stamina = "%.2f".format(9.0 - (9.9 - only90(6).split(":")(1).dropRight(1).toDouble * 10.0)).replace(",", ".")
 
       val last_position = position + behaviour + isKicker
+      val position_stars = position + behaviour + " " + stars
 
       println(stars)
       println(last_position)
       println(condition)
       println(stamina)
 
-      (last_position, stars, condition, stamina)
+      (last_position, stars, condition, stamina, position_stars, position)  //2024-02-12
 
 
     }
@@ -1052,7 +1074,7 @@ class Senior(args: Array[String]) extends PlayerClass(args){
 
   lazy val skills: Option[(Int, Int, Int, Int, Int, Int, Int, Int, Int, Int, Int)] = if (onTL.getOrElse(false)) Some(Senior.Skills(info)) else None
 
-  lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info, playerId)) //test: info1 dla czytania gwiazdek i kondycji
+  lazy val generalInfo: Option[(Int, Int, Int, Int, String)] = Some(Senior.GeneralInfo(info, playerId)) //test: info1 dla czytania gwiazdek i kondycji
   //lazy val generalInfo: Option[(Int, Int, Int, Int)] = Some(Senior.GeneralInfo(info1)) //test: info dla normalnej pracy
 
   lazy val tsi: Option[Int] = if (onTL.getOrElse(false)) Some(skills.get._1) else None
