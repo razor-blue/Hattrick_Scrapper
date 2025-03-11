@@ -169,6 +169,7 @@ object PlayerClass{
 class PlayerClass(args: Array[String]) {
 
   val url: String = args(0) + args(1)
+  //println(url)
   val connection: Connection = Jsoup.connect(url)
   val document: Document = connection.get()
 

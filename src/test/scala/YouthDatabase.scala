@@ -657,6 +657,7 @@ object YouthDatabase {
 
     val yp = new Youth(Array(youthPlayerPath,id))
 
+    println(id)
     //println(yp.exists) //to test
     
     if(yp.exists)
@@ -840,7 +841,7 @@ object YouthDatabase {
             val cols: Array[String] = line.split(",").map(_.trim)
             val id: String = cols(1)
 
-            //println(s"Line to test: $line") to test
+            //println(s"Line to test: $line") //to test
 
 
             //val id_index: Int = db_ids.indexOf(id)
@@ -1423,9 +1424,9 @@ object run extends App{
   //new YouthAnalysis(678445)
   //new YouthAnalysis(2955119)
   //new YouthAnalysis(2710178)
-  //new YouthAnalysis("Polska")
+  new YouthAnalysis("Polska")
   //new YouthAnalysis("Kenia")
-  new YouthAnalysis("Rwanda")
+  //new YouthAnalysis("Rwanda")
   //new YouthAnalysis("Ligi_1-4")
   //new YouthAnalysis("5 Liga")
   //new YouthAnalysis("6 Liga 1-256")
@@ -1652,6 +1653,8 @@ object addNewPlayersToDatabase_withFutures extends App{
 
 
 
+
+
   Await.result(Future.sequence(Seq(f1, f2, f3, f4)), 1.day)
   //Await.result(Future.sequence(Seq(f4)), 1.day)
 
@@ -1678,10 +1681,10 @@ object prepareDatabaseForScouts extends App{
   //new YouthAnalysis(maxAgeLimit_Kenia,"Kenia")
 
   //new YouthAnalysis("removeDaysFromSpeciality","Polska")
-  //new YouthAnalysis(maxAgeLimit_Poland,"tttest")
+  new YouthAnalysis(maxAgeLimit_Poland,"tttest")
 
   //new YouthAnalysis("removeDaysFromSpeciality", "Rwanda")
-  new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
+  //new YouthAnalysis(maxAgeLimit_Rwanda,"tttest")
 
 }
 
@@ -1956,13 +1959,16 @@ object WC2_database extends App{
   val pathToDatabase: String = YouthDatabase.getDatabasePathByDatabaseKey("WC2")
 
   //val ids: Seq[String] = Seq("375054176", "373919828")
-  //val core_ids = Seq("375054176","373919828","373492547","375253541","373877439","373837379","374229724","374535314","373616802","374073826","374492952","374483825","376532404","377643973","375112051","374679968","374498567","375734000","378494549","373907491","377669160","375105261","378916413","373957734")
-  val new_ids = Seq("375701493","377415606")
-  val ids = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+  //val core_ids = Seq("375054176","373919828","373492547","375253541","373877439","373837379","374229724","374535314","373616802","374073826","374492952","374483825","376532404","377643973","375112051","374679968","374498567","375734000","378494549","373907491","377669160","375105261","378916413","373957734","375701493","377415606")
+  val new_ids = Seq("")
+  val ids: Seq[String] = YouthDatabase.getYouthPlayerIDsFromYouthDatabase(pathToDatabase)
+
+  ids.foreach(println(_))
 
   YouthDatabase.updateDatabase(pathToDatabase)
 
-  YouthDatabase.addPlayerToDatabase(pathToDatabase,new_ids,ids)
+  //YouthDatabase.addPlayerToDatabase(pathToDatabase,new_ids,ids)
+  //YouthDatabase.createDatabase(pathToDatabase,core_ids)
 
 }
 
